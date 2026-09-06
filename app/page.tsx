@@ -287,50 +287,50 @@ export default function Catalog() {
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", background: "var(--bg)" }}>
 
       {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <header style={{ background: headerBg, backdropFilter: "blur(12px)", borderBottom: "1px solid var(--border)", padding: "0 16px", height: 62, display: "flex", alignItems: "center", gap: 12, position: "sticky", top: 0, zIndex: 100 }}>
+      <header style={{ background: "rgba(2,13,26,.94)", backdropFilter: "blur(14px)", borderBottom: "1px solid var(--border)", padding: "0 20px", height: 60, display: "flex", alignItems: "center", gap: 14, position: "sticky", top: 0, zIndex: 100 }}>
         <button
           onClick={() => setSidebarOpen(o => !o)}
           className="mobile-filter-btn"
-          style={{ width: 38, height: 38, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text2)", background: "var(--surface2)", border: "none", cursor: "pointer", flexShrink: 0 }}
+          style={{ width: 36, height: 36, borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text2)", background: "var(--surface2)", border: "1px solid var(--border)", cursor: "pointer", flexShrink: 0 }}
         >
           <Icon name="filter" />
         </button>
-        <a href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", flexShrink: 0 }}>
-          <div style={{ width: 38, height: 38, borderRadius: 9, background: accent, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 13, letterSpacing: "-.5px", boxShadow: `0 0 16px ${accent}50` }}>
-            {settings.logoText}
-          </div>
-          <div>
-            <div style={{ fontWeight: 700, fontSize: 15, color: "var(--text)" }}>{settings.businessName}</div>
-            <div style={{ fontSize: 11, color: "var(--text3)" }}>{settings.tagline}</div>
-          </div>
+
+        {/* Logo Narom */}
+        <a href="/" style={{ display: "flex", alignItems: "center", textDecoration: "none", flexShrink: 0 }}>
+          <img src="/narom-logo.svg" alt="Narom Group" style={{ height: 30, width: "auto" }} />
         </a>
 
-        <div style={{ flex: 1, maxWidth: 460, position: "relative" }}>
-          <span style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)", color: "var(--text3)", pointerEvents: "none" }}>
-            <Icon name="search" size={15} />
+        {/* Buscador */}
+        <div style={{ flex: 1, maxWidth: 480, position: "relative" }}>
+          <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "var(--text3)", pointerEvents: "none" }}>
+            <Icon name="search" size={14} />
           </span>
           <input
-            style={{ width: "100%", height: 38, borderRadius: 9, border: "1.5px solid var(--border)", padding: "0 12px 0 36px", fontSize: 13.5, background: "var(--surface2)", color: "var(--text)", outline: "none" }}
+            style={{ width: "100%", height: 38, borderRadius: 12, border: "1px solid var(--border)", padding: "0 14px 0 36px", fontSize: 13, background: "var(--surface2)", color: "var(--text)", outline: "none" }}
             placeholder="Buscar por nombre, marca o SKU…"
             value={query}
             onChange={e => setQuery(e.target.value)}
           />
         </div>
 
-        <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
-          <a href="/admin" style={{ width: 38, height: 38, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text3)", background: "var(--surface2)", textDecoration: "none" }}>
-            <Icon name="settings" />
+        <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center" }}>
+          {user && (
+            <span style={{ fontSize: 12, color: "var(--text3)", display: "flex", alignItems: "center", gap: 6 }}>
+              <span style={{ width: 26, height: 26, borderRadius: "50%", background: accent + "22", color: accent, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800 }}>
+                {user.name[0]?.toUpperCase()}
+              </span>
+            </span>
+          )}
+          <a href="/admin" style={{ width: 36, height: 36, borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text3)", background: "var(--surface2)", border: "1px solid var(--border)", textDecoration: "none" }}>
+            <Icon name="settings" size={16} />
           </a>
           <button
             onClick={() => setCartOpen(o => !o)}
-            style={{ width: 38, height: 38, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", color: cartCount > 0 ? accent : "var(--text3)", background: cartCount > 0 ? accent + "18" : "var(--surface2)", position: "relative", border: cartCount > 0 ? `1px solid ${accent}30` : "none" }}
+            style={{ height: 36, padding: "0 14px", borderRadius: 9, display: "flex", alignItems: "center", gap: 8, color: cartCount > 0 ? "#fff" : "var(--text2)", background: cartCount > 0 ? accent : "var(--surface2)", border: `1px solid ${cartCount > 0 ? accent : "var(--border)"}`, fontWeight: 700, fontSize: 13, position: "relative", boxShadow: cartCount > 0 ? `0 4px 16px ${accent}40` : "none", transition: "all .2s" }}
           >
-            <Icon name="cart" />
-            {cartCount > 0 && (
-              <span style={{ position: "absolute", top: 3, right: 3, width: 16, height: 16, borderRadius: 8, background: accent, color: "#000", fontSize: 10, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                {cartCount > 99 ? "99+" : cartCount}
-              </span>
-            )}
+            <Icon name="cart" size={16} />
+            {cartCount > 0 && <span>{cartCount}</span>}
           </button>
         </div>
       </header>
@@ -343,55 +343,64 @@ export default function Catalog() {
         )}
 
         {/* ── Sidebar ────────────────────────────────────────────────────────── */}
-        <aside className={sidebarOpen ? "sidebar sidebar-open" : "sidebar"} style={{ width: 232, flexShrink: 0, background: "var(--surface)", borderRight: "1px solid var(--border)", padding: "20px 0", overflowY: "auto", position: "sticky", top: 62, height: "calc(100vh - 62px)" }}>
-          <div style={{ padding: "0 14px 16px" }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: "var(--text3)", letterSpacing: "1.2px", textTransform: "uppercase" as const, marginBottom: 10 }}>Marca</div>
+        <aside className={sidebarOpen ? "sidebar sidebar-open" : "sidebar"} style={{ width: 224, flexShrink: 0, background: "var(--surface)", borderRight: "1px solid var(--border)", padding: "20px 0 24px", overflowY: "auto", position: "sticky", top: 60, height: "calc(100vh - 60px)" }}>
+
+          {/* MARCAS */}
+          <div style={{ padding: "0 12px 4px" }}>
+            <div className="nav-label">Marcas</div>
             {VISIBLE_BRANDS.map(b => {
               const on = activeBrands.includes(b);
               return (
-                <div key={b} style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 4px", cursor: "pointer" }} onClick={() => { toggleBrand(b); }}>
-                  <div style={{ width: 16, height: 16, borderRadius: 4, border: `1.5px solid ${on ? accent : "var(--border2)"}`, background: on ? accent : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all .15s" }}>
-                    {on && <Icon name="check" size={10} />}
-                  </div>
-                  <span style={{ fontSize: 13, color: on ? "var(--text)" : "var(--text2)" }}>{b}</span>
-                </div>
+                <button key={b} className={"nav-item" + (on ? " active" : "")} onClick={() => toggleBrand(b)}>
+                  <span className="nav-dot" />
+                  <span style={{ flex: 1 }}>{b}</span>
+                  {on && <Icon name="check" size={12} />}
+                </button>
               );
             })}
           </div>
 
-          <div style={{ height: 1, background: "var(--border)", margin: "0 14px 16px" }} />
+          <div className="nav-separator" style={{ margin: "14px 12px" }} />
 
-          <div style={{ padding: "0 14px 16px" }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: "var(--text3)", letterSpacing: "1.2px", textTransform: "uppercase" as const, marginBottom: 10 }}>Categoría</div>
-            {["Todos", ...CATEGORIES].map(cat => (
-              <button key={cat} style={activeCategory === cat ? sidebarCatActive : sidebarCatIdle} onClick={() => { setActiveCategory(cat); setSidebarOpen(false); }}>
-                {cat}
-              </button>
-            ))}
+          {/* CATEGORÍAS */}
+          <div style={{ padding: "0 12px 4px" }}>
+            <div className="nav-label">Categorías</div>
+            {["Todos", ...CATEGORIES].map(cat => {
+              const on = activeCategory === cat;
+              return (
+                <button key={cat} className={"nav-item" + (on ? " active" : "")}
+                  onClick={() => { setActiveCategory(cat); setSidebarOpen(false); }}>
+                  <span className="nav-dot" />
+                  <span style={{ flex: 1 }}>{cat}</span>
+                </button>
+              );
+            })}
           </div>
 
-          <div style={{ height: 1, background: "var(--border)", margin: "0 14px 16px" }} />
+          <div className="nav-separator" style={{ margin: "14px 12px" }} />
 
-          <div style={{ padding: "0 14px 16px" }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: "var(--text3)", letterSpacing: "1.2px", textTransform: "uppercase" as const, marginBottom: 12 }}>Filtros</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <span style={{ fontSize: 13, color: "var(--text2)" }}>Solo en oferta</span>
-                <Toggle on={onlySale} onChange={() => setOnlySale(o => !o)} accent={accent} />
-              </div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <span style={{ fontSize: 13, color: "var(--text2)" }}>Con stock</span>
-                <Toggle on={onlyStock} onChange={() => setOnlyStock(o => !o)} accent={accent} />
-              </div>
-            </div>
+          {/* FILTROS */}
+          <div style={{ padding: "0 12px 4px" }}>
+            <div className="nav-label">Filtros</div>
+            <button className={"nav-item" + (onlySale ? " active" : "")} onClick={() => setOnlySale(o => !o)}>
+              <span className="nav-dot" />
+              <span style={{ flex: 1 }}>Solo en oferta</span>
+              {onlySale && <Icon name="check" size={12} />}
+            </button>
+            <button className={"nav-item" + (onlyStock ? " active" : "")} onClick={() => setOnlyStock(o => !o)}>
+              <span className="nav-dot" />
+              <span style={{ flex: 1 }}>Con stock</span>
+              {onlyStock && <Icon name="check" size={12} />}
+            </button>
           </div>
 
           {(activeBrands.length > 0 || onlySale || onlyStock || activeCategory !== "Todos") && (
             <>
-              <div style={{ height: 1, background: "var(--border)", margin: "0 14px 8px" }} />
-              <div style={{ padding: "0 14px" }}>
-                <button style={{ fontSize: 12.5, color: accent, fontWeight: 600 }} onClick={() => { setActiveCategory("Todos"); setActiveBrands([]); setOnlySale(false); setOnlyStock(false); }}>
-                  Limpiar filtros
+              <div className="nav-separator" style={{ margin: "14px 12px 10px" }} />
+              <div style={{ padding: "0 12px" }}>
+                <button className="nav-item" style={{ color: accent }} onClick={() => { setActiveCategory("Todos"); setActiveBrands([]); setOnlySale(false); setOnlyStock(false); }}>
+                  <Icon name="close" size={13} />
+                  <span>Limpiar filtros</span>
                 </button>
               </div>
             </>
@@ -425,54 +434,58 @@ export default function Catalog() {
                   <div
                     key={p.id}
                     onClick={() => openProduct(p)}
-                    style={{ background: "var(--surface)", borderRadius: 14, border: "1px solid var(--border)", overflow: "hidden", cursor: "pointer", display: "flex", flexDirection: "column", transition: "border-color .2s, box-shadow .2s" }}
-                    onMouseEnter={e => { const el = e.currentTarget as HTMLDivElement; el.style.borderColor = accent + "50"; el.style.boxShadow = `0 0 0 1px ${accent}20, var(--shadow-md)`; }}
-                    onMouseLeave={e => { const el = e.currentTarget as HTMLDivElement; el.style.borderColor = "var(--border)"; el.style.boxShadow = "none"; }}
+                    style={{ background: "var(--surface)", borderRadius: 16, border: "1px solid var(--border)", overflow: "hidden", cursor: "pointer", display: "flex", flexDirection: "column", transition: "border-color .2s, box-shadow .2s, transform .2s" }}
+                    onMouseEnter={e => { const el = e.currentTarget as HTMLDivElement; el.style.borderColor = accent + "60"; el.style.boxShadow = `0 8px 28px rgba(0,0,0,.4)`; el.style.transform = "translateY(-1px)"; }}
+                    onMouseLeave={e => { const el = e.currentTarget as HTMLDivElement; el.style.borderColor = "var(--border)"; el.style.boxShadow = "none"; el.style.transform = "none"; }}
                   >
                     {/* Image */}
-                    <div style={{ height: 130, overflow: "hidden", background: "var(--surface2)", position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <div style={{ height: 128, background: "var(--surface2)", position: "relative", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
                       <CardImg product={p} />
                       {p.tag && (
-                        <div style={{ position: "absolute", top: 10, left: 10 }}>
+                        <div style={{ position: "absolute", top: 8, left: 8 }}>
                           <Tag label={p.tag} accent={accent} />
+                        </div>
+                      )}
+                      {!inStock && (
+                        <div style={{ position: "absolute", inset: 0, background: "rgba(2,13,26,.55)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <span style={{ fontSize: 10, fontWeight: 800, color: "var(--text3)", letterSpacing: ".1em", textTransform: "uppercase" as const }}>Sin stock</span>
                         </div>
                       )}
                     </div>
 
-                    <div style={{ padding: "9px 11px", flex: 1, display: "flex", flexDirection: "column", gap: 3 }}>
-                      <div style={{ fontSize: 10, fontWeight: 700, color: "var(--text3)", letterSpacing: ".5px", textTransform: "uppercase" as const }}>{p.brand}</div>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text)", lineHeight: 1.3 }}>{p.name}</div>
-                      <div style={{ fontSize: 11, color: "var(--text3)", fontFamily: "monospace" }}>SKU: {p.sku}</div>
-
-                      <div style={{ display: "flex", alignItems: "baseline", gap: 7, marginTop: 6 }}>
-                        <span style={{ fontSize: 18, fontWeight: 800, color: p.onSale ? "#f87171" : "var(--text)" }}>{fmt(price, settings.currency)}</span>
-                        {p.onSale && <span style={{ fontSize: 12, color: "var(--text3)", textDecoration: "line-through" }}>{fmt(p.price, settings.currency)}</span>}
+                    <div style={{ padding: "10px 12px", flex: 1, display: "flex", flexDirection: "column", gap: 3 }}>
+                      <div style={{ fontSize: 9, fontWeight: 800, color: "var(--text3)", letterSpacing: ".12em", textTransform: "uppercase" as const }}>{p.brand}</div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text)", lineHeight: 1.35 }}>{p.name}</div>
+                      <div style={{ fontSize: 10, color: "var(--text3)", fontFamily: "monospace", marginTop: 1 }}>{p.sku}</div>
+                      <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginTop: 8 }}>
+                        <span style={{ fontSize: 17, fontWeight: 800, color: p.onSale ? "#f87171" : "var(--text)", letterSpacing: "-0.03em" }}>{fmt(price, settings.currency)}</span>
+                        {p.onSale && <span style={{ fontSize: 11, color: "var(--text3)", textDecoration: "line-through" }}>{fmt(p.price, settings.currency)}</span>}
                       </div>
                     </div>
 
-                    <div style={{ padding: "8px 11px", borderTop: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
+                    <div style={{ padding: "8px 12px 10px", display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
                       {cartQty > 0 ? (
                         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                           <button
                             onClick={e => { e.stopPropagation(); e.preventDefault(); updateQty(p.id, -p.minQty); }}
-                            style={{ width: 30, height: 30, borderRadius: 7, background: "var(--surface3)", color: "var(--text2)", display: "flex", alignItems: "center", justifyContent: "center" }}
+                            style={{ width: 30, height: 30, borderRadius: 8, background: "var(--surface3)", color: "var(--text2)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--border)" }}
                           >
-                            <Icon name="minus" size={13} />
+                            <Icon name="minus" size={12} />
                           </button>
-                          <span style={{ fontSize: 14, fontWeight: 800, minWidth: 24, textAlign: "center", color: accent }}>{cartQty}</span>
+                          <span style={{ fontSize: 14, fontWeight: 800, minWidth: 26, textAlign: "center" as const, color: accent }}>{cartQty}</span>
                           <button
                             onClick={e => { e.stopPropagation(); e.preventDefault(); if (inStock) addToCart(p, p.minQty); }}
-                            style={{ width: 30, height: 30, borderRadius: 7, background: accent, color: "#000", display: "flex", alignItems: "center", justifyContent: "center" }}
+                            style={{ width: 30, height: 30, borderRadius: 8, background: accent, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 2px 8px ${accent}40` }}
                           >
-                            <Icon name="plus" size={13} />
+                            <Icon name="plus" size={12} />
                           </button>
                         </div>
                       ) : (
                         <button
                           onClick={e => { e.stopPropagation(); e.preventDefault(); if (inStock) addToCart(p, p.minQty); }}
-                          style={{ height: 32, padding: "0 14px", borderRadius: 7, background: inStock ? accent : "var(--surface3)", color: inStock ? "#000" : "var(--text3)", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", gap: 5, opacity: inStock ? 1 : 0.5 }}
+                          style={{ height: 30, padding: "0 12px", borderRadius: 8, background: inStock ? accent : "var(--surface3)", color: inStock ? "#fff" : "var(--text3)", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", gap: 5, opacity: inStock ? 1 : 0.4, boxShadow: inStock ? `0 2px 10px ${accent}35` : "none" }}
                         >
-                          <Icon name="plus" size={13} />
+                          <Icon name="plus" size={12} />
                           Agregar
                         </button>
                       )}

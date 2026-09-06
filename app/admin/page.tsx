@@ -240,7 +240,8 @@ export default function Admin() {
     return (
       <div style={{ minHeight: "100vh", background: "var(--bg)", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ width: 360, background: "var(--surface)", borderRadius: 16, border: "1px solid var(--border)", padding: 32 }}>
-          <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 4 }}>Panel Narom</div>
+          <img src="/narom-logo.svg" alt="Narom" style={{ height: 32, marginBottom: 20 }} />
+          <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 4 }}>Panel de administración</div>
           <p style={{ fontSize: 13, color: "var(--text3)", marginBottom: 24 }}>Ingresá con tu cuenta para administrar el catálogo.</p>
           <form onSubmit={loginAdmin} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <div style={field}><span style={label}>Email</span>
@@ -266,7 +267,7 @@ export default function Admin() {
         <a href="/" style={{ display: "flex", alignItems: "center", gap: 6, color: "var(--text3)", textDecoration: "none", fontSize: 13, fontWeight: 500, flexShrink: 0 }}>
           <Icon name="back" size={15} /> Catálogo
         </a>
-        <span style={S.title}>Panel Narom</span>
+        <img src="/narom-logo.svg" alt="Narom" style={{ height: 26, width: "auto" }} />
 
         {/* Tabs */}
         <div style={{ display: "flex", gap: 2, background: "var(--surface2)", borderRadius: 9, padding: 3, marginLeft: 8 }}>
