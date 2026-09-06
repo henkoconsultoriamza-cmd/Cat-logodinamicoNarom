@@ -1,8 +1,8 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
 :root {
-  --accent: #2E80CE;
-  --accent-light: rgba(46,128,206,.12);
+  --accent: #F4AA24;
+  --accent-light: rgba(244,170,36,.12);
   --bg: #020d1a;
   --surface: #071828;
   --surface2: #0d2438;

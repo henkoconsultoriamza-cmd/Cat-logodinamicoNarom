@@ -118,13 +118,13 @@ export const CART_KEY = "mota_cart_v1";
 export const APP_SETTINGS_KEY = "mota_app_settings_v1";
 
 export const DEFAULT_APP_SETTINGS: AppSettings = {
-  businessName: "MOTA Herramientas",
-  tagline: "Calidad profesional para cada trabajo",
-  logoText: "MOTA",
-  accentColor: "#E63946",
+  businessName: "Narom Group",
+  tagline: "Distribuidor mayorista para ferreterías",
+  logoText: "NRM",
+  accentColor: "#F4AA24",
   currency: "ARS",
   whatsappNumber: "5491157648501",
-  contactEmail: "ventas@mota.com.ar",
+  contactEmail: "ventas@naromgroup.com.ar",
 };
 
 export const DEFAULT_PRODUCTS = [
