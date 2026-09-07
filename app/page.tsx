@@ -300,7 +300,7 @@ export default function Catalog() {
     "INGCO": "/brands/ingco.png",
     "SANIPLAST": "/brands/saniplast.png",
     "SIKA": "/brands/sika.png",
-    "Gama Pinturas": "/brands/gama.png",
+    "GAMA PINTURAS": "/brands/gama.png",
     "TELPLAS": "/brands/telplas.png",
   };
 

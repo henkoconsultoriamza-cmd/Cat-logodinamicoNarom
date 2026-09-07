@@ -110,7 +110,7 @@ export const BRANDS = [
   "INGCO",
   "FS GROUP",
   "SIKA",
-  "Gama Pinturas",
+  "GAMA PINTURAS",
   "TELPLAS",
 ] as const;
 
