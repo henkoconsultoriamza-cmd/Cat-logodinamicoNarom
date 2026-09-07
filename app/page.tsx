@@ -138,6 +138,7 @@ export default function Catalog() {
   const [orderSending, setOrderSending] = useState(false);
   const PAGE_SIZE = 48;
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [slide, setSlide] = useState(0);
 
   const accent = settings.accentColor;
 
@@ -152,6 +153,11 @@ export default function Catalog() {
   }, []);
 
   useEffect(() => { if (hydrated) localStorage.setItem(CART_KEY, JSON.stringify(cart)); }, [cart, hydrated]);
+
+  useEffect(() => {
+    const t = setInterval(() => setSlide(s => (s + 1) % 3), 4500);
+    return () => clearInterval(t);
+  }, []);
 
   // Restaurar sesión Supabase al cargar
   useEffect(() => {
@@ -284,12 +290,6 @@ export default function Catalog() {
     { badge: "OFERTA", brand: "INGCO", title: "Máquinas y herramientas eléctricas", sub: "Amoladoras, taladros, sierras y lijadoras. Potencia profesional para cada obra.", img: "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=1400&q=80", color: "#F5A800" },
     { badge: "NUEVO", brand: "SANIPLAST", title: "Cañerías PP-R y termofusión", sub: "La línea que instalan los mejores plomeros. Agua fría y caliente, garantía total.", img: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=1400&q=80", color: "#2d8a4e" },
   ];
-  const [slide, setSlide] = useState(0);
-  useEffect(() => {
-    const t = setInterval(() => setSlide(s => (s + 1) % SLIDES.length), 4500);
-    return () => clearInterval(t);
-  }, []);
-
   // ── Brand logo map ────────────────────────────────────────────────────────
   const BRAND_LOGOS: Record<string, string> = {
     "MOTA": "/brands/mota.png",
