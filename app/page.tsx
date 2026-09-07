@@ -297,11 +297,11 @@ export default function Catalog() {
     "LubriMota": "/brands/mota.jpg",
     "GasMota": "/brands/mota.jpg",
     "MembraMota": "/brands/mota.jpg",
-    "INGCO": "/brands/ingco.jpg",
-    "SANIPLAST": "/brands/saniplast.jpg",
+    "INGCO": "/brands/ingco.png",
+    "SANIPLAST": "/brands/saniplast.png",
     "SIKA": "/brands/sika.png",
-    "Gama Pinturas": "/brands/gama.jpg",
-    "TELPLAS": "/brands/telplas.jpg",
+    "Gama Pinturas": "/brands/gama.png",
+    "TELPLAS": "/brands/telplas.png",
   };
 
   return (
