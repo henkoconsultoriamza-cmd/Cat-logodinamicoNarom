@@ -292,13 +292,16 @@ export default function Catalog() {
   ];
   // ── Brand logo map ────────────────────────────────────────────────────────
   const BRAND_LOGOS: Record<string, string> = {
-    "MOTA": "/brands/mota.png",
-    "ArtMota": "/brands/mota.png",
-    "LubriMota": "/brands/mota.png",
-    "GasMota": "/brands/mota.png",
-    "MembraMota": "/brands/mota.png",
+    "MOTA": "/brands/mota.jpg",
+    "ArtMota": "/brands/mota.jpg",
+    "LubriMota": "/brands/mota.jpg",
+    "GasMota": "/brands/mota.jpg",
+    "MembraMota": "/brands/mota.jpg",
     "INGCO": "/brands/ingco.jpg",
     "SANIPLAST": "/brands/saniplast.jpg",
+    "SIKA": "/brands/sika.png",
+    "Gama Pinturas": "/brands/gama.jpg",
+    "TELPLAS": "/brands/telplas.jpg",
   };
 
   return (
@@ -457,8 +460,17 @@ export default function Catalog() {
                 </div>
               </div>
             ))}
+            {/* Arrows */}
+            <button onClick={() => setSlide(s => (s - 1 + SLIDES.length) % SLIDES.length)}
+              style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", width: 36, height: 36, borderRadius: "50%", background: "rgba(255,255,255,.15)", border: "1px solid rgba(255,255,255,.2)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", backdropFilter: "blur(4px)", zIndex: 10 }}>
+              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button onClick={() => setSlide(s => (s + 1) % SLIDES.length)}
+              style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)", width: 36, height: 36, borderRadius: "50%", background: "rgba(255,255,255,.15)", border: "1px solid rgba(255,255,255,.2)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", backdropFilter: "blur(4px)", zIndex: 10 }}>
+              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 18l6-6-6-6"/></svg>
+            </button>
             {/* Dots */}
-            <div style={{ position: "absolute", bottom: 14, right: 20, display: "flex", gap: 6 }}>
+            <div style={{ position: "absolute", bottom: 14, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 6 }}>
               {SLIDES.map((_, i) => (
                 <button key={i} onClick={() => setSlide(i)} style={{ width: i === slide ? 20 : 6, height: 6, borderRadius: 3, background: i === slide ? "#F4AA24" : "rgba(255,255,255,.3)", border: "none", cursor: "pointer", transition: "all .3s ease", padding: 0 }} />
               ))}
@@ -466,19 +478,17 @@ export default function Catalog() {
           </div>
 
           {/* ── Brand logo strip ──────────────────────────────────────────── */}
-          <div style={{ background: "#fff", borderBottom: "1px solid #e2e8f0", padding: "14px 20px", display: "flex", alignItems: "center", gap: 10, overflowX: "auto" }}>
-            <span style={{ fontSize: 10, fontWeight: 800, color: "#94a3b8", letterSpacing: ".12em", textTransform: "uppercase" as const, flexShrink: 0 }}>MARCAS</span>
-            <div style={{ width: 1, height: 20, background: "#e2e8f0", flexShrink: 0 }} />
-            <button onClick={() => setActiveBrands([])} style={{ height: 36, padding: "0 14px", borderRadius: 20, border: `1.5px solid ${activeBrands.length === 0 ? "#02152C" : "#e2e8f0"}`, background: activeBrands.length === 0 ? "#02152C" : "#fff", color: activeBrands.length === 0 ? "#fff" : "#475569", fontSize: 12, fontWeight: 700, cursor: "pointer", flexShrink: 0 }}>
+          <div style={{ background: "#fff", borderBottom: "1px solid #e2e8f0", padding: "12px 20px", display: "flex", alignItems: "center", gap: 8, overflowX: "auto" }}>
+            <button onClick={() => setActiveBrands([])} style={{ height: 40, padding: "0 16px", borderRadius: 999, border: `2px solid ${activeBrands.length === 0 ? "#02152C" : "#e2e8f0"}`, background: activeBrands.length === 0 ? "#02152C" : "#fff", color: activeBrands.length === 0 ? "#fff" : "#475569", fontSize: 12, fontWeight: 700, cursor: "pointer", flexShrink: 0, transition: "all .15s" }}>
               Todas
             </button>
             {VISIBLE_BRANDS.map(b => {
               const on = activeBrands.includes(b);
               const logo = BRAND_LOGOS[b];
               return (
-                <button key={b} onClick={() => toggleBrand(b)} style={{ height: 44, padding: logo ? "6px 12px" : "0 14px", borderRadius: 10, border: `1.5px solid ${on ? "#02152C" : "#e2e8f0"}`, background: on ? "#02152C0d" : "#fff", cursor: "pointer", display: "flex", alignItems: "center", gap: 8, flexShrink: 0, transition: "all .15s" }}>
+                <button key={b} onClick={() => toggleBrand(b)} style={{ height: 48, padding: logo ? "6px 14px" : "0 16px", borderRadius: 999, border: `2px solid ${on ? "#02152C" : "#e2e8f0"}`, background: on ? "rgba(2,21,44,.06)" : "#fff", cursor: "pointer", display: "flex", alignItems: "center", gap: 8, flexShrink: 0, transition: "all .15s", boxShadow: on ? "0 0 0 1px #02152C" : "none" }}>
                   {logo
-                    ? <img src={logo} alt={b} style={{ height: 28, width: "auto", maxWidth: 80, objectFit: "contain" }} />
+                    ? <img src={logo} alt={b} style={{ height: 30, width: "auto", maxWidth: 90, objectFit: "contain" }} />
                     : <span style={{ fontSize: 12, fontWeight: 700, color: on ? "#02152C" : "#475569" }}>{b}</span>
                   }
                   {on && <Icon name="check" size={12} />}

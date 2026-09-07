@@ -109,6 +109,9 @@ export const BRANDS = [
   "SANIPLAST",
   "INGCO",
   "FS GROUP",
+  "SIKA",
+  "Gama Pinturas",
+  "TELPLAS",
 ] as const;
 
 export type Brand = typeof BRANDS[number];
