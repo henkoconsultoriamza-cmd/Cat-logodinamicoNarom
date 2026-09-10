@@ -7,6 +7,7 @@ export async function POST(req: NextRequest) {
 
   const { id, is_admin } = await req.json();
   if (!id) return NextResponse.json({ error: "Falta el id del usuario" }, { status: 400 });
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return NextResponse.json({ error: "ID inválido" }, { status: 400 });
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceKey  = process.env.SUPABASE_SERVICE_ROLE_KEY;

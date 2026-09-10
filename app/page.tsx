@@ -1,12 +1,11 @@
 "use client";
 
-import { CSSProperties, useEffect, useMemo, useState } from "react";
+import { CSSProperties, useEffect, useMemo, useRef, useState } from "react";
 import {
   APP_SETTINGS_KEY, AppSettings, BRANDS, CART_KEY, CATEGORIES,
   DEFAULT_APP_SETTINGS, DEFAULT_PRODUCTS, Product, PRODUCTS_KEY, Variant,
 } from "./catalog-data";
 import { supabase } from "./lib/supabase";
-import { saveOrder } from "./lib/orders";
 
 type CartItem = {
   productId: string;
@@ -142,6 +141,7 @@ export default function Catalog() {
   const [regAddress, setRegAddress] = useState("");
   const [regMsg, setRegMsg] = useState("");
   const [orderSending, setOrderSending] = useState(false);
+  const pendingOrderRef = useRef(false);
   const PAGE_SIZE = 48;
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [slide, setSlide] = useState(0);
@@ -217,27 +217,32 @@ export default function Catalog() {
     return `Hola! Quiero hacer un pedido mayorista:\n\n${lines}\n\nTotal estimado: ${fmt(cartTotal, settings.currency)}\n\n¿Podés confirmarme disponibilidad?`;
   }
 
-  async function handleSendOrder() {
+  async function handleSendOrderWithUser(_u: { id: string; email: string; name: string }, token: string) {
     if (!cart.length) return;
-    if (!user) { setLoginOpen(true); return; }
     setOrderSending(true);
     try {
-      // Guardar en Supabase
-      await saveOrder({
-        clientId:    user.id,
-        clientEmail: user.email,
-        clientName:  user.name,
-        items: cart.map(i => ({ productId: i.productId, name: i.name, brand: i.brand, sku: i.variantSku ?? i.productId, unitPrice: i.unitPrice, quantity: i.quantity })),
-        total: cartTotal,
+      const items = cart.map(i => ({ productId: i.productId, name: i.name, brand: i.brand, sku: i.variantSku ?? i.productId, unitPrice: i.unitPrice, quantity: i.quantity }));
+      await fetch("/api/save-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        body: JSON.stringify({ items, total: cartTotal }),
       });
     } catch (e) {
       console.error("Error guardando pedido:", e);
     }
-    // Enviar por WhatsApp siempre
-    window.open(`https://wa.me/${settings.whatsappNumber}?text=${encodeURIComponent(buildWhatsAppMsg())}`, "_blank");
+    const safeNumber = settings.whatsappNumber.replace(/\D/g, "");
+    window.open(`https://wa.me/${safeNumber}?text=${encodeURIComponent(buildWhatsAppMsg())}`, "_blank");
     setCart([]);
     setCartOpen(false);
     setOrderSending(false);
+  }
+
+  async function handleSendOrder() {
+    if (!cart.length) return;
+    if (!user) { setLoginOpen(true); return; }
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token ?? "";
+    await handleSendOrderWithUser(user, token);
   }
 
   async function handleLogin(e: React.FormEvent) {
@@ -249,7 +254,7 @@ export default function Catalog() {
     if (error) { setLoginError("Email o contraseña incorrectos"); return; }
     setLoginOpen(false);
     setLoginEmail(""); setLoginPass("");
-    setTimeout(() => handleSendOrder(), 300);
+    pendingOrderRef.current = true;
   }
 
   async function handleRegister(e: React.FormEvent) {
@@ -289,6 +294,13 @@ export default function Catalog() {
     return [...expanded];
   }
 
+  useEffect(() => {
+    if (user && pendingOrderRef.current) {
+      pendingOrderRef.current = false;
+      handleSendOrder();
+    }
+  }, [user]);
+
   useEffect(() => { setVisibleCount(PAGE_SIZE); }, [query, activeCategory, activeBrands, onlySale, onlyStock]);
 
   const filtered = useMemo(() => products.filter(p => {
@@ -307,7 +319,6 @@ export default function Catalog() {
     setActiveBrands(prev => prev.includes(b) ? prev.filter(x => x !== b) : [...prev, b]);
   }
 
-  const css = (s: CSSProperties): CSSProperties => s;
   const currentPrice = selected ? effectivePrice(selected, selectedVariant) : 0;
 
   if (!hydrated) return null;
