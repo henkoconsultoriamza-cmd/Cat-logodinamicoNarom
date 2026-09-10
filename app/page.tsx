@@ -131,10 +131,16 @@ export default function Catalog() {
 
   const [user, setUser] = useState<{ id: string; email: string; name: string } | null>(null);
   const [loginOpen, setLoginOpen] = useState(false);
+  const [loginTab, setLoginTab] = useState<"login" | "register">("login");
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPass, setLoginPass] = useState("");
   const [loginError, setLoginError] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
+  const [regName, setRegName] = useState("");
+  const [regBusiness, setRegBusiness] = useState("");
+  const [regPhone, setRegPhone] = useState("");
+  const [regAddress, setRegAddress] = useState("");
+  const [regMsg, setRegMsg] = useState("");
   const [orderSending, setOrderSending] = useState(false);
   const PAGE_SIZE = 48;
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
@@ -243,8 +249,30 @@ export default function Catalog() {
     if (error) { setLoginError("Email o contraseña incorrectos"); return; }
     setLoginOpen(false);
     setLoginEmail(""); setLoginPass("");
-    // Reintentar envío tras login exitoso
     setTimeout(() => handleSendOrder(), 300);
+  }
+
+  async function handleRegister(e: React.FormEvent) {
+    e.preventDefault();
+    setRegMsg("");
+    if (!regName || !regBusiness || !regPhone || !loginEmail || !loginPass) {
+      setRegMsg("Completá todos los campos");
+      return;
+    }
+    if (loginPass.length < 6) { setRegMsg("La contraseña debe tener al menos 6 caracteres"); return; }
+    setLoginLoading(true);
+    const { error } = await supabase.auth.signUp({
+      email: loginEmail,
+      password: loginPass,
+      options: {
+        data: { name: regName, business: regBusiness, phone: regPhone, address: regAddress },
+      },
+    });
+    setLoginLoading(false);
+    if (error) { setRegMsg("Error: " + error.message); return; }
+    setRegMsg("✓ Cuenta creada. Ya podés iniciar sesión.");
+    setLoginTab("login");
+    setRegName(""); setRegBusiness(""); setRegPhone(""); setRegAddress("");
   }
 
   const BRAND_GROUPS: Record<string, string[]> = {
@@ -523,8 +551,16 @@ export default function Catalog() {
                         <div style={{ fontSize: 13, fontWeight: 600, color: "#0f172a", lineHeight: 1.35 }}>{p.name}</div>
                         <div style={{ fontSize: 10, color: "#94a3b8", fontFamily: "monospace", marginTop: 1 }}>{p.sku}</div>
                         <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginTop: 8 }}>
-                          <span style={{ fontSize: 17, fontWeight: 800, color: p.onSale ? "#dc2626" : "#0f172a", letterSpacing: "-0.03em" }}>{fmt(price, settings.currency)}</span>
-                          {p.onSale && <span style={{ fontSize: 11, color: "#94a3b8", textDecoration: "line-through" }}>{fmt(p.price, settings.currency)}</span>}
+                          {user ? (
+                            <>
+                              <span style={{ fontSize: 17, fontWeight: 800, color: p.onSale ? "#dc2626" : "#0f172a", letterSpacing: "-0.03em" }}>{fmt(price, settings.currency)}</span>
+                              {p.onSale && <span style={{ fontSize: 11, color: "#94a3b8", textDecoration: "line-through" }}>{fmt(p.price, settings.currency)}</span>}
+                            </>
+                          ) : (
+                            <button onClick={e => { e.stopPropagation(); e.preventDefault(); setLoginOpen(true); }} style={{ fontSize: 12, color: accent, fontWeight: 700, display: "flex", alignItems: "center", gap: 4, background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+                              🔒 Ver precio
+                            </button>
+                          )}
                         </div>
                       </div>
                       <div style={{ padding: "8px 12px 12px", display: "flex", alignItems: "center", justifyContent: "flex-end", borderTop: "1px solid #f1f5f9" }}>
@@ -727,45 +763,68 @@ export default function Catalog() {
       {/* ── Login modal ────────────────────────────────────────────────────────── */}
       {loginOpen && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.75)", zIndex: 300, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }} onClick={e => { if (e.target === e.currentTarget) setLoginOpen(false); }}>
-          <div style={{ background: "var(--surface)", borderRadius: 18, width: "100%", maxWidth: 380, padding: 28, border: "1px solid var(--border)", boxShadow: "var(--shadow-lg)" }}>
-            <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Iniciá sesión</div>
-            <p style={{ fontSize: 13, color: "var(--text3)", marginBottom: 24 }}>Para confirmar tu pedido necesitamos identificarte.</p>
-            <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                <label style={{ fontSize: 12, fontWeight: 600, color: "var(--text2)", textTransform: "uppercase" as const, letterSpacing: ".5px" }}>Email</label>
-                <input
-                  type="email" required autoFocus
-                  value={loginEmail} onChange={e => setLoginEmail(e.target.value)}
-                  placeholder="tu@email.com"
-                  style={{ height: 42, borderRadius: 9, border: `1.5px solid ${loginError ? "#ef4444" : "var(--border)"}`, padding: "0 14px", fontSize: 14, background: "var(--surface2)", color: "var(--text)", outline: "none" }}
-                />
+          <div style={{ background: "#fff", borderRadius: 20, width: "100%", maxWidth: 420, boxShadow: "0 24px 60px rgba(0,0,0,.35)", overflow: "hidden" }}>
+
+            {/* Header */}
+            <div style={{ background: "#02152C", padding: "24px 28px 0" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+                <span style={{ fontSize: 18, fontWeight: 800, color: "#fff" }}>Catálogo Mayorista</span>
+                <button onClick={() => setLoginOpen(false)} style={{ color: "rgba(255,255,255,.5)", background: "none", border: "none", cursor: "pointer" }}><Icon name="close" size={18} /></button>
               </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                <label style={{ fontSize: 12, fontWeight: 600, color: "var(--text2)", textTransform: "uppercase" as const, letterSpacing: ".5px" }}>Contraseña</label>
-                <input
-                  type="password" required
-                  value={loginPass} onChange={e => setLoginPass(e.target.value)}
-                  placeholder="••••••••"
-                  style={{ height: 42, borderRadius: 9, border: `1.5px solid ${loginError ? "#ef4444" : "var(--border)"}`, padding: "0 14px", fontSize: 14, background: "var(--surface2)", color: "var(--text)", outline: "none" }}
-                />
+              <div style={{ display: "flex", gap: 4 }}>
+                {(["login", "register"] as const).map(t => (
+                  <button key={t} onClick={() => { setLoginTab(t); setLoginError(""); setRegMsg(""); }}
+                    style={{ flex: 1, height: 38, borderRadius: "8px 8px 0 0", border: "none", cursor: "pointer", fontSize: 13, fontWeight: 700,
+                      background: loginTab === t ? "#fff" : "transparent",
+                      color: loginTab === t ? "#02152C" : "rgba(255,255,255,.6)" }}>
+                    {t === "login" ? "Iniciá sesión" : "Crear cuenta"}
+                  </button>
+                ))}
               </div>
-              {loginError && <div style={{ fontSize: 13, color: "#ef4444", fontWeight: 500 }}>{loginError}</div>}
-              <button
-                type="submit" disabled={loginLoading}
-                style={{ height: 44, borderRadius: 9, background: accent, color: "#000", fontSize: 14, fontWeight: 700, opacity: loginLoading ? 0.7 : 1 }}
-              >
-                {loginLoading ? "Ingresando…" : "Ingresar y confirmar pedido"}
-              </button>
-            </form>
-            <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid var(--border)", textAlign: "center" }}>
-              <p style={{ fontSize: 12, color: "var(--text3)", marginBottom: 10 }}>¿No tenés acceso aún?</p>
-              <button
-                onClick={() => { const msg = "Hola! Quiero solicitar acceso al catálogo mayorista."; window.open(`https://wa.me/${settings.whatsappNumber}?text=${encodeURIComponent(msg)}`, "_blank"); }}
-                style={{ fontSize: 13, color: "#25D366", fontWeight: 600, display: "flex", alignItems: "center", gap: 6, margin: "0 auto" }}
-              >
-                <Icon name="whatsapp" size={15} />
-                Solicitar acceso por WhatsApp
-              </button>
+            </div>
+
+            <div style={{ padding: 28 }}>
+              {loginTab === "login" ? (
+                <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                  {[
+                    { label: "Email", type: "email", value: loginEmail, set: setLoginEmail, placeholder: "tu@email.com" },
+                    { label: "Contraseña", type: "password", value: loginPass, set: setLoginPass, placeholder: "••••••••" },
+                  ].map(f => (
+                    <div key={f.label} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: "#475569", textTransform: "uppercase" as const, letterSpacing: ".6px" }}>{f.label}</label>
+                      <input type={f.type} required value={f.value} onChange={e => f.set(e.target.value)} placeholder={f.placeholder}
+                        style={{ height: 42, borderRadius: 9, border: `1.5px solid ${loginError ? "#ef4444" : "#e2e8f0"}`, padding: "0 14px", fontSize: 14, color: "#0f172a", outline: "none", background: "#f8fafc" }} />
+                    </div>
+                  ))}
+                  {loginError && <div style={{ fontSize: 13, color: "#ef4444", fontWeight: 500 }}>{loginError}</div>}
+                  <button type="submit" disabled={loginLoading}
+                    style={{ height: 44, borderRadius: 9, background: "#F4AA24", color: "#02152C", fontSize: 14, fontWeight: 800, border: "none", cursor: "pointer", opacity: loginLoading ? 0.7 : 1, marginTop: 4 }}>
+                    {loginLoading ? "Ingresando…" : "Ingresar"}
+                  </button>
+                </form>
+              ) : (
+                <form onSubmit={handleRegister} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {[
+                    { label: "Nombre y apellido", value: regName, set: setRegName, placeholder: "Juan García" },
+                    { label: "Nombre comercial / Negocio", value: regBusiness, set: setRegBusiness, placeholder: "Ferretería El Clavo" },
+                    { label: "Celular / WhatsApp", value: regPhone, set: setRegPhone, placeholder: "+54 9 11 1234-5678" },
+                    { label: "Dirección", value: regAddress, set: setRegAddress, placeholder: "Av. Corrientes 1234, CABA" },
+                    { label: "Email", type: "email", value: loginEmail, set: setLoginEmail, placeholder: "tu@email.com" },
+                    { label: "Contraseña", type: "password", value: loginPass, set: setLoginPass, placeholder: "Mínimo 6 caracteres" },
+                  ].map(f => (
+                    <div key={f.label} style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: "#475569", textTransform: "uppercase" as const, letterSpacing: ".6px" }}>{f.label}</label>
+                      <input type={(f as any).type ?? "text"} required value={f.value} onChange={e => f.set(e.target.value)} placeholder={f.placeholder}
+                        style={{ height: 40, borderRadius: 9, border: "1.5px solid #e2e8f0", padding: "0 14px", fontSize: 14, color: "#0f172a", outline: "none", background: "#f8fafc" }} />
+                    </div>
+                  ))}
+                  {regMsg && <div style={{ fontSize: 13, color: regMsg.startsWith("✓") ? "#16a34a" : "#ef4444", fontWeight: 500 }}>{regMsg}</div>}
+                  <button type="submit" disabled={loginLoading}
+                    style={{ height: 44, borderRadius: 9, background: "#02152C", color: "#fff", fontSize: 14, fontWeight: 800, border: "none", cursor: "pointer", opacity: loginLoading ? 0.7 : 1, marginTop: 4 }}>
+                    {loginLoading ? "Creando cuenta…" : "Crear mi cuenta"}
+                  </button>
+                </form>
+              )}
             </div>
           </div>
         </div>
