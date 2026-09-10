@@ -1,4 +1,4 @@
-import { supabase } from "./supabase";
+import { catalogSupabase } from "./catalog-supabase";
 
 export type OrderStatus = "pendiente" | "confirmado" | "en_preparacion" | "entregado";
 
@@ -30,7 +30,7 @@ export async function saveOrder(params: {
   items: OrderItem[];
   total: number;
 }) {
-  const { data, error } = await supabase
+  const { data, error } = await catalogSupabase
     .from("orders")
     .insert({
       client_id:    params.clientId,
@@ -48,7 +48,7 @@ export async function saveOrder(params: {
 }
 
 export async function getOrders() {
-  const { data, error } = await supabase
+  const { data, error } = await catalogSupabase
     .from("orders")
     .select("*")
     .order("created_at", { ascending: false });
@@ -58,16 +58,10 @@ export async function getOrders() {
 }
 
 export async function updateOrderStatus(id: string, status: OrderStatus) {
-  const { error } = await supabase
+  const { error } = await catalogSupabase
     .from("orders")
     .update({ status })
     .eq("id", id);
 
   if (error) throw error;
-}
-
-export async function getClients() {
-  const { data, error } = await supabase.auth.admin.listUsers();
-  if (error) throw error;
-  return data.users;
 }
