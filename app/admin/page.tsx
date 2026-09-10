@@ -191,10 +191,21 @@ export default function Admin() {
     setOrdersLoading(false);
   }
 
+  async function getToken(): Promise<string> {
+    const { data } = await supabase.auth.getSession();
+    return data.session?.access_token ?? "";
+  }
+
+  async function authHeaders(): Promise<Record<string, string>> {
+    const token = await getToken();
+    return { "Content-Type": "application/json", "Authorization": `Bearer ${token}` };
+  }
+
   async function loadClients() {
     setClientsLoading(true);
     try {
-      const res = await fetch("/api/list-clients");
+      const token = await getToken();
+      const res = await fetch("/api/list-clients", { headers: { "Authorization": `Bearer ${token}` } });
       const json = await res.json();
       if (!json.error) setClients(json.clients ?? []);
     } catch { setClients([]); }
@@ -208,9 +219,10 @@ export default function Admin() {
       setClientMsg("La contraseña debe tener al menos 6 caracteres");
       return;
     }
+    const headers = await authHeaders();
     const res = await fetch("/api/create-client", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify({ email: newClientEmail, password: newClientPass, name: newClientName, business: newClientBusiness, phone: newClientPhone, address: newClientAddress, tax_id: newClientTax }),
     });
     const json = await res.json();
@@ -642,7 +654,7 @@ export default function Admin() {
                   </div>
                   <div style={{ display: "flex", gap: 12, alignItems: "flex-end" }}>
                     <div style={{ ...field, flex: 1 }}><span style={labelS}>Contraseña inicial</span>
-                      <input type="text" style={inputS} required value={newClientPass} onChange={e => setNewClientPass(e.target.value)} placeholder="mínimo 6 caracteres" />
+                      <input type="password" style={inputS} required value={newClientPass} onChange={e => setNewClientPass(e.target.value)} placeholder="mínimo 6 caracteres" />
                     </div>
                     <button type="submit" style={{ ...btn(N.navy), height: 40, flexShrink: 0 }}>Agregar cliente</button>
                   </div>
@@ -709,7 +721,8 @@ export default function Admin() {
                         <button onClick={async () => {
                             const isAdmin = c.app_metadata?.is_admin;
                             if (!confirm(isAdmin ? `¿Quitarle acceso admin a ${c.name || c.email}?` : `¿Dar acceso admin a ${c.name || c.email}?`)) return;
-                            const res = await fetch("/api/set-admin", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: c.id, is_admin: !isAdmin }) });
+                            const headers = await authHeaders();
+                            const res = await fetch("/api/set-admin", { method: "POST", headers, body: JSON.stringify({ id: c.id, is_admin: !isAdmin }) });
                             const json = await res.json();
                             if (json.error) { alert("Error: " + json.error); return; }
                             setSelectedClient({ ...c, app_metadata: { ...c.app_metadata, is_admin: !isAdmin } });
@@ -751,7 +764,8 @@ export default function Admin() {
                             <div style={{ display: "flex", gap: 10 }}>
                               <button style={{ ...btn(N.navy) }} onClick={async () => {
                                 setEditMsg("");
-                                const res = await fetch("/api/update-client", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: c.id, ...editFields }) });
+                                const headers = await authHeaders();
+                              const res = await fetch("/api/update-client", { method: "PATCH", headers, body: JSON.stringify({ id: c.id, ...editFields }) });
                                 const json = await res.json();
                                 if (json.error) { setEditMsg("Error: " + json.error); return; }
                                 setEditMsg("✓ Datos actualizados");
