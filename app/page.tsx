@@ -426,11 +426,20 @@ export default function Catalog() {
           )}
         </div>
 
-        {user && (
-          <div style={{ padding: "12px 16px 0", borderTop: "1px solid rgba(255,255,255,.08)", marginTop: 12 }}>
-            <span style={{ fontSize: 11, color: "rgba(255,255,255,.35)" }}>{user.name}</span>
-          </div>
-        )}
+        <div style={{ padding: "12px 16px 0", borderTop: "1px solid rgba(255,255,255,.08)", marginTop: 12 }}>
+          {user ? (
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span style={{ fontSize: 11, color: "rgba(255,255,255,.4)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const, maxWidth: 130 }}>{user.name}</span>
+              <button onClick={() => supabase.auth.signOut()} style={{ fontSize: 11, color: "rgba(255,255,255,.35)", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
+                Salir
+              </button>
+            </div>
+          ) : (
+            <button onClick={() => setLoginOpen(true)} style={{ fontSize: 11, color: "#F4AA24", fontWeight: 700, background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+              Iniciá sesión
+            </button>
+          )}
+        </div>
       </aside>
 
       {/* ── Main content ─────────────────────────────────────────────────────── */}
