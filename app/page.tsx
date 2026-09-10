@@ -398,19 +398,11 @@ export default function Catalog() {
           )}
         </div>
 
-        {/* Footer */}
-        <div style={{ padding: "12px 16px 0", borderTop: "1px solid rgba(255,255,255,.08)", marginTop: 12 }}>
-          <div style={{ display: "flex", gap: 8 }}>
-            <a href="/admin" style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "rgba(255,255,255,.35)", textDecoration: "none", fontWeight: 500 }}>
-              <Icon name="settings" size={13} /> Admin
-            </a>
-            {user && (
-              <span style={{ fontSize: 11, color: "rgba(255,255,255,.35)", marginLeft: "auto" }}>
-                {user.name}
-              </span>
-            )}
+        {user && (
+          <div style={{ padding: "12px 16px 0", borderTop: "1px solid rgba(255,255,255,.08)", marginTop: 12 }}>
+            <span style={{ fontSize: 11, color: "rgba(255,255,255,.35)" }}>{user.name}</span>
           </div>
-        </div>
+        )}
       </aside>
 
       {/* ── Main content ─────────────────────────────────────────────────────── */}
