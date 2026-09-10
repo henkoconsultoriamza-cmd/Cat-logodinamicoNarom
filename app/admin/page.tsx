@@ -164,7 +164,7 @@ export default function Admin() {
     setHydrated(true);
     supabase.auth.getSession().then(({ data }) => {
       const u = data.session?.user;
-      if (u) setAdminUser({ email: u.email ?? "", id: u.id });
+      if (u && u.app_metadata?.is_admin) setAdminUser({ email: u.email ?? "", id: u.id });
     });
   }, []);
 
@@ -175,7 +175,14 @@ export default function Admin() {
     setAdminLoading(false);
     if (error) { setAdminError("Credenciales incorrectas"); return; }
     const { data } = await supabase.auth.getUser();
-    if (data.user) setAdminUser({ email: data.user.email ?? "", id: data.user.id });
+    const u = data.user;
+    if (!u) return;
+    if (!u.app_metadata?.is_admin) {
+      await supabase.auth.signOut();
+      setAdminError("No tenés acceso al panel de administración.");
+      return;
+    }
+    setAdminUser({ email: u.email ?? "", id: u.id });
   }
 
   async function loadOrders() {
@@ -699,6 +706,18 @@ export default function Admin() {
                           <div style={{ fontSize: 18, fontWeight: 800, color: "#fff" }}>{c.name || "—"}</div>
                           <div style={{ fontSize: 13, color: "rgba(255,255,255,.5)" }}>{c.email}</div>
                         </div>
+                        <button onClick={async () => {
+                            const isAdmin = c.app_metadata?.is_admin;
+                            if (!confirm(isAdmin ? `¿Quitarle acceso admin a ${c.name || c.email}?` : `¿Dar acceso admin a ${c.name || c.email}?`)) return;
+                            const res = await fetch("/api/set-admin", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: c.id, is_admin: !isAdmin }) });
+                            const json = await res.json();
+                            if (json.error) { alert("Error: " + json.error); return; }
+                            setSelectedClient({ ...c, app_metadata: { ...c.app_metadata, is_admin: !isAdmin } });
+                            loadClients();
+                          }}
+                          style={{ fontSize: 12, fontWeight: 700, color: c.app_metadata?.is_admin ? N.danger : N.text3, background: c.app_metadata?.is_admin ? N.danger + "15" : N.border, border: "none", borderRadius: 8, padding: "6px 14px", cursor: "pointer", marginRight: 6 }}>
+                          {c.app_metadata?.is_admin ? "Quitar admin" : "Dar admin"}
+                        </button>
                         <button onClick={() => { setEditingClient(true); setEditFields({ name: c.name, business: meta.business, phone: meta.phone, address: meta.address, tax_id: meta.tax_id }); setEditMsg(""); }}
                           style={{ fontSize: 12, fontWeight: 700, color: N.amber, background: N.amber + "18", border: "none", borderRadius: 8, padding: "6px 14px", cursor: "pointer", marginRight: 8 }}>
                           Editar
