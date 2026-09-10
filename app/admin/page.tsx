@@ -179,8 +179,9 @@ export default function Admin() {
   async function loadClients() {
     setClientsLoading(true);
     try {
-      const { data, error } = await supabase.from("clients").select("*").order("created_at", { ascending: false });
-      if (!error) setClients(data ?? []);
+      const res = await fetch("/api/list-clients");
+      const json = await res.json();
+      if (!json.error) setClients(json.clients ?? []);
     } catch { setClients([]); }
     setClientsLoading(false);
   }
@@ -188,9 +189,18 @@ export default function Admin() {
   async function createClient(e) {
     e.preventDefault();
     setClientMsg("");
-    const { error } = await supabase.from("clients").insert({ email: newClientEmail, name: newClientName, notes: "" });
-    if (error) { setClientMsg("Error: " + error.message); return; }
-    setClientMsg("Cliente agregado correctamente");
+    if (!newClientPass || newClientPass.length < 6) {
+      setClientMsg("La contraseña debe tener al menos 6 caracteres");
+      return;
+    }
+    const res = await fetch("/api/create-client", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: newClientEmail, password: newClientPass, name: newClientName }),
+    });
+    const json = await res.json();
+    if (json.error) { setClientMsg("Error: " + json.error); return; }
+    setClientMsg("✓ Cliente creado correctamente");
     setNewClientEmail(""); setNewClientName(""); setNewClientPass("");
     loadClients();
   }
