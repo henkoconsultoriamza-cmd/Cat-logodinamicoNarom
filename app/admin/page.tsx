@@ -138,8 +138,13 @@ export default function Admin() {
   const [clientsLoading, setClientsLoading] = useState(false);
   const [newClientEmail, setNewClientEmail] = useState("");
   const [newClientName, setNewClientName] = useState("");
+  const [newClientBusiness, setNewClientBusiness] = useState("");
+  const [newClientPhone, setNewClientPhone] = useState("");
+  const [newClientAddress, setNewClientAddress] = useState("");
+  const [newClientTax, setNewClientTax] = useState("");
   const [newClientPass, setNewClientPass] = useState("");
   const [clientMsg, setClientMsg] = useState("");
+  const [selectedClient, setSelectedClient] = useState<any>(null);
 
   // Products filter
   const [prodSearch, setProdSearch] = useState("");
@@ -196,12 +201,12 @@ export default function Admin() {
     const res = await fetch("/api/create-client", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: newClientEmail, password: newClientPass, name: newClientName }),
+      body: JSON.stringify({ email: newClientEmail, password: newClientPass, name: newClientName, business: newClientBusiness, phone: newClientPhone, address: newClientAddress, tax_id: newClientTax }),
     });
     const json = await res.json();
     if (json.error) { setClientMsg("Error: " + json.error); return; }
     setClientMsg("✓ Cliente creado correctamente");
-    setNewClientEmail(""); setNewClientName(""); setNewClientPass("");
+    setNewClientEmail(""); setNewClientName(""); setNewClientBusiness(""); setNewClientPhone(""); setNewClientAddress(""); setNewClientTax(""); setNewClientPass("");
     loadClients();
   }
 
@@ -604,22 +609,35 @@ export default function Admin() {
               {/* New client form */}
               <div style={{ background: N.surface, borderRadius: 14, border: `1px solid ${N.border}`, padding: 24, marginBottom: 20 }}>
                 <div style={{ fontSize: 14, fontWeight: 700, color: N.text, marginBottom: 16 }}>Agregar cliente</div>
-                <form onSubmit={createClient} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr auto", gap: 12, alignItems: "end" }}>
-                  <div style={field}>
-                    <span style={labelS}>Nombre</span>
-                    <input style={inputS} required value={newClientName} onChange={e => setNewClientName(e.target.value)} placeholder="Nombre del negocio" />
+                <form onSubmit={createClient}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 12 }}>
+                    <div style={field}><span style={labelS}>Nombre y apellido</span>
+                      <input style={inputS} required value={newClientName} onChange={e => setNewClientName(e.target.value)} placeholder="Juan García" />
+                    </div>
+                    <div style={field}><span style={labelS}>Nombre comercial</span>
+                      <input style={inputS} value={newClientBusiness} onChange={e => setNewClientBusiness(e.target.value)} placeholder="Ferretería El Clavo" />
+                    </div>
+                    <div style={field}><span style={labelS}>CUIT / CUIL / DNI</span>
+                      <input style={inputS} value={newClientTax} onChange={e => setNewClientTax(e.target.value)} placeholder="20-12345678-9" />
+                    </div>
+                    <div style={field}><span style={labelS}>Email</span>
+                      <input type="email" style={inputS} required value={newClientEmail} onChange={e => setNewClientEmail(e.target.value)} placeholder="cliente@ejemplo.com" />
+                    </div>
+                    <div style={field}><span style={labelS}>Celular / WhatsApp</span>
+                      <input style={inputS} value={newClientPhone} onChange={e => setNewClientPhone(e.target.value)} placeholder="+54 9 11 1234-5678" />
+                    </div>
+                    <div style={field}><span style={labelS}>Dirección</span>
+                      <input style={inputS} value={newClientAddress} onChange={e => setNewClientAddress(e.target.value)} placeholder="Av. Corrientes 1234, CABA" />
+                    </div>
                   </div>
-                  <div style={field}>
-                    <span style={labelS}>Email</span>
-                    <input type="email" style={inputS} required value={newClientEmail} onChange={e => setNewClientEmail(e.target.value)} placeholder="cliente@ejemplo.com" />
+                  <div style={{ display: "flex", gap: 12, alignItems: "flex-end" }}>
+                    <div style={{ ...field, flex: 1 }}><span style={labelS}>Contraseña inicial</span>
+                      <input type="text" style={inputS} required value={newClientPass} onChange={e => setNewClientPass(e.target.value)} placeholder="mínimo 6 caracteres" />
+                    </div>
+                    <button type="submit" style={{ ...btn(N.navy), height: 40, flexShrink: 0 }}>Agregar cliente</button>
                   </div>
-                  <div style={field}>
-                    <span style={labelS}>Contraseña inicial</span>
-                    <input type="text" style={inputS} value={newClientPass} onChange={e => setNewClientPass(e.target.value)} placeholder="mínimo 6 caracteres" />
-                  </div>
-                  <button type="submit" style={{ ...btn(N.navy), height: 40 }}>Agregar</button>
                 </form>
-                {clientMsg && <div style={{ marginTop: 12, fontSize: 13, color: clientMsg.startsWith("Error") ? N.danger : N.success, fontWeight: 600 }}>{clientMsg}</div>}
+                {clientMsg && <div style={{ marginTop: 12, fontSize: 13, color: clientMsg.startsWith("✓") ? N.success : N.danger, fontWeight: 600 }}>{clientMsg}</div>}
               </div>
 
               {/* Client list */}
@@ -630,28 +648,103 @@ export default function Admin() {
                 </div>
                 {clientsLoading && <div style={{ padding: 24, color: N.text3, fontSize: 13 }}>Cargando…</div>}
                 {!clientsLoading && clients.length === 0 && (
-                  <div style={{ padding: 24, fontSize: 13, color: N.text3 }}>
-                    Sin clientes registrados aún.<br />
-                    <span style={{ fontSize: 12 }}>Los clientes se crean desde Supabase → Authentication → Users con "Auto confirm user" tildado.</span>
-                  </div>
+                  <div style={{ padding: 24, fontSize: 13, color: N.text3 }}>Sin clientes registrados aún.</div>
                 )}
                 <div>
-                  {clients.map((c, i) => (
-                    <div key={c.id} style={{ padding: "14px 24px", borderBottom: i < clients.length - 1 ? `1px solid ${N.border}` : "none", display: "flex", alignItems: "center", gap: 14 }}>
-                      <div style={{ width: 38, height: 38, borderRadius: 10, background: N.navy + "12", color: N.navy, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 15, flexShrink: 0 }}>
-                        {(c.name || c.email || "?")[0].toUpperCase()}
+                  {clients.map((c, i) => {
+                    const clientOrders = orders.filter(o => o.client_email === c.email);
+                    const meta = c.user_metadata ?? {};
+                    return (
+                      <div key={c.id} onClick={() => setSelectedClient(c)}
+                        style={{ padding: "14px 24px", borderBottom: i < clients.length - 1 ? `1px solid ${N.border}` : "none", display: "flex", alignItems: "center", gap: 14, cursor: "pointer", transition: "background .15s" }}
+                        onMouseEnter={e => (e.currentTarget.style.background = N.surface2)}
+                        onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                        <div style={{ width: 40, height: 40, borderRadius: 10, background: N.navy + "12", color: N.navy, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 16, flexShrink: 0 }}>
+                          {(c.name || c.email || "?")[0].toUpperCase()}
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 14, fontWeight: 700, color: N.text }}>{c.name || "—"}</div>
+                          <div style={{ fontSize: 12, color: N.text3 }}>{meta.business ? `${meta.business} · ` : ""}{c.email}</div>
+                        </div>
+                        {meta.phone && <div style={{ fontSize: 12, color: N.text2 }}>{meta.phone}</div>}
+                        <div style={{ fontSize: 12, fontWeight: 600, color: clientOrders.length > 0 ? N.info : N.text3, background: clientOrders.length > 0 ? N.info + "15" : N.border, padding: "3px 10px", borderRadius: 20 }}>
+                          {clientOrders.length} pedido{clientOrders.length !== 1 ? "s" : ""}
+                        </div>
+                        <div style={{ color: N.text3, fontSize: 16 }}>›</div>
                       </div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 14, fontWeight: 600, color: N.text }}>{c.name || "—"}</div>
-                        <div style={{ fontSize: 12, color: N.text3 }}>{c.email}</div>
-                      </div>
-                      <div style={{ fontSize: 12, color: N.text3 }}>
-                        {orders.filter(o => o.client_email === c.email).length} pedidos
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
+
+              {/* Client detail modal */}
+              {selectedClient && (() => {
+                const c = selectedClient;
+                const meta = c.user_metadata ?? {};
+                const clientOrders = orders.filter(o => o.client_email === c.email).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+                const fmt = (n: number) => `$ ${n.toLocaleString("es-AR", { minimumFractionDigits: 0 })}`;
+                return (
+                  <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.5)", zIndex: 500, display: "flex", alignItems: "flex-start", justifyContent: "flex-end" }} onClick={e => { if (e.target === e.currentTarget) setSelectedClient(null); }}>
+                    <div style={{ width: 520, height: "100vh", background: N.surface, overflowY: "auto", boxShadow: "-8px 0 40px rgba(0,0,0,.15)", display: "flex", flexDirection: "column" }}>
+
+                      {/* Header */}
+                      <div style={{ background: N.navy, padding: "24px 28px", display: "flex", alignItems: "center", gap: 16, flexShrink: 0 }}>
+                        <div style={{ width: 48, height: 48, borderRadius: 12, background: N.amber + "22", color: N.amber, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 20 }}>
+                          {(c.name || c.email || "?")[0].toUpperCase()}
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: 18, fontWeight: 800, color: "#fff" }}>{c.name || "—"}</div>
+                          <div style={{ fontSize: 13, color: "rgba(255,255,255,.5)" }}>{c.email}</div>
+                        </div>
+                        <button onClick={() => setSelectedClient(null)} style={{ color: "rgba(255,255,255,.4)", background: "none", border: "none", cursor: "pointer", fontSize: 20 }}>✕</button>
+                      </div>
+
+                      <div style={{ padding: 28, flex: 1 }}>
+                        {/* Data */}
+                        <div style={{ fontSize: 11, fontWeight: 800, color: N.text3, letterSpacing: ".1em", textTransform: "uppercase" as const, marginBottom: 14 }}>Datos del cliente</div>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 28 }}>
+                          {[
+                            ["Nombre comercial", meta.business],
+                            ["CUIT / CUIL / DNI", meta.tax_id],
+                            ["Celular / WhatsApp", meta.phone],
+                            ["Dirección", meta.address],
+                            ["Email", c.email],
+                            ["Alta", new Date(c.created_at).toLocaleDateString("es-AR")],
+                          ].map(([label, value]) => (
+                            <div key={label} style={{ background: N.surface2, borderRadius: 10, padding: "12px 14px", border: `1px solid ${N.border}` }}>
+                              <div style={{ fontSize: 10, fontWeight: 700, color: N.text3, textTransform: "uppercase" as const, letterSpacing: ".08em", marginBottom: 4 }}>{label}</div>
+                              <div style={{ fontSize: 14, fontWeight: 600, color: value ? N.text : N.text3 }}>{value || "—"}</div>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Orders */}
+                        <div style={{ fontSize: 11, fontWeight: 800, color: N.text3, letterSpacing: ".1em", textTransform: "uppercase" as const, marginBottom: 14 }}>
+                          Pedidos ({clientOrders.length})
+                        </div>
+                        {clientOrders.length === 0 ? (
+                          <div style={{ fontSize: 13, color: N.text3, padding: "20px 0" }}>Sin pedidos aún.</div>
+                        ) : clientOrders.map(o => (
+                          <div key={o.id} style={{ borderRadius: 10, border: `1px solid ${N.border}`, padding: 16, marginBottom: 10 }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                              <div style={{ fontSize: 12, color: N.text3 }}>{new Date(o.created_at).toLocaleDateString("es-AR", { day: "2-digit", month: "short", year: "numeric" })}</div>
+                              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                <span style={{ fontSize: 16, fontWeight: 800, color: N.text }}>{fmt(o.total)}</span>
+                                <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 20, background: COL_COLOR[o.status] + "18", color: COL_COLOR[o.status] }}>{COL_LABEL[o.status]}</span>
+                              </div>
+                            </div>
+                            <div style={{ fontSize: 12, color: N.text2 }}>
+                              {(o.items as any[]).map((it, idx) => (
+                                <span key={idx}>{idx > 0 ? " · " : ""}{it.quantity}× {it.name}</span>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           )}
 

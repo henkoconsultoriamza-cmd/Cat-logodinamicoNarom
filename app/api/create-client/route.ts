@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const { email, password, name } = await req.json();
+  const { email, password, name, business, phone, address, tax_id } = await req.json();
 
   if (!email || !password || !name) {
     return NextResponse.json({ error: "Faltan datos" }, { status: 400 });
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
       email,
       password,
       email_confirm: true,
-      user_metadata: { name },
+      user_metadata: { name, business, phone, address, tax_id },
     }),
   });
 
