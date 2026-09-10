@@ -145,6 +145,9 @@ export default function Admin() {
   const [newClientPass, setNewClientPass] = useState("");
   const [clientMsg, setClientMsg] = useState("");
   const [selectedClient, setSelectedClient] = useState<any>(null);
+  const [editingClient, setEditingClient] = useState(false);
+  const [editFields, setEditFields] = useState<any>({});
+  const [editMsg, setEditMsg] = useState("");
 
   // Products filter
   const [prodSearch, setProdSearch] = useState("");
@@ -696,27 +699,67 @@ export default function Admin() {
                           <div style={{ fontSize: 18, fontWeight: 800, color: "#fff" }}>{c.name || "—"}</div>
                           <div style={{ fontSize: 13, color: "rgba(255,255,255,.5)" }}>{c.email}</div>
                         </div>
-                        <button onClick={() => setSelectedClient(null)} style={{ color: "rgba(255,255,255,.4)", background: "none", border: "none", cursor: "pointer", fontSize: 20 }}>✕</button>
+                        <button onClick={() => { setEditingClient(true); setEditFields({ name: c.name, business: meta.business, phone: meta.phone, address: meta.address, tax_id: meta.tax_id }); setEditMsg(""); }}
+                          style={{ fontSize: 12, fontWeight: 700, color: N.amber, background: N.amber + "18", border: "none", borderRadius: 8, padding: "6px 14px", cursor: "pointer", marginRight: 8 }}>
+                          Editar
+                        </button>
+                        <button onClick={() => { setSelectedClient(null); setEditingClient(false); }} style={{ color: "rgba(255,255,255,.4)", background: "none", border: "none", cursor: "pointer", fontSize: 20 }}>✕</button>
                       </div>
 
                       <div style={{ padding: 28, flex: 1 }}>
                         {/* Data */}
-                        <div style={{ fontSize: 11, fontWeight: 800, color: N.text3, letterSpacing: ".1em", textTransform: "uppercase" as const, marginBottom: 14 }}>Datos del cliente</div>
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 28 }}>
-                          {[
-                            ["Nombre comercial", meta.business],
-                            ["CUIT / CUIL / DNI", meta.tax_id],
-                            ["Celular / WhatsApp", meta.phone],
-                            ["Dirección", meta.address],
-                            ["Email", c.email],
-                            ["Alta", new Date(c.created_at).toLocaleDateString("es-AR")],
-                          ].map(([label, value]) => (
-                            <div key={label} style={{ background: N.surface2, borderRadius: 10, padding: "12px 14px", border: `1px solid ${N.border}` }}>
-                              <div style={{ fontSize: 10, fontWeight: 700, color: N.text3, textTransform: "uppercase" as const, letterSpacing: ".08em", marginBottom: 4 }}>{label}</div>
-                              <div style={{ fontSize: 14, fontWeight: 600, color: value ? N.text : N.text3 }}>{value || "—"}</div>
-                            </div>
-                          ))}
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+                          <div style={{ fontSize: 11, fontWeight: 800, color: N.text3, letterSpacing: ".1em", textTransform: "uppercase" as const }}>Datos del cliente</div>
                         </div>
+
+                        {editingClient ? (
+                          <div style={{ marginBottom: 28 }}>
+                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
+                              {[
+                                { label: "Nombre y apellido", key: "name" },
+                                { label: "Nombre comercial", key: "business" },
+                                { label: "CUIT / CUIL / DNI", key: "tax_id" },
+                                { label: "Celular / WhatsApp", key: "phone" },
+                                { label: "Dirección", key: "address" },
+                              ].map(f => (
+                                <div key={f.key} style={field}>
+                                  <span style={labelS}>{f.label}</span>
+                                  <input style={inputS} value={editFields[f.key] ?? ""} onChange={e => setEditFields(p => ({ ...p, [f.key]: e.target.value }))} />
+                                </div>
+                              ))}
+                            </div>
+                            {editMsg && <div style={{ fontSize: 13, color: editMsg.startsWith("✓") ? N.success : N.danger, fontWeight: 600, marginBottom: 12 }}>{editMsg}</div>}
+                            <div style={{ display: "flex", gap: 10 }}>
+                              <button style={{ ...btn(N.navy) }} onClick={async () => {
+                                setEditMsg("");
+                                const res = await fetch("/api/update-client", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: c.id, ...editFields }) });
+                                const json = await res.json();
+                                if (json.error) { setEditMsg("Error: " + json.error); return; }
+                                setEditMsg("✓ Datos actualizados");
+                                setEditingClient(false);
+                                setSelectedClient({ ...c, name: editFields.name, user_metadata: { ...meta, ...editFields } });
+                                loadClients();
+                              }}>Guardar cambios</button>
+                              <button style={{ ...btn(N.text3, true) }} onClick={() => setEditingClient(false)}>Cancelar</button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 28 }}>
+                            {[
+                              ["Nombre comercial", meta.business],
+                              ["CUIT / CUIL / DNI", meta.tax_id],
+                              ["Celular / WhatsApp", meta.phone],
+                              ["Dirección", meta.address],
+                              ["Email", c.email],
+                              ["Alta", new Date(c.created_at).toLocaleDateString("es-AR")],
+                            ].map(([label, value]) => (
+                              <div key={label} style={{ background: N.surface2, borderRadius: 10, padding: "12px 14px", border: `1px solid ${N.border}` }}>
+                                <div style={{ fontSize: 10, fontWeight: 700, color: N.text3, textTransform: "uppercase" as const, letterSpacing: ".08em", marginBottom: 4 }}>{label}</div>
+                                <div style={{ fontSize: 14, fontWeight: 600, color: value ? N.text : N.text3 }}>{value || "—"}</div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
 
                         {/* Orders */}
                         <div style={{ fontSize: 11, fontWeight: 800, color: N.text3, letterSpacing: ".1em", textTransform: "uppercase" as const, marginBottom: 14 }}>
