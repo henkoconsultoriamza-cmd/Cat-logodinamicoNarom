@@ -1,17 +1,27 @@
-import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
-const adminClient = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  { auth: { autoRefreshToken: false, persistSession: false } }
-);
-
 export async function GET() {
-  const { data, error } = await adminClient.auth.admin.listUsers();
-  if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey  = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  const clients = data.users.map(u => ({
+  if (!supabaseUrl || !serviceKey) {
+    return NextResponse.json({ error: "Variables de entorno no configuradas" }, { status: 500 });
+  }
+
+  const res = await fetch(`${supabaseUrl}/auth/v1/admin/users?per_page=200`, {
+    headers: {
+      "apikey": serviceKey,
+      "Authorization": `Bearer ${serviceKey}`,
+    },
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    return NextResponse.json({ error: data.message ?? "Error al listar usuarios" }, { status: res.status });
+  }
+
+  const clients = (data.users ?? []).map((u: any) => ({
     id: u.id,
     email: u.email,
     name: u.user_metadata?.name ?? u.email,
