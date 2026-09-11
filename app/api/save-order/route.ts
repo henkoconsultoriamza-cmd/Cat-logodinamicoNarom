@@ -43,7 +43,9 @@ export async function POST(req: NextRequest) {
     }),
   });
 
-  const data = await res.json();
-  if (!res.ok) return NextResponse.json({ error: data?.message ?? "Error al guardar el pedido" }, { status: res.status });
-  return NextResponse.json({ order: Array.isArray(data) ? data[0] : data });
+  const text = await res.text();
+  let data: any;
+  try { data = JSON.parse(text); } catch { data = text; }
+  if (!res.ok) return NextResponse.json({ error: data?.message ?? data ?? "Error al guardar el pedido", status: res.status }, { status: res.status });
+  return NextResponse.json({ ok: true, supabaseStatus: res.status, data });
 }
