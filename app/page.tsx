@@ -222,13 +222,21 @@ export default function Catalog() {
     setOrderSending(true);
     try {
       const items = cart.map(i => ({ productId: i.productId, name: i.name, brand: i.brand, sku: i.variantSku ?? i.productId, unitPrice: i.unitPrice, quantity: i.quantity }));
-      await fetch("/api/save-order", {
+      const res = await fetch("/api/save-order", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
         body: JSON.stringify({ items, total: cartTotal }),
       });
+      const json = await res.json();
+      if (!res.ok) {
+        alert("Error al guardar el pedido: " + (json.error ?? res.status));
+        setOrderSending(false);
+        return;
+      }
     } catch (e) {
-      console.error("Error guardando pedido:", e);
+      alert("Error de conexión al guardar el pedido: " + e);
+      setOrderSending(false);
+      return;
     }
     const safeNumber = settings.whatsappNumber.replace(/\D/g, "");
     window.open(`https://wa.me/${safeNumber}?text=${encodeURIComponent(buildWhatsAppMsg())}`, "_blank");
