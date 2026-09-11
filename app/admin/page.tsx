@@ -7,7 +7,7 @@ import {
   PRODUCTS_KEY, Product, cloneProducts,
 } from "../catalog-data";
 import { supabase } from "../lib/supabase";
-import { getOrders, updateOrderStatus, Order, OrderStatus } from "../lib/orders";
+import { Order, OrderStatus } from "../lib/orders";
 
 // ── Icons ────────────────────────────────────────────────────────────────────
 function Icon({ name, size = 18 }) {
@@ -187,7 +187,12 @@ export default function Admin() {
 
   async function loadOrders() {
     setOrdersLoading(true);
-    try { setOrders(await getOrders()); } catch { setOrders([]); }
+    try {
+      const token = await getToken();
+      const res = await fetch("/api/list-orders", { headers: { "Authorization": `Bearer ${token}` } });
+      const json = await res.json();
+      if (!json.error) setOrders(json.orders ?? []);
+    } catch { setOrders([]); }
     setOrdersLoading(false);
   }
 
@@ -243,7 +248,8 @@ export default function Admin() {
   useEffect(() => { if (adminUser && activeTab === "clients") loadClients(); }, [activeTab]);
 
   async function moveOrder(id, status) {
-    await updateOrderStatus(id, status);
+    const headers = await authHeaders();
+    await fetch("/api/update-order", { method: "PATCH", headers, body: JSON.stringify({ id, status }) });
     setOrders(prev => prev.map(o => o.id === id ? { ...o, status } : o));
     if (selectedOrder?.id === id) setSelectedOrder(o => ({ ...o, status }));
   }
