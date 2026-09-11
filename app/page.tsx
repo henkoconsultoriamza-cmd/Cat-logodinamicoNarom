@@ -233,7 +233,6 @@ export default function Catalog() {
         setOrderSending(false);
         return;
       }
-      alert("DEBUG respuesta: " + JSON.stringify(json));
     } catch (e) {
       alert("Error de conexión al guardar el pedido: " + e);
       setOrderSending(false);
