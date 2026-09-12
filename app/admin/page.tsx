@@ -137,6 +137,7 @@ export default function Admin() {
   const [editingItems, setEditingItems] = useState(false);
   const [editItems, setEditItems] = useState<any[]>([]);
   const [addProdSearch, setAddProdSearch] = useState("");
+  const [mergingOrder, setMergingOrder] = useState(false);
   const [draggedOrderId, setDraggedOrderId] = useState<string | null>(null);
 
   // Clients
@@ -998,7 +999,7 @@ export default function Admin() {
       {/* ── Modal detalle pedido ─────────────────────────────────────────── */}
       {selectedOrder && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.45)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}
-          onClick={() => { setSelectedOrder(null); setEditingItems(false); setEditingOrder(false); }}>
+          onClick={() => { setSelectedOrder(null); setEditingItems(false); setEditingOrder(false); setMergingOrder(false); }}>
           <div style={{ background: N.surface, borderRadius: 18, border: `1px solid ${N.border}`, width: "100%", maxWidth: 560, maxHeight: "90vh", overflow: "auto", boxShadow: "0 30px 80px rgba(0,0,0,.2)" }}
             onClick={e => e.stopPropagation()}>
             <div style={{ padding: "22px 26px", borderBottom: `1px solid ${N.border}`, display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
@@ -1009,7 +1010,7 @@ export default function Admin() {
                   {new Date(selectedOrder.created_at).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}
                 </div>
               </div>
-              <button onClick={() => { setSelectedOrder(null); setEditingItems(false); setEditingOrder(false); }} style={{ color: N.text3, background: "transparent", border: "none", cursor: "pointer", padding: 4 }}>
+              <button onClick={() => { setSelectedOrder(null); setEditingItems(false); setEditingOrder(false); setMergingOrder(false); }} style={{ color: N.text3, background: "transparent", border: "none", cursor: "pointer", padding: 4 }}>
                 <Icon name="close" size={20} />
               </button>
             </div>
@@ -1179,6 +1180,80 @@ export default function Admin() {
                   </div>
                 )}
               </div>
+
+              {/* Unificar pedidos */}
+              {(() => {
+                const sameClientOrders = orders.filter(o => o.client_email === selectedOrder.client_email && o.id !== selectedOrder.id);
+                if (sameClientOrders.length === 0) return null;
+                return (
+                  <div style={{ marginTop: 20, borderTop: `1px solid ${N.border}`, paddingTop: 16 }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: mergingOrder ? 12 : 0 }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: N.text2, textTransform: "uppercase", letterSpacing: ".07em" }}>
+                        UNIFICAR PEDIDO
+                      </span>
+                      {!mergingOrder && (
+                        <button onClick={() => setMergingOrder(true)}
+                          style={{ ...btn("#7c3aed", true), height: 28, fontSize: 11 }}>
+                          Unificar con otro pedido
+                        </button>
+                      )}
+                    </div>
+                    {mergingOrder && (
+                      <div>
+                        <div style={{ fontSize: 12, color: N.text2, marginBottom: 10 }}>
+                          Elegí el pedido de <strong>{selectedOrder.client_name}</strong> que querés absorber. Sus productos se agregarán a este y el otro se eliminará.
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                          {sameClientOrders.map(o => (
+                            <button key={o.id} onClick={async () => {
+                              if (!confirm(`¿Unificar con el pedido de ${new Date(o.created_at).toLocaleDateString("es-AR")} ($${o.total?.toLocaleString("es-AR")})? El otro pedido se eliminará.`)) return;
+
+                              // Merge items: mismo SKU → sumar cantidad, distinto → agregar
+                              const merged = [...selectedOrder.items];
+                              for (const it of o.items) {
+                                const idx = merged.findIndex(x => x.sku === it.sku);
+                                if (idx >= 0) merged[idx] = { ...merged[idx], quantity: merged[idx].quantity + it.quantity };
+                                else merged.push({ ...it });
+                              }
+                              const newTotal = merged.reduce((acc, it) => acc + (it.unitPrice || 0) * it.quantity, 0);
+
+                              const headers = await authHeaders();
+                              const [r1, r2] = await Promise.all([
+                                fetch("/api/update-order", { method: "PATCH", headers, body: JSON.stringify({ id: selectedOrder.id, items: merged, total: newTotal }) }),
+                                fetch("/api/delete-order", { method: "DELETE", headers, body: JSON.stringify({ id: o.id }) }),
+                              ]);
+                              if (r1.ok && r2.ok) {
+                                const updated = { ...selectedOrder, items: merged, total: newTotal };
+                                setSelectedOrder(updated);
+                                setOrders(prev => prev.map(x => x.id === selectedOrder.id ? updated : x).filter(x => x.id !== o.id));
+                                setMergingOrder(false);
+                              } else {
+                                alert("Error al unificar los pedidos.");
+                              }
+                            }}
+                              style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 14px", background: N.surface2, borderRadius: 10, border: `1.5px solid #7c3aed30`, cursor: "pointer", textAlign: "left" }}>
+                              <div>
+                                <div style={{ fontSize: 13, fontWeight: 600, color: N.text }}>
+                                  {new Date(o.created_at).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                                </div>
+                                <div style={{ fontSize: 11, color: N.text3, marginTop: 2 }}>
+                                  {o.items?.length} producto{o.items?.length !== 1 ? "s" : ""} · {COL_LABEL[o.status]}
+                                </div>
+                              </div>
+                              <div style={{ textAlign: "right" }}>
+                                <div style={{ fontSize: 15, fontWeight: 800, color: "#7c3aed" }}>$ {o.total?.toLocaleString("es-AR")}</div>
+                                <div style={{ fontSize: 11, color: N.text3, marginTop: 2 }}>Click para unificar</div>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                        <button onClick={() => setMergingOrder(false)}
+                          style={{ ...btn(N.text3, true), height: 30, fontSize: 12, marginTop: 10 }}>Cancelar</button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
           </div>
         </div>
