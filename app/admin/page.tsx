@@ -134,6 +134,9 @@ export default function Admin() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [editingOrder, setEditingOrder] = useState(false);
   const [editOrderNotes, setEditOrderNotes] = useState("");
+  const [editingItems, setEditingItems] = useState(false);
+  const [editItems, setEditItems] = useState<any[]>([]);
+  const [addProdSearch, setAddProdSearch] = useState("");
   const [draggedOrderId, setDraggedOrderId] = useState<string | null>(null);
 
   // Clients
@@ -985,8 +988,8 @@ export default function Admin() {
       {/* ── Modal detalle pedido ─────────────────────────────────────────── */}
       {selectedOrder && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.45)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}
-          onClick={() => setSelectedOrder(null)}>
-          <div style={{ background: N.surface, borderRadius: 18, border: `1px solid ${N.border}`, width: "100%", maxWidth: 520, maxHeight: "85vh", overflow: "auto", boxShadow: "0 30px 80px rgba(0,0,0,.2)" }}
+          onClick={() => { setSelectedOrder(null); setEditingItems(false); setEditingOrder(false); }}>
+          <div style={{ background: N.surface, borderRadius: 18, border: `1px solid ${N.border}`, width: "100%", maxWidth: 560, maxHeight: "90vh", overflow: "auto", boxShadow: "0 30px 80px rgba(0,0,0,.2)" }}
             onClick={e => e.stopPropagation()}>
             <div style={{ padding: "22px 26px", borderBottom: `1px solid ${N.border}`, display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
               <div>
@@ -996,7 +999,7 @@ export default function Admin() {
                   {new Date(selectedOrder.created_at).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}
                 </div>
               </div>
-              <button onClick={() => setSelectedOrder(null)} style={{ color: N.text3, background: "transparent", border: "none", cursor: "pointer", padding: 4 }}>
+              <button onClick={() => { setSelectedOrder(null); setEditingItems(false); setEditingOrder(false); }} style={{ color: N.text3, background: "transparent", border: "none", cursor: "pointer", padding: 4 }}>
                 <Icon name="close" size={20} />
               </button>
             </div>
@@ -1019,25 +1022,119 @@ export default function Admin() {
             </div>
 
             <div style={{ padding: "18px 26px" }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: N.text2, textTransform: "uppercase", letterSpacing: ".07em", marginBottom: 12 }}>PRODUCTOS</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {selectedOrder.items.map((it, i) => (
-                  <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", background: N.surface2, borderRadius: 10, border: `1px solid ${N.border}` }}>
-                    <div>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: N.text }}>{it.name}</div>
-                      <div style={{ fontSize: 11, color: N.text3 }}>{it.brand} · SKU {it.sku}</div>
-                    </div>
-                    <div style={{ textAlign: "right" }}>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: N.text }}>{it.quantity}×</div>
-                      <div style={{ fontSize: 12, color: N.text3 }}>$ {it.unitPrice.toLocaleString("es-AR")}</div>
-                    </div>
+              {/* Header de productos con botón editar */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: N.text2, textTransform: "uppercase", letterSpacing: ".07em" }}>PRODUCTOS</div>
+                {!editingItems && (
+                  <button onClick={() => { setEditingItems(true); setEditItems(selectedOrder.items.map(it => ({ ...it }))); setAddProdSearch(""); }}
+                    style={{ ...btn(N.amber, true), height: 28, fontSize: 11 }}><Icon name="edit" size={12} />Editar productos</button>
+                )}
+              </div>
+
+              {editingItems ? (
+                <div>
+                  {/* Items editables */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 12 }}>
+                    {editItems.map((it, i) => (
+                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: N.surface2, borderRadius: 10, border: `1px solid ${N.border}` }}>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: 13, fontWeight: 600, color: N.text }}>{it.name}</div>
+                          <div style={{ fontSize: 11, color: N.text3 }}>{it.brand} · SKU {it.sku} · $ {it.unitPrice?.toLocaleString("es-AR")}</div>
+                        </div>
+                        <input type="number" min={1} value={it.quantity}
+                          onChange={e => setEditItems(prev => prev.map((x, j) => j === i ? { ...x, quantity: Math.max(1, Number(e.target.value)) } : x))}
+                          style={{ ...inputS, width: 64, textAlign: "center", padding: "0 8px" }} />
+                        <button onClick={() => setEditItems(prev => prev.filter((_, j) => j !== i))}
+                          style={{ color: N.danger, background: N.danger + "12", border: "none", borderRadius: 7, width: 30, height: 30, cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>×</button>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-              <div style={{ marginTop: 18, display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 12 }}>
-                <span style={{ fontSize: 13, color: N.text3 }}>Total</span>
-                <span style={{ fontSize: 24, fontWeight: 900, color: N.navy }}>$ {selectedOrder.total.toLocaleString("es-AR")}</span>
-              </div>
+
+                  {/* Agregar producto */}
+                  <div style={{ borderTop: `1px solid ${N.border}`, paddingTop: 12, marginBottom: 14 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: N.text3, textTransform: "uppercase", letterSpacing: ".07em", marginBottom: 8 }}>Agregar producto</div>
+                    <input value={addProdSearch} onChange={e => setAddProdSearch(e.target.value)}
+                      placeholder="Buscar por nombre o SKU…"
+                      style={{ ...inputS, marginBottom: 8 }} />
+                    {addProdSearch.length >= 2 && (() => {
+                      const q = addProdSearch.toLowerCase();
+                      const matches = products.filter(p => p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q)).slice(0, 6);
+                      return matches.length > 0 ? (
+                        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                          {matches.map(p => (
+                            <button key={p.id} onClick={() => {
+                              const exists = editItems.findIndex(it => it.sku === p.sku);
+                              if (exists >= 0) {
+                                setEditItems(prev => prev.map((it, i) => i === exists ? { ...it, quantity: it.quantity + (p.minQty || 1) } : it));
+                              } else {
+                                setEditItems(prev => [...prev, { name: p.name, brand: p.brand, sku: p.sku, quantity: p.minQty || 1, unitPrice: p.onSale && p.salePrice ? p.salePrice : p.price }]);
+                              }
+                              setAddProdSearch("");
+                            }}
+                              style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", background: N.surface2, borderRadius: 8, border: `1px solid ${N.border}`, cursor: "pointer", textAlign: "left" }}>
+                              <div>
+                                <div style={{ fontSize: 13, fontWeight: 600, color: N.text }}>{p.name}</div>
+                                <div style={{ fontSize: 11, color: N.text3 }}>{p.brand} · SKU {p.sku}</div>
+                              </div>
+                              <div style={{ fontSize: 13, fontWeight: 700, color: N.navy, flexShrink: 0 }}>$ {(p.onSale && p.salePrice ? p.salePrice : p.price).toLocaleString("es-AR")}</div>
+                            </button>
+                          ))}
+                        </div>
+                      ) : <div style={{ fontSize: 12, color: N.text3 }}>Sin resultados</div>;
+                    })()}
+                  </div>
+
+                  {/* Total calculado */}
+                  {(() => {
+                    const newTotal = editItems.reduce((acc, it) => acc + (it.unitPrice || 0) * it.quantity, 0);
+                    return (
+                      <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 12, marginBottom: 14 }}>
+                        <span style={{ fontSize: 13, color: N.text3 }}>Total</span>
+                        <span style={{ fontSize: 22, fontWeight: 900, color: N.navy }}>$ {newTotal.toLocaleString("es-AR")}</span>
+                      </div>
+                    );
+                  })()}
+
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <button style={btn(N.navy)} onClick={async () => {
+                      if (editItems.length === 0) { alert("El pedido debe tener al menos un producto."); return; }
+                      const newTotal = editItems.reduce((acc, it) => acc + (it.unitPrice || 0) * it.quantity, 0);
+                      const headers = await authHeaders();
+                      const res = await fetch("/api/update-order", { method: "PATCH", headers, body: JSON.stringify({ id: selectedOrder.id, items: editItems, total: newTotal }) });
+                      if (res.ok) {
+                        const updated = { ...selectedOrder, items: editItems, total: newTotal };
+                        setSelectedOrder(updated);
+                        setOrders(prev => prev.map(o => o.id === selectedOrder.id ? updated : o));
+                        setEditingItems(false);
+                      } else {
+                        alert("Error al guardar los cambios.");
+                      }
+                    }}>Guardar cambios</button>
+                    <button style={btn(N.text3, true)} onClick={() => setEditingItems(false)}>Cancelar</button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {selectedOrder.items.map((it, i) => (
+                      <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", background: N.surface2, borderRadius: 10, border: `1px solid ${N.border}` }}>
+                        <div>
+                          <div style={{ fontSize: 13, fontWeight: 600, color: N.text }}>{it.name}</div>
+                          <div style={{ fontSize: 11, color: N.text3 }}>{it.brand} · SKU {it.sku}</div>
+                        </div>
+                        <div style={{ textAlign: "right" }}>
+                          <div style={{ fontSize: 13, fontWeight: 700, color: N.text }}>{it.quantity}×</div>
+                          <div style={{ fontSize: 12, color: N.text3 }}>$ {it.unitPrice.toLocaleString("es-AR")}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ marginTop: 18, display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 12 }}>
+                    <span style={{ fontSize: 13, color: N.text3 }}>Total</span>
+                    <span style={{ fontSize: 24, fontWeight: 900, color: N.navy }}>$ {selectedOrder.total.toLocaleString("es-AR")}</span>
+                  </div>
+                </>
+              )}
 
               {/* Notas */}
               <div style={{ marginTop: 20, borderTop: `1px solid ${N.border}`, paddingTop: 16 }}>
