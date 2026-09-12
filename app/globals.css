@@ -112,6 +112,19 @@ img { display: block; max-width: 100%; }
   margin: 12px 0;
 }
 
+/* ── Light content area (catalog main) ──────────────────────────────────── */
+.light-area {
+  --bg: #f0f4f8;
+  --surface: #ffffff;
+  --surface2: #f8fafc;
+  --surface3: #f1f5f9;
+  --border: #e2e8f0;
+  --border2: #cbd5e1;
+  --text: #0f172a;
+  --text2: #475569;
+  --text3: #94a3b8;
+}
+
 /* ── Mobile responsive ───────────────────────────────────────────────────── */
 .mobile-filter-btn { display: none; }
 

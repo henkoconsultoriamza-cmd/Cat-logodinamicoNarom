@@ -132,6 +132,9 @@ export default function Admin() {
   const [orders, setOrders] = useState([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [editingOrder, setEditingOrder] = useState(false);
+  const [editOrderNotes, setEditOrderNotes] = useState("");
+  const [draggedOrderId, setDraggedOrderId] = useState<string | null>(null);
 
   // Clients
   const [clients, setClients] = useState([]);
@@ -140,7 +143,9 @@ export default function Admin() {
   const [newClientName, setNewClientName] = useState("");
   const [newClientBusiness, setNewClientBusiness] = useState("");
   const [newClientPhone, setNewClientPhone] = useState("");
-  const [newClientAddress, setNewClientAddress] = useState("");
+  const [newClientStreet, setNewClientStreet] = useState("");
+  const [newClientStreetNum, setNewClientStreetNum] = useState("");
+  const [newClientCity, setNewClientCity] = useState("");
   const [newClientTax, setNewClientTax] = useState("");
   const [newClientPass, setNewClientPass] = useState("");
   const [clientMsg, setClientMsg] = useState("");
@@ -225,15 +230,17 @@ export default function Admin() {
       return;
     }
     const headers = await authHeaders();
+    const address = [newClientStreet, newClientStreetNum, newClientCity].filter(Boolean).join(", ");
     const res = await fetch("/api/create-client", {
       method: "POST",
       headers,
-      body: JSON.stringify({ email: newClientEmail, password: newClientPass, name: newClientName, business: newClientBusiness, phone: newClientPhone, address: newClientAddress, tax_id: newClientTax }),
+      body: JSON.stringify({ email: newClientEmail, password: newClientPass, name: newClientName, business: newClientBusiness, phone: newClientPhone, address, street: newClientStreet, street_number: newClientStreetNum, city: newClientCity, tax_id: newClientTax }),
     });
     const json = await res.json();
     if (json.error) { setClientMsg("Error: " + json.error); return; }
     setClientMsg("✓ Cliente creado correctamente");
-    setNewClientEmail(""); setNewClientName(""); setNewClientBusiness(""); setNewClientPhone(""); setNewClientAddress(""); setNewClientTax(""); setNewClientPass("");
+    setNewClientEmail(""); setNewClientName(""); setNewClientBusiness(""); setNewClientPhone("");
+    setNewClientStreet(""); setNewClientStreetNum(""); setNewClientCity(""); setNewClientTax(""); setNewClientPass("");
     loadClients();
   }
 
@@ -582,7 +589,10 @@ export default function Admin() {
                 {COL_STATUS.map(col => {
                   const colOrders = orders.filter(o => o.status === col);
                   return (
-                    <div key={col} style={{ background: N.surface, borderRadius: 14, border: `1px solid ${N.border}`, overflow: "hidden" }}>
+                    <div key={col}
+                      onDragOver={e => e.preventDefault()}
+                      onDrop={e => { e.preventDefault(); if (draggedOrderId) { moveOrder(draggedOrderId, col); setDraggedOrderId(null); } }}
+                      style={{ background: N.surface, borderRadius: 14, border: `1px solid ${N.border}`, overflow: "hidden", transition: "border-color .15s" }}>
                       <div style={{ padding: "12px 16px", borderBottom: `1px solid ${N.border}`, display: "flex", alignItems: "center", gap: 8, background: COL_COLOR[col] + "0a" }}>
                         <div style={{ width: 8, height: 8, borderRadius: "50%", background: COL_COLOR[col], flexShrink: 0 }} />
                         <span style={{ fontSize: 12, fontWeight: 700, color: N.text }}>{COL_LABEL[col]}</span>
@@ -593,8 +603,12 @@ export default function Admin() {
                           <div style={{ fontSize: 12, color: N.text3, textAlign: "center", padding: "20px 0" }}>Sin pedidos</div>
                         )}
                         {colOrders.map(o => (
-                          <div key={o.id} onClick={() => setSelectedOrder(o)}
-                            style={{ background: N.surface2, borderRadius: 10, padding: 12, cursor: "pointer", border: `1px solid ${N.border}`, transition: "border-color .15s" }}
+                          <div key={o.id}
+                            draggable
+                            onDragStart={() => setDraggedOrderId(o.id)}
+                            onDragEnd={() => setDraggedOrderId(null)}
+                            onClick={() => { setSelectedOrder(o); setEditingOrder(false); setEditOrderNotes(o.notes ?? ""); }}
+                            style={{ background: N.surface2, borderRadius: 10, padding: 12, cursor: "grab", border: `1px solid ${N.border}`, transition: "border-color .15s, opacity .15s", opacity: draggedOrderId === o.id ? 0.4 : 1 }}
                             onMouseEnter={e => e.currentTarget.style.borderColor = COL_COLOR[col]}
                             onMouseLeave={e => e.currentTarget.style.borderColor = N.border}
                           >
@@ -654,8 +668,14 @@ export default function Admin() {
                     <div style={field}><span style={labelS}>Celular / WhatsApp</span>
                       <input style={inputS} value={newClientPhone} onChange={e => setNewClientPhone(e.target.value)} placeholder="+54 9 11 1234-5678" />
                     </div>
-                    <div style={field}><span style={labelS}>Dirección</span>
-                      <input style={inputS} value={newClientAddress} onChange={e => setNewClientAddress(e.target.value)} placeholder="Av. Corrientes 1234, CABA" />
+                    <div style={field}><span style={labelS}>Calle</span>
+                      <input style={inputS} value={newClientStreet} onChange={e => setNewClientStreet(e.target.value)} placeholder="Av. Corrientes" />
+                    </div>
+                    <div style={field}><span style={labelS}>Número</span>
+                      <input style={inputS} value={newClientStreetNum} onChange={e => setNewClientStreetNum(e.target.value)} placeholder="1234" />
+                    </div>
+                    <div style={field}><span style={labelS}>Localidad</span>
+                      <input style={inputS} value={newClientCity} onChange={e => setNewClientCity(e.target.value)} placeholder="CABA" />
                     </div>
                   </div>
                   <div style={{ display: "flex", gap: 12, alignItems: "flex-end" }}>
@@ -1017,6 +1037,40 @@ export default function Admin() {
               <div style={{ marginTop: 18, display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 12 }}>
                 <span style={{ fontSize: 13, color: N.text3 }}>Total</span>
                 <span style={{ fontSize: 24, fontWeight: 900, color: N.navy }}>$ {selectedOrder.total.toLocaleString("es-AR")}</span>
+              </div>
+
+              {/* Notas */}
+              <div style={{ marginTop: 20, borderTop: `1px solid ${N.border}`, paddingTop: 16 }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: N.text2, textTransform: "uppercase", letterSpacing: ".07em" }}>NOTAS</span>
+                  {!editingOrder && (
+                    <button onClick={() => { setEditingOrder(true); setEditOrderNotes(selectedOrder.notes ?? ""); }}
+                      style={{ ...btn(N.amber, true), height: 28, fontSize: 11 }}><Icon name="edit" size={12} />Editar</button>
+                  )}
+                </div>
+                {editingOrder ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    <textarea value={editOrderNotes} onChange={e => setEditOrderNotes(e.target.value)}
+                      placeholder="Agregar notas sobre este pedido…"
+                      style={{ width: "100%", minHeight: 80, borderRadius: 8, border: `1.5px solid ${N.border}`, padding: "10px 12px", fontSize: 13, color: N.text, fontFamily: "inherit", resize: "vertical", outline: "none", boxSizing: "border-box" }} />
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <button style={btn(N.navy)} onClick={async () => {
+                        const headers = await authHeaders();
+                        const res = await fetch("/api/update-order", { method: "PATCH", headers, body: JSON.stringify({ id: selectedOrder.id, notes: editOrderNotes }) });
+                        if (res.ok) {
+                          setSelectedOrder({ ...selectedOrder, notes: editOrderNotes });
+                          setOrders(prev => prev.map(o => o.id === selectedOrder.id ? { ...o, notes: editOrderNotes } : o));
+                          setEditingOrder(false);
+                        }
+                      }}>Guardar</button>
+                      <button style={btn(N.text3, true)} onClick={() => setEditingOrder(false)}>Cancelar</button>
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ fontSize: 13, color: selectedOrder.notes ? N.text : N.text3, fontStyle: selectedOrder.notes ? "normal" : "italic" }}>
+                    {selectedOrder.notes || "Sin notas"}
+                  </div>
+                )}
               </div>
             </div>
           </div>
