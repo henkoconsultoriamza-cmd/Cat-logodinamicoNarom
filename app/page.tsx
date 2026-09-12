@@ -631,6 +631,9 @@ export default function Catalog() {
           </main>
         </div>
 
+        {/* ── Overlay carrito (mobile) ─────────────────────────────────────── */}
+        {cartOpen && <div className="cart-overlay" style={{ display: "none" }} onClick={() => setCartOpen(false)} />}
+
         {/* ── Cart ─────────────────────────────────────────────────────────── */}
         {cartOpen && (
           <div className="cart-panel" style={{ width: 330, background: "#fff", borderLeft: "1px solid #e2e8f0", display: "flex", flexDirection: "column", position: "fixed", top: 0, right: 0, height: "100vh", zIndex: 160, boxShadow: "-8px 0 40px rgba(0,0,0,.12)" }}>

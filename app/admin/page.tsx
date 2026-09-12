@@ -589,11 +589,11 @@ export default function Admin() {
               </div>
 
               {/* Kanban */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, alignItems: "start" }}>
+              <div className="kanban-board" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, alignItems: "start" }}>
                 {COL_STATUS.map(col => {
                   const colOrders = orders.filter(o => o.status === col);
                   return (
-                    <div key={col}
+                    <div key={col} className="kanban-col"
                       onDragOver={e => e.preventDefault()}
                       onDrop={e => { e.preventDefault(); if (draggedOrderId) { moveOrder(draggedOrderId, col); setDraggedOrderId(null); } }}
                       style={{ background: N.surface, borderRadius: 14, border: `1px solid ${N.border}`, overflow: "hidden", transition: "border-color .15s" }}>
