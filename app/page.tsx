@@ -145,6 +145,14 @@ export default function Catalog() {
   const PAGE_SIZE = 48;
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [slide, setSlide] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   const accent = settings.accentColor;
 
@@ -466,19 +474,23 @@ export default function Catalog() {
 
         {/* Top bar */}
         <div style={{ background: "#fff", borderBottom: "1px solid #e2e8f0", padding: "0 14px", height: 54, display: "flex", alignItems: "center", gap: 10, position: "sticky", top: 0, zIndex: 40 }}>
-          <button onClick={() => setSidebarOpen(o => !o)} className="mobile-filter-btn" style={{ width: 34, height: 34, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", color: "#475569", background: "#f1f5f9", border: "1px solid #e2e8f0", cursor: "pointer", flexShrink: 0 }}>
-            <Icon name="filter" />
-          </button>
-          {/* Buscador mobile (en topbar) */}
-          <div className="mobile-search topbar-search-wrap" style={{ display: "none", alignItems: "center", gap: 6, background: "#f1f5f9", borderRadius: 8, border: "1px solid #e2e8f0", padding: "0 10px", height: 34 }}>
-            <Icon name="search" size={13} />
-            <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Buscar…"
-              style={{ background: "transparent", border: "none", outline: "none", fontSize: 13, color: "#0f172a", width: "100%", fontFamily: "inherit" }} />
-          </div>
-          <span className="desktop-only" style={{ fontSize: 13, color: "#94a3b8", flexShrink: 0 }}>
-            {filtered.length} producto{filtered.length !== 1 ? "s" : ""}
-            {activeCategory !== "Todos" && ` · ${activeCategory}`}
-          </span>
+          {isMobile && (
+            <button onClick={() => setSidebarOpen(o => !o)} style={{ width: 34, height: 34, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", color: "#475569", background: "#f1f5f9", border: "1px solid #e2e8f0", cursor: "pointer", flexShrink: 0 }}>
+              <Icon name="filter" />
+            </button>
+          )}
+          {isMobile ? (
+            <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 6, background: "#f1f5f9", borderRadius: 8, border: "1px solid #e2e8f0", padding: "0 10px", height: 34 }}>
+              <Icon name="search" size={13} />
+              <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Buscar…"
+                style={{ background: "transparent", border: "none", outline: "none", fontSize: 13, color: "#0f172a", width: "100%", fontFamily: "inherit" }} />
+            </div>
+          ) : (
+            <span style={{ fontSize: 13, color: "#94a3b8", flexShrink: 0 }}>
+              {filtered.length} producto{filtered.length !== 1 ? "s" : ""}
+              {activeCategory !== "Todos" && ` · ${activeCategory}`}
+            </span>
+          )}
           <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center", flexShrink: 0 }}>
             {user && (
               <span style={{ width: 28, height: 28, borderRadius: "50%", background: accent + "22", color: accent, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, flexShrink: 0 }}>
@@ -496,17 +508,17 @@ export default function Catalog() {
         <div style={{ flex: 1, overflowY: "auto" }}>
 
           {/* ── Banner slider ─────────────────────────────────────────────── */}
-          <div className="hero-banner" style={{ position: "relative", height: 260, overflow: "hidden", background: "#02152C" }}>
+          <div className="hero-banner" style={{ position: "relative", height: isMobile ? 180 : 260, overflow: "hidden", background: "#02152C" }}>
             {SLIDES.map((s, i) => (
               <div key={i} style={{ position: "absolute", inset: 0, transition: "opacity .7s ease", opacity: i === slide ? 1 : 0, pointerEvents: i === slide ? "auto" : "none" }}>
                 <img src={s.img} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
                 <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, rgba(2,21,44,.93) 0%, rgba(2,21,44,.65) 55%, rgba(2,21,44,.1) 100%)" }} />
-                <div className="hero-content" style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 48px" }}>
+                <div className="hero-content" style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center", padding: isMobile ? "0 18px" : "0 48px" }}>
                   <span style={{ display: "inline-block", fontSize: 10, fontWeight: 800, color: "#02152C", background: s.color, padding: "3px 10px", borderRadius: 20, marginBottom: 8, width: "fit-content" }}>{s.badge}</span>
                   <div style={{ fontSize: 11, fontWeight: 700, color: "#F4AA24", letterSpacing: ".18em", textTransform: "uppercase" as const, marginBottom: 6 }}>{s.brand}</div>
-                  <div className="hero-title" style={{ fontSize: "clamp(18px, 2.8vw, 36px)", fontWeight: 900, color: "#fff", lineHeight: 1.2, marginBottom: 8, maxWidth: 500 }}>{s.title}</div>
-                  <div className="hero-sub" style={{ fontSize: 13, color: "rgba(255,255,255,.6)", marginBottom: 16, maxWidth: 420 }}>{s.sub}</div>
-                  <button className="hero-btn" onClick={() => { setActiveBrands([s.brand]); }} style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 38, padding: "0 20px", borderRadius: 20, background: "#F4AA24", color: "#02152C", fontWeight: 800, fontSize: 13, border: "none", cursor: "pointer", width: "fit-content" }}>
+                  <div className="hero-title" style={{ fontSize: isMobile ? 17 : "clamp(18px, 2.8vw, 36px)", fontWeight: 900, color: "#fff", lineHeight: 1.2, marginBottom: 8, maxWidth: 500 }}>{s.title}</div>
+                  {!isMobile && <div className="hero-sub" style={{ fontSize: 13, color: "rgba(255,255,255,.6)", marginBottom: 16, maxWidth: 420 }}>{s.sub}</div>}
+                  <button className="hero-btn" onClick={() => { setActiveBrands([s.brand]); setSidebarOpen(false); }} style={{ display: "inline-flex", alignItems: "center", gap: 6, height: isMobile ? 32 : 38, padding: isMobile ? "0 14px" : "0 20px", borderRadius: 20, background: "#F4AA24", color: "#02152C", fontWeight: 800, fontSize: isMobile ? 12 : 13, border: "none", cursor: "pointer", width: "fit-content", marginTop: isMobile ? 10 : 0 }}>
                     Ver productos
                     <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
                   </button>
@@ -559,7 +571,7 @@ export default function Catalog() {
                 <div style={{ fontSize: 13 }}>Probá cambiar los filtros o la búsqueda</div>
               </div>
             ) : (
-              <div className="product-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 12 }}>
+              <div className="product-grid" style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(auto-fill, minmax(200px, 1fr))", gap: isMobile ? 8 : 12 }}>
                 {filtered.slice(0, visibleCount).map(p => {
                   const price = p.onSale && p.salePrice ? p.salePrice : p.price;
                   const inStock = p.stock > 0;
@@ -696,11 +708,11 @@ export default function Catalog() {
 
       {/* ── Product modal ──────────────────────────────────────────────────────── */}
       {selected && (
-        <div className="product-modal-wrap" style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.75)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }} onClick={e => { if (e.target === e.currentTarget) setSelected(null); }}>
-          <div className="product-modal" style={{ background: "var(--surface)", borderRadius: 18, maxWidth: 860, width: "100%", maxHeight: "92vh", overflow: "hidden", display: "flex", flexDirection: "column", border: "1px solid var(--border)", boxShadow: "var(--shadow-lg)" }}>
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.75)", zIndex: 200, display: "flex", alignItems: isMobile ? "flex-end" : "center", justifyContent: "center", padding: isMobile ? 0 : 16 }} onClick={e => { if (e.target === e.currentTarget) setSelected(null); }}>
+          <div style={{ background: "var(--surface)", borderRadius: isMobile ? "20px 20px 0 0" : 18, maxWidth: 860, width: "100%", maxHeight: isMobile ? "92vh" : "92vh", overflow: "hidden", display: "flex", flexDirection: "column", border: "1px solid var(--border)", boxShadow: "var(--shadow-lg)" }}>
 
             {/* Imagen grande */}
-            <div className="product-modal-img" style={{ position: "relative", height: 380, flexShrink: 0, background: "var(--surface2)", overflow: "hidden" }}>
+            <div style={{ position: "relative", height: isMobile ? 200 : 380, flexShrink: 0, background: "var(--surface2)", overflow: "hidden" }}>
               {selected.image
                 ? <img src={selected.image} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
                 : <div style={{ width: "100%", height: "100%", background: selected.imageColor, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 100 }}>{selected.imageIcon}</div>
@@ -759,7 +771,7 @@ export default function Catalog() {
             </div>
 
             {/* Modal footer */}
-            <div className="product-modal-footer" style={{ padding: "14px 22px", borderTop: "1px solid var(--border)", display: "flex", alignItems: "center", gap: 14, background: "var(--surface2)" }}>
+            <div style={{ padding: "14px 18px", borderTop: "1px solid var(--border)", display: "flex", alignItems: "center", gap: 12, background: "var(--surface2)", flexWrap: isMobile ? "wrap" : "nowrap" as any }}>
               {/* Qty */}
               <div style={{ display: "flex", alignItems: "center", gap: 8, background: "var(--surface3)", borderRadius: 9, padding: "6px 6px" }}>
                 <button onClick={() => setDetailQty(q => Math.max(selected.minQty, q - 1))} style={{ width: 30, height: 30, borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text2)" }}>
@@ -784,10 +796,9 @@ export default function Catalog() {
 
               {/* Add */}
               <button
-                className="add-btn"
                 onClick={() => addToCart(selected, detailQty, selectedVariant)}
                 disabled={selected.stock === 0}
-                style={{ height: 46, padding: "0 24px", borderRadius: 10, background: selected.stock === 0 ? "var(--surface3)" : accent, color: selected.stock === 0 ? "var(--text3)" : "#000", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", gap: 8 }}
+                style={{ height: 46, padding: "0 24px", borderRadius: 10, background: selected.stock === 0 ? "var(--surface3)" : accent, color: selected.stock === 0 ? "var(--text3)" : "#000", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, flex: isMobile ? 1 : undefined }}
               >
                 <Icon name="cart" size={16} />
                 Agregar al pedido

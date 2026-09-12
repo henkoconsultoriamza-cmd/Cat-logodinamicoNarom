@@ -139,6 +139,13 @@ export default function Admin() {
   const [addProdSearch, setAddProdSearch] = useState("");
   const [mergingOrder, setMergingOrder] = useState(false);
   const [draggedOrderId, setDraggedOrderId] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   // Clients
   const [clients, setClients] = useState([]);
@@ -589,11 +596,13 @@ export default function Admin() {
               </div>
 
               {/* Kanban */}
-              <div className="kanban-board" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, alignItems: "start" }}>
+              <div style={isMobile
+                ? { display: "flex", flexDirection: "column", gap: 12 }
+                : { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, alignItems: "start" }}>
                 {COL_STATUS.map(col => {
                   const colOrders = orders.filter(o => o.status === col);
                   return (
-                    <div key={col} className="kanban-col"
+                    <div key={col}
                       onDragOver={e => e.preventDefault()}
                       onDrop={e => { e.preventDefault(); if (draggedOrderId) { moveOrder(draggedOrderId, col); setDraggedOrderId(null); } }}
                       style={{ background: N.surface, borderRadius: 14, border: `1px solid ${N.border}`, overflow: "hidden", transition: "border-color .15s" }}>
