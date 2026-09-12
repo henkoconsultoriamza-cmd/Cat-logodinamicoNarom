@@ -392,7 +392,7 @@ export default function Catalog() {
           {VISIBLE_BRANDS.map(b => {
             const on = activeBrands.includes(b);
             return (
-              <button key={b} onClick={() => toggleBrand(b)} style={{
+              <button key={b} onClick={() => { toggleBrand(b); setSidebarOpen(false); }} style={{
                 display: "flex", alignItems: "center", gap: 8, width: "100%", height: 38, padding: "0 10px",
                 borderRadius: 9, border: "none", borderLeft: on ? "3px solid #F4AA24" : "3px solid transparent",
                 background: on ? "rgba(244,170,36,.1)" : "transparent",
@@ -426,7 +426,7 @@ export default function Catalog() {
 
           <div style={{ height: 1, background: "rgba(255,255,255,.08)", margin: "12px 6px" }} />
           <div style={{ fontSize: 9, fontWeight: 800, color: "rgba(255,255,255,.25)", letterSpacing: ".14em", textTransform: "uppercase" as const, padding: "0 10px", marginBottom: 4 }}>Filtros</div>
-          {[{ key: "sale", label: "Solo en oferta", on: onlySale, toggle: () => setOnlySale(o => !o) }, { key: "stock", label: "Con stock", on: onlyStock, toggle: () => setOnlyStock(o => !o) }].map(f => (
+          {[{ key: "sale", label: "Solo en oferta", on: onlySale, toggle: () => { setOnlySale(o => !o); setSidebarOpen(false); } }, { key: "stock", label: "Con stock", on: onlyStock, toggle: () => { setOnlyStock(o => !o); setSidebarOpen(false); } }].map(f => (
             <button key={f.key} onClick={f.toggle} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", height: 36, padding: "0 10px", borderRadius: 9, border: "none", borderLeft: f.on ? "3px solid #F4AA24" : "3px solid transparent", background: f.on ? "rgba(244,170,36,.1)" : "transparent", color: f.on ? "#F4AA24" : "rgba(255,255,255,.45)", fontSize: 12, fontWeight: f.on ? 700 : 400, cursor: "pointer", textAlign: "left" as const }}>
               <span style={{ width: 5, height: 5, borderRadius: "50%", background: f.on ? "#F4AA24" : "rgba(255,255,255,.15)", flexShrink: 0 }} />
               <span style={{ flex: 1 }}>{f.label}</span>

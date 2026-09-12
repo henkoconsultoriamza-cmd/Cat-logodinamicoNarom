@@ -256,19 +256,14 @@ img { display: block; max-width: 100%; }
     z-index: 159;
   }
 
-  /* ── Kanban admin: scroll horizontal ────────────────────────────── */
+  /* ── Kanban admin: columnas verticales ──────────────────────────── */
   .kanban-board {
     display: flex !important;
-    overflow-x: auto !important;
+    flex-direction: column !important;
     gap: 12px !important;
-    padding-bottom: 16px !important;
-    -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x mandatory;
   }
 
   .kanban-col {
-    min-width: 260px !important;
-    flex-shrink: 0 !important;
-    scroll-snap-align: start;
+    width: 100% !important;
   }
 }
