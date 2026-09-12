@@ -928,22 +928,32 @@ export default function Admin() {
                                 ? tag("#dc2626", `Oferta: $${p.salePrice} ARS`)
                                 : tag("#475569", `$${p.price} ARS`)
                               }
-                              {tag(p.stock > 0 ? "#16a34a" : "#dc2626", p.stock > 0 ? `Stock: ${p.stock}` : "Sin stock")}
+                              {p.stock === 0 && tag("#dc2626", "Sin stock")}
                               {tag("#64748b", `Mín. ${p.minQty}`)}
                             </div>
                           </div>
-                          <button style={{ ...btn(isEditing ? N.navy : "#64748b", !isEditing), height: 34, fontSize: 12 }} onClick={() => setEditingId(isEditing ? null : p.id)}>
-                            <Icon name="edit" size={13} />{isEditing ? "Cerrar" : "Editar"}
-                          </button>
+                          <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                            {p.stock !== 0 && (
+                              <button style={{ ...btn("#dc2626", true), height: 34, fontSize: 12 }}
+                                onClick={() => updateProduct(p.id, "stock", 0)}>
+                                Sin stock
+                              </button>
+                            )}
+                            <button style={{ ...btn(isEditing ? N.navy : "#64748b", !isEditing), height: 34, fontSize: 12 }}
+                              onClick={() => setEditingId(isEditing ? null : p.id)}>
+                              <Icon name="edit" size={13} />{isEditing ? "Cerrar" : "Editar"}
+                            </button>
+                            <button style={{ color: N.danger, background: N.danger + "12", border: "none", borderRadius: 8, width: 34, height: 34, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
+                              onClick={() => { if (confirm(`¿Eliminar "${p.name}" del catálogo?`)) setProducts(prev => prev.filter(x => x.id !== p.id)); }}>
+                              <Icon name="close" size={15} />
+                            </button>
+                          </div>
                         </div>
 
                         {isEditing && (
-                          <div style={{ marginTop: 12, background: N.surface2, borderRadius: 10, padding: 16, display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 12, border: `1px solid ${N.border}` }}>
+                          <div style={{ marginTop: 12, background: N.surface2, borderRadius: 10, padding: 16, display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, border: `1px solid ${N.border}` }}>
                             <div style={field}><span style={labelS}>Precio</span>
                               <input type="number" style={inputS} value={p.price} onChange={e => updateProduct(p.id, "price", Number(e.target.value))} />
-                            </div>
-                            <div style={field}><span style={labelS}>Stock</span>
-                              <input type="number" style={inputS} value={p.stock} onChange={e => updateProduct(p.id, "stock", Number(e.target.value))} />
                             </div>
                             <div style={field}><span style={labelS}>Min. qty</span>
                               <input type="number" style={inputS} value={p.minQty} onChange={e => updateProduct(p.id, "minQty", Number(e.target.value))} />
