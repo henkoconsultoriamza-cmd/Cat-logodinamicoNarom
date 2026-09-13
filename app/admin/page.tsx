@@ -140,6 +140,7 @@ export default function Admin() {
   const [mergingOrder, setMergingOrder] = useState(false);
   const [draggedOrderId, setDraggedOrderId] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [adminSidebarOpen, setAdminSidebarOpen] = useState(false);
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth <= 768);
     check();
@@ -380,7 +381,7 @@ export default function Admin() {
   function NavItem({ id, icon, label, count }: { id: string, icon: string, label: string, count?: number }) {
     const isActive = activeTab === id;
     return (
-      <button onClick={() => setActiveTab(id)} style={{
+      <button onClick={() => { setActiveTab(id); setAdminSidebarOpen(false); }} style={{
         display: "flex", alignItems: "center", gap: 10, width: "100%",
         height: 42, padding: "0 14px", borderRadius: 9, border: "none",
         background: isActive ? N.amberDim : "transparent",
@@ -405,8 +406,14 @@ export default function Admin() {
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: N.bg, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
 
+      {/* ── Overlay mobile sidebar ──────────────────────────────────────── */}
+      {isMobile && adminSidebarOpen && (
+        <div onClick={() => setAdminSidebarOpen(false)}
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.55)", zIndex: 49 }} />
+      )}
+
       {/* ── Sidebar ─────────────────────────────────────────────────────── */}
-      <aside style={{ width: 220, background: N.navy, display: "flex", flexDirection: "column", position: "fixed", top: 0, left: 0, height: "100vh", zIndex: 50, overflowY: "auto" }}>
+      <aside style={{ width: 220, background: N.navy, display: "flex", flexDirection: "column", position: "fixed", top: 0, left: 0, height: "100vh", zIndex: 50, overflowY: "auto", transform: isMobile && !adminSidebarOpen ? "translateX(-100%)" : "translateX(0)", transition: "transform .25s ease" }}>
 
         {/* Logo */}
         <div style={{ padding: "24px 18px 20px" }}>
@@ -470,13 +477,21 @@ export default function Admin() {
       </aside>
 
       {/* ── Main content ─────────────────────────────────────────────────── */}
-      <main style={{ marginLeft: 220, flex: 1, minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+      <main style={{ marginLeft: isMobile ? 0 : 220, flex: 1, minHeight: "100vh", display: "flex", flexDirection: "column" }}>
 
         {/* Top bar */}
-        <div style={{ background: N.surface, borderBottom: `1px solid ${N.border}`, padding: "0 32px", height: 58, display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 40 }}>
-          <div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: N.amber, letterSpacing: ".12em", textTransform: "uppercase" }}>
-              NAROM GROUP · {new Date().toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "long" })}
+        <div style={{ background: N.surface, borderBottom: `1px solid ${N.border}`, padding: isMobile ? "0 16px" : "0 32px", height: 58, display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 40 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            {isMobile && (
+              <button onClick={() => setAdminSidebarOpen(o => !o)}
+                style={{ width: 36, height: 36, borderRadius: 8, background: N.navy, border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 5, flexShrink: 0 }}>
+                <span style={{ width: 16, height: 2, background: N.amber, borderRadius: 2 }} />
+                <span style={{ width: 16, height: 2, background: N.amber, borderRadius: 2 }} />
+                <span style={{ width: 16, height: 2, background: N.amber, borderRadius: 2 }} />
+              </button>
+            )}
+            <div style={{ fontSize: isMobile ? 10 : 11, fontWeight: 700, color: N.amber, letterSpacing: ".12em", textTransform: "uppercase" }}>
+              {isMobile ? "NAROM ADMIN" : `NAROM GROUP · ${new Date().toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "long" })}`}
             </div>
           </div>
           <div style={{ display: "flex", gap: 8 }}>
