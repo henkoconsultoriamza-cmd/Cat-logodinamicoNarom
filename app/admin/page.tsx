@@ -510,7 +510,7 @@ export default function Admin() {
         </div>
 
         {/* Content */}
-        <div style={{ flex: 1, padding: isMobile ? "16px 14px 48px" : "32px 32px 48px" }}>
+        <div style={{ flex: 1, padding: isMobile ? "16px 20px 48px" : "32px 32px 48px" }}>
 
           {/* ── DASHBOARD ──────────────────────────────────────────────── */}
           {activeTab === "dashboard" && (
