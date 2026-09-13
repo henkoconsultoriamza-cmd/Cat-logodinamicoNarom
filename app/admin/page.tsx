@@ -510,7 +510,7 @@ export default function Admin() {
         </div>
 
         {/* Content */}
-        <div style={{ flex: 1, padding: "32px 32px 48px" }}>
+        <div style={{ flex: 1, padding: isMobile ? "16px 14px 48px" : "32px 32px 48px" }}>
 
           {/* ── DASHBOARD ──────────────────────────────────────────────── */}
           {activeTab === "dashboard" && (
@@ -529,7 +529,7 @@ export default function Admin() {
               </div>
 
               {/* Main stat cards */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 16 }}>
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)", gap: isMobile ? 10 : 16, marginBottom: 16 }}>
                 <StatCard icon="clock" label="Pedidos pendientes" value={pendingOrders} sub="Esperando confirmación" color={N.warning} accent={N.amber} />
                 <StatCard icon="package" label="En preparación" value={inPrepOrders} sub="Siendo procesados" color="#7c3aed" accent={N.amber} />
                 <StatCard icon="users" label="Clientes activos" value={clients.length} sub="Distribuidores registrados" color={N.info} accent={N.amber} />
@@ -537,7 +537,7 @@ export default function Admin() {
               </div>
 
               {/* Secondary stats */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 12, marginBottom: 28 }}>
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(3, 1fr)" : "repeat(5, 1fr)", gap: isMobile ? 8 : 12, marginBottom: isMobile ? 16 : 28 }}>
                 <MiniStat label="Confirmados" value={confirmedOrders} color={N.info} />
                 <MiniStat label="Entregados" value={deliveredOrders} color={N.success} />
                 <MiniStat label="Total pedidos" value={orders.length} />
@@ -546,7 +546,7 @@ export default function Admin() {
               </div>
 
               {/* Status pipeline */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16 }}>
                 {/* Orders by status */}
                 <div style={{ background: N.surface, borderRadius: 14, border: `1px solid ${N.border}`, padding: 24 }}>
                   <div style={{ fontSize: 11, fontWeight: 700, color: N.text2, letterSpacing: ".1em", textTransform: "uppercase", marginBottom: 16 }}>PEDIDOS POR ESTADO</div>
@@ -680,7 +680,7 @@ export default function Admin() {
               <div style={{ background: N.surface, borderRadius: 14, border: `1px solid ${N.border}`, padding: 24, marginBottom: 20 }}>
                 <div style={{ fontSize: 14, fontWeight: 700, color: N.text, marginBottom: 16 }}>Agregar cliente</div>
                 <form onSubmit={createClient}>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 12 }}>
+                  <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 12, marginBottom: 12 }}>
                     <div style={field}><span style={labelS}>Nombre y apellido</span>
                       <input style={inputS} required value={newClientName} onChange={e => setNewClientName(e.target.value)} placeholder="Juan García" />
                     </div>
@@ -800,7 +800,7 @@ export default function Admin() {
 
                         {editingClient ? (
                           <div style={{ marginBottom: 28 }}>
-                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
+                            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12, marginBottom: 16 }}>
                               {[
                                 { label: "Nombre y apellido", key: "name" },
                                 { label: "Nombre comercial", key: "business" },
@@ -831,7 +831,7 @@ export default function Admin() {
                             </div>
                           </div>
                         ) : (
-                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 28 }}>
+                          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12, marginBottom: 28 }}>
                             {[
                               ["Nombre comercial", meta.business],
                               ["CUIT / CUIL / DNI", meta.tax_id],
@@ -889,7 +889,7 @@ export default function Admin() {
               {/* Business settings */}
               <div style={{ background: N.surface, borderRadius: 14, border: `1px solid ${N.border}`, padding: 24, marginBottom: 20 }}>
                 <div style={{ fontSize: 14, fontWeight: 700, color: N.text, marginBottom: 20 }}>Configuración del negocio</div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16 }}>
                   <div style={field}><span style={labelS}>Nombre del negocio</span>
                     <input style={inputS} value={settings.businessName} onChange={e => setSettings(s => ({ ...s, businessName: e.target.value }))} />
                   </div>
@@ -976,7 +976,7 @@ export default function Admin() {
                         </div>
 
                         {isEditing && (
-                          <div style={{ marginTop: 12, background: N.surface2, borderRadius: 10, padding: 16, display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, border: `1px solid ${N.border}` }}>
+                          <div style={{ marginTop: 12, background: N.surface2, borderRadius: 10, padding: 16, display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "1fr 1fr 1fr", gap: 12, border: `1px solid ${N.border}` }}>
                             <div style={field}><span style={labelS}>Precio</span>
                               <input type="number" style={inputS} value={p.price} onChange={e => updateProduct(p.id, "price", Number(e.target.value))} />
                             </div>
