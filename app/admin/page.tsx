@@ -477,7 +477,7 @@ export default function Admin() {
       </aside>
 
       {/* ── Main content ─────────────────────────────────────────────────── */}
-      <main style={{ marginLeft: isMobile ? 0 : 220, flex: 1, minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+      <main style={{ marginLeft: isMobile ? 0 : 220, flex: 1, minHeight: "100vh", display: "flex", flexDirection: "column", background: N.bg }}>
 
         {/* Top bar */}
         <div style={{ background: N.surface, borderBottom: `1px solid ${N.border}`, padding: isMobile ? "0 16px" : "0 32px", height: 58, display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 40 }}>
