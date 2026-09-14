@@ -160,7 +160,25 @@ export default function Catalog() {
     const s = localStorage.getItem(APP_SETTINGS_KEY);
     if (s) { try { setSettings({ ...DEFAULT_APP_SETTINGS, ...JSON.parse(s) }); } catch { localStorage.removeItem(APP_SETTINGS_KEY); } }
     const p = localStorage.getItem(PRODUCTS_KEY);
-    if (p) { try { setProducts(JSON.parse(p)); } catch { localStorage.removeItem(PRODUCTS_KEY); } }
+    if (p) {
+      try {
+        const parsed = JSON.parse(p);
+        const needsMigration = parsed.some((x: any) => x.image && x.image.includes('ingco_page_'));
+        if (needsMigration) {
+          fetch('/products/ingco_sku_images.json').then(r => r.json()).then((skuMap: Record<string, string>) => {
+            setProducts(parsed.map((x: any) => {
+              if (x.brand === 'INGCO' && x.image && x.image.includes('ingco_page_')) {
+                const newImg = skuMap[x.sku];
+                return { ...x, image: newImg || '' };
+              }
+              return x;
+            }));
+          }).catch(() => setProducts(parsed));
+        } else {
+          setProducts(parsed);
+        }
+      } catch { localStorage.removeItem(PRODUCTS_KEY); }
+    }
     const c = localStorage.getItem(CART_KEY);
     if (c) { try { setCart(JSON.parse(c)); } catch { localStorage.removeItem(CART_KEY); } }
     setHydrated(true);

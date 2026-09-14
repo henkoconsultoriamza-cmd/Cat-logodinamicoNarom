@@ -177,7 +177,25 @@ export default function Admin() {
     const s = localStorage.getItem(APP_SETTINGS_KEY);
     if (s) { try { setSettings({ ...DEFAULT_APP_SETTINGS, ...JSON.parse(s) }); } catch { localStorage.removeItem(APP_SETTINGS_KEY); } }
     const p = localStorage.getItem(PRODUCTS_KEY);
-    if (p) { try { setProducts(JSON.parse(p)); } catch { localStorage.removeItem(PRODUCTS_KEY); } }
+    if (p) {
+      try {
+        const parsed = JSON.parse(p);
+        const needsMigration = parsed.some((x: any) => x.image && x.image.includes('ingco_page_'));
+        if (needsMigration) {
+          fetch('/products/ingco_sku_images.json').then(r => r.json()).then((skuMap: Record<string, string>) => {
+            setProducts(parsed.map((x: any) => {
+              if (x.brand === 'INGCO' && x.image && x.image.includes('ingco_page_')) {
+                const newImg = skuMap[x.sku];
+                return { ...x, image: newImg || '' };
+              }
+              return x;
+            }));
+          }).catch(() => setProducts(parsed));
+        } else {
+          setProducts(parsed);
+        }
+      } catch { localStorage.removeItem(PRODUCTS_KEY); }
+    }
     setHydrated(true);
     supabase.auth.getSession().then(({ data }) => {
       const u = data.session?.user;
@@ -995,6 +1013,10 @@ export default function Admin() {
                             <div style={{ ...field, gridColumn: "1 / -1" }}>
                               <span style={labelS}>Tag</span>
                               <input style={inputS} value={p.tag ?? ""} placeholder='Nuevo, Más vendido…' onChange={e => updateProduct(p.id, "tag", e.target.value || undefined)} />
+                            </div>
+                            <div style={{ ...field, gridColumn: "1 / -1" }}>
+                              <span style={labelS}>URL de imagen</span>
+                              <input style={inputS} value={p.image ?? ""} placeholder='https://… o /products/nombre.jpeg' onChange={e => updateProduct(p.id, "image", e.target.value || "")} />
                             </div>
                           </div>
                         )}
