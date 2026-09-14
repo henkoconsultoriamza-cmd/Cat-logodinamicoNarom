@@ -180,13 +180,16 @@ export default function Admin() {
     if (p) {
       try {
         const parsed = JSON.parse(p);
-        const needsMigration = parsed.some((x: any) => x.image && x.image.includes('ingco_page_'));
+        const needsMigration = parsed.some((x: any) => x.image && (x.image.includes('ingco_page_') || x.image.includes('ingco_extracted')));
         if (needsMigration) {
-          fetch('/products/ingco_sku_images.json').then(r => r.json()).then((skuMap: Record<string, string>) => {
+          fetch('/products/ingco_sections/sections_map.json').then(r => r.json()).then((sectMap: any) => {
+            const codeMap: Record<string, string> = sectMap.sku_to_code || {};
+            const imgMap: Record<string, string> = sectMap.code_to_image || {};
             setProducts(parsed.map((x: any) => {
-              if (x.brand === 'INGCO' && x.image && x.image.includes('ingco_page_')) {
-                const newImg = skuMap[x.sku];
-                return { ...x, image: newImg || '' };
+              if (x.brand === 'INGCO') {
+                const code = codeMap[x.sku];
+                const newImg = code ? imgMap[code] : undefined;
+                if (newImg) return { ...x, image: newImg };
               }
               return x;
             }));

@@ -122,6 +122,7 @@ export default function Catalog() {
   const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null);
   const [detailQty, setDetailQty] = useState(1);
   const [lightbox, setLightbox] = useState<string | null>(null);
+  const [ingcoCodeMap, setIngcoCodeMap] = useState<Record<string, string>>({});  // sku → numeric code
 
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
@@ -159,26 +160,39 @@ export default function Catalog() {
   useEffect(() => {
     const s = localStorage.getItem(APP_SETTINGS_KEY);
     if (s) { try { setSettings({ ...DEFAULT_APP_SETTINGS, ...JSON.parse(s) }); } catch { localStorage.removeItem(APP_SETTINGS_KEY); } }
-    const p = localStorage.getItem(PRODUCTS_KEY);
-    if (p) {
-      try {
-        const parsed = JSON.parse(p);
-        const needsMigration = parsed.some((x: any) => x.image && x.image.includes('ingco_page_'));
-        if (needsMigration) {
-          fetch('/products/ingco_sku_images.json').then(r => r.json()).then((skuMap: Record<string, string>) => {
-            setProducts(parsed.map((x: any) => {
-              if (x.brand === 'INGCO' && x.image && x.image.includes('ingco_page_')) {
-                const newImg = skuMap[x.sku];
-                return { ...x, image: newImg || '' };
-              }
-              return x;
-            }));
-          }).catch(() => setProducts(parsed));
-        } else {
-          setProducts(parsed);
-        }
-      } catch { localStorage.removeItem(PRODUCTS_KEY); }
-    }
+    // Load INGCO sections map (numeric codes + section crop images)
+    fetch('/products/ingco_sections/sections_map.json').then(r => r.json()).then((sectMap: any) => {
+      const codeMap: Record<string, string> = sectMap.sku_to_code || {};
+      const imgMap: Record<string, string> = sectMap.code_to_image || {};
+      setIngcoCodeMap(codeMap);
+      const p2 = localStorage.getItem(PRODUCTS_KEY);
+      if (p2) {
+        try {
+          const parsed = JSON.parse(p2);
+          setProducts(parsed.map((x: any) => {
+            if (x.brand === 'INGCO') {
+              const code = codeMap[x.sku];
+              const newImg = code ? imgMap[code] : undefined;
+              if (newImg) return { ...x, image: newImg };
+            }
+            return x;
+          }));
+        } catch { localStorage.removeItem(PRODUCTS_KEY); }
+      } else {
+        // Load DEFAULT_PRODUCTS with section images applied
+        setProducts(DEFAULT_PRODUCTS.map((x: any) => {
+          if (x.brand === 'INGCO') {
+            const code = codeMap[x.sku];
+            const newImg = code ? imgMap[code] : undefined;
+            if (newImg) return { ...x, image: newImg };
+          }
+          return x;
+        }));
+      }
+    }).catch(() => {
+      const p2 = localStorage.getItem(PRODUCTS_KEY);
+      if (p2) { try { setProducts(JSON.parse(p2)); } catch { localStorage.removeItem(PRODUCTS_KEY); } }
+    });
     const c = localStorage.getItem(CART_KEY);
     if (c) { try { setCart(JSON.parse(c)); } catch { localStorage.removeItem(CART_KEY); } }
     setHydrated(true);
@@ -612,7 +626,7 @@ export default function Catalog() {
                       <div style={{ padding: "10px 12px", flex: 1, display: "flex", flexDirection: "column", gap: 3 }}>
                         <div style={{ fontSize: 9, fontWeight: 800, color: "#94a3b8", letterSpacing: ".12em", textTransform: "uppercase" as const }}>{p.brand}</div>
                         <div style={{ fontSize: 13, fontWeight: 600, color: "#0f172a", lineHeight: 1.35 }}>{p.name}</div>
-                        <div style={{ fontSize: 10, color: "#94a3b8", fontFamily: "monospace", marginTop: 1 }}>{p.sku}</div>
+                        <div style={{ fontSize: 10, color: "#94a3b8", fontFamily: "monospace", marginTop: 1 }}>{ingcoCodeMap[p.sku] || p.sku}</div>
                         <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginTop: 8 }}>
                           {user ? (
                             <>
@@ -732,7 +746,7 @@ export default function Catalog() {
             {/* Imagen grande */}
             <div style={{ position: "relative", height: isMobile ? 200 : 380, flexShrink: 0, background: "var(--surface2)", overflow: "hidden" }}>
               {selected.image
-                ? <img src={selected.image} alt="" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                ? <img src={selected.image} alt="" style={{ width: "100%", height: "100%", objectFit: "contain", cursor: "zoom-in" }} onClick={() => setLightbox(selected.image)} />
                 : <div style={{ width: "100%", height: "100%", background: selected.imageColor, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 100 }}>{selected.imageIcon}</div>
               }
               <button style={{ position: "absolute", top: 12, right: 12, background: "rgba(0,0,0,.5)", border: "none", borderRadius: "50%", width: 36, height: 36, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }} onClick={() => setSelected(null)}>
@@ -750,7 +764,7 @@ export default function Catalog() {
             <div style={{ padding: "16px 22px 0", borderBottom: "1px solid var(--border)" }}>
               <div style={{ fontSize: 10, fontWeight: 700, color: "var(--text3)", letterSpacing: ".5px", textTransform: "uppercase" as const, marginBottom: 3 }}>{selected.brand}</div>
               <div style={{ fontSize: 20, fontWeight: 700, lineHeight: 1.25, marginBottom: 4 }}>{selected.name}</div>
-              <div style={{ fontSize: 11, color: "var(--text3)", fontFamily: "monospace", marginBottom: 8 }}>SKU: {selected.sku}</div>
+              <div style={{ fontSize: 11, color: "var(--text3)", fontFamily: "monospace", marginBottom: 8 }}>SKU: {ingcoCodeMap[selected.sku] || selected.sku}</div>
               <p style={{ fontSize: 13, color: "var(--text2)", lineHeight: 1.6, marginBottom: 14 }}>{selected.description}</p>
             </div>
 
