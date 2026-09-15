@@ -112,7 +112,6 @@ export const BRANDS = [
   "SIKA",
   "GAMA PINTURAS",
   "TELPLAST",
-  "KLAUKOL",
 ] as const;
 
 export type Brand = typeof BRANDS[number];
@@ -11988,7 +11987,8 @@ export const DEFAULT_PRODUCTS = [
   { id: "SIKA-HIDROFUGO-SACHE-1LT-X12", name: "Sika-1 Hidrofugo Quimico Inorganico Sache 1 LT x 12 Unid", brand: "SIKA", category: "Impermeabilizantes", sku: "", description: "Hidrófugo químico inorgánico para hormigones y morteros. Presentación: Caja 12 sobres x 1 LT.", image: "/products/sika_sections/sika_hidrofugo_sache_1lt.webp", imageColor: "#c8102e", imageIcon: "💧", price: 0, minQty: 1, stock: 100 },
   { id: "SIKA-HIDROFUGO-SACHE-5LT-X4", name: "Sika-1 Hidrofugo Quimico Inorganico Sache 5 LT x 4 Unid", brand: "SIKA", category: "Impermeabilizantes", sku: "", description: "Hidrófugo químico inorgánico para hormigones y morteros. Presentación: Pack 4 sobres x 5 LT.", image: "/products/sika_sections/sika_hidrofugo_sache_5lt.webp", imageColor: "#c8102e", imageIcon: "💧", price: 0, minQty: 1, stock: 100 },
   { id: "SIKA-HIDROFUGO-200LT", name: "Sika-1 Hidrofugo Quimico 200 LT", brand: "SIKA", category: "Impermeabilizantes", sku: "", description: "Hidrófugo químico inorgánico para hormigones y morteros. Presentación: Bidon 200 LT.", image: "", imageColor: "#c8102e", imageIcon: "💧", price: 0, minQty: 1, stock: 100 },
-  { id: "KLAUKOL-PASTINA-CLASICA-1KG", name: "Pastina Clasica Klaukol Caja x 10 Unidades Bolsa 1 KG", brand: "KLAUKOL", category: "Pastinas", sku: "", description: "Pastina clásica para juntas de cerámicos. Presentación: Caja x 10 bolsas de 1 KG.", image: "/products/sika_sections/klaukol_pastina_1kg.jpg", imageColor: "#d4a017", imageIcon: "🏗️", price: 0, minQty: 1, stock: 100 },
+  { id: "SIKA-PASTINA-CLASICA-KLAUKOL-30KG", name: "Pastina Clasica Klaukol 30 KG", brand: "SIKA", category: "Pastinas", sku: "", description: "Pastina clásica para juntas de cerámicos. Presentación: 30 KG.", image: "/products/sika_sections/klaukol_pastina.jpg", imageColor: "#c8102e", imageIcon: "🏗️", price: 0, minQty: 1, stock: 100 },
+  { id: "SIKA-PASTINA-CLASICA-KLAUKOL-1KG", name: "Pastina Clasica Klaukol Caja x 10 Unidades Bolsa 1 KG", brand: "SIKA", category: "Pastinas", sku: "", description: "Pastina clásica para juntas de cerámicos. Presentación: Caja x 10 bolsas de 1 KG.", image: "/products/sika_sections/klaukol_pastina_1kg.jpg", imageColor: "#c8102e", imageIcon: "🏗️", price: 0, minQty: 1, stock: 100 },
   { id: "SIKA-SIKAWALL711-1KG", name: "Sikawall 711 Interior 1 KG", brand: "SIKA", category: "Revoques y enduidos", sku: "", description: "Revoque fino interior listo para usar. Excelente terminación. Presentación: 1 KG.", image: "/products/sika_sections/sika_sikawall711_1kg.jpg", imageColor: "#c8102e", imageIcon: "🏠", price: 0, minQty: 1, stock: 100 },
   { id: "SIKA-SIKAWALL711-5KG", name: "Sikawall 711 Interior 5 KG", brand: "SIKA", category: "Revoques y enduidos", sku: "", description: "Revoque fino interior listo para usar. Excelente terminación. Presentación: 5 KG.", image: "/products/sika_sections/sika_sikawall711_5kg.jpg", imageColor: "#c8102e", imageIcon: "🏠", price: 0, minQty: 1, stock: 100 },
   { id: "SIKA-SIKAWALL712-1KG", name: "Sikawall 712 Exterior 1 KG", brand: "SIKA", category: "Revoques y enduidos", sku: "", description: "Revoque fino exterior listo para usar. Resistente a la intemperie. Presentación: 1 KG.", image: "/products/sika_sections/sika_sikawall712_1kg.avif", imageColor: "#c8102e", imageIcon: "🏠", price: 0, minQty: 1, stock: 100 },
