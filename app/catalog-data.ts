@@ -138,7 +138,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Cocinas y Sopletes",
     sku: "GS20",
     description: "Cocina portátil 2 fuegos. Ideal para exterior e industria.",
-    image: "/products/mota_p004.jpeg",
+    image: "/products/mota_sections/mota_GS20.jpeg",
     imageColor: "#FF6B35",
     imageIcon: "🔥",
     price: 28000,
@@ -154,7 +154,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Cocinas y Sopletes",
     sku: "GS21",
     description: "Cocina portátil 1 fuego de alto rendimiento.",
-    image: "/products/mota_p004.jpeg",
+    image: "/products/mota_sections/mota_GS20.jpeg",
     imageColor: "#FF6B35",
     imageIcon: "🔥",
     price: 22000,
@@ -170,7 +170,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Cocinas y Sopletes",
     sku: "GS30",
     description: "Soplete de gas de uso general.",
-    image: "/products/mota_p004.jpeg",
+    image: "/products/mota_sections/mota_GS30.jpeg",
     imageColor: "#FF6B35",
     imageIcon: "🔥",
     price: 9500,
@@ -185,7 +185,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Cocinas y Sopletes",
     sku: "GS30A",
     description: "Soplete de gas con encendido piezoeléctrico automático.",
-    image: "/products/mota_p004.jpeg",
+    image: "/products/mota_sections/mota_GS01.jpeg",
     imageColor: "#FF6B35",
     imageIcon: "🔥",
     price: 11500,
@@ -201,7 +201,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Cocinas y Sopletes",
     sku: "GS01",
     description: "Cartucho de gas butano para sopletes y cocinas GasMota.",
-    image: "/products/mota_p004.jpeg",
+    image: "/products/mota_sections/mota_GS01.jpeg",
     imageColor: "#FF6B35",
     imageIcon: "🔥",
     price: 2800,
@@ -216,7 +216,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Aerosoles",
     sku: "LAG01",
     description: "Aerosol multipropósito color blanco. 450ml. Secado rápido.",
-    image: "/products/mota_p006.jpeg",
+    image: "/products/mota_sections/mota_LAG23.jpeg",
     imageColor: "#4ECDC4",
     imageIcon: "🎨",
     price: 4200,
@@ -231,7 +231,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Aerosoles",
     sku: "LAG02",
     description: "Aerosol multipropósito color negro. 450ml. Secado rápido.",
-    image: "/products/mota_p006.jpeg",
+    image: "/products/mota_sections/mota_LAG23.jpeg",
     imageColor: "#4ECDC4",
     imageIcon: "🎨",
     price: 4200,
@@ -246,7 +246,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Aerosoles",
     sku: "LAG03",
     description: "Aerosol multipropósito color rojo. 450ml. Secado rápido.",
-    image: "/products/mota_p006.jpeg",
+    image: "/products/mota_sections/mota_LAG23.jpeg",
     imageColor: "#4ECDC4",
     imageIcon: "🎨",
     price: 4200,
@@ -261,7 +261,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Aerosoles",
     sku: "LAG04",
     description: "Aerosol multipropósito color azul. 450ml. Secado rápido.",
-    image: "/products/mota_p006.jpeg",
+    image: "/products/mota_sections/mota_LAG23.jpeg",
     imageColor: "#4ECDC4",
     imageIcon: "🎨",
     price: 4200,
@@ -276,7 +276,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Aerosoles",
     sku: "LAG05",
     description: "Aerosol multipropósito color verde. 450ml. Secado rápido.",
-    image: "/products/mota_p006.jpeg",
+    image: "/products/mota_sections/mota_LAG23.jpeg",
     imageColor: "#4ECDC4",
     imageIcon: "🎨",
     price: 4200,
@@ -291,7 +291,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Aerosoles",
     sku: "LAG06",
     description: "Aerosol multipropósito color amarillo. 450ml. Secado rápido.",
-    image: "/products/mota_p006.jpeg",
+    image: "/products/mota_sections/mota_LAG23.jpeg",
     imageColor: "#4ECDC4",
     imageIcon: "🎨",
     price: 4200,
@@ -306,7 +306,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Aerosoles",
     sku: "LAG07",
     description: "Aerosol multipropósito color naranja. 450ml. Secado rápido.",
-    image: "/products/mota_p006.jpeg",
+    image: "/products/mota_sections/mota_LAG23.jpeg",
     imageColor: "#4ECDC4",
     imageIcon: "🎨",
     price: 4200,
@@ -321,7 +321,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Aerosoles",
     sku: "LAG09",
     description: "Aerosol multipropósito color violeta. 450ml. Secado rápido.",
-    image: "/products/mota_p006.jpeg",
+    image: "/products/mota_sections/mota_LAG23.jpeg",
     imageColor: "#4ECDC4",
     imageIcon: "🎨",
     price: 4200,
@@ -336,7 +336,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Aerosoles",
     sku: "LAG11",
     description: "Aerosol multipropósito color marrón. 450ml. Secado rápido.",
-    image: "/products/mota_p006.jpeg",
+    image: "/products/mota_sections/mota_LAG23.jpeg",
     imageColor: "#4ECDC4",
     imageIcon: "🎨",
     price: 4200,
@@ -351,7 +351,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Aerosoles",
     sku: "LAG12",
     description: "Aerosol multipropósito color gris. 450ml. Secado rápido.",
-    image: "/products/mota_p006.jpeg",
+    image: "/products/mota_sections/mota_LAG23.jpeg",
     imageColor: "#4ECDC4",
     imageIcon: "🎨",
     price: 4200,
@@ -366,7 +366,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Aerosoles",
     sku: "LAG13",
     description: "Aerosol multipropósito color plateado. 450ml. Secado rápido.",
-    image: "/products/mota_p006.jpeg",
+    image: "/products/mota_sections/mota_LAG23.jpeg",
     imageColor: "#4ECDC4",
     imageIcon: "🎨",
     price: 4200,
@@ -381,7 +381,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Aerosoles",
     sku: "LAG15",
     description: "Aerosol multipropósito color dorado. 450ml. Secado rápido.",
-    image: "/products/mota_p006.jpeg",
+    image: "/products/mota_sections/mota_LAG23.jpeg",
     imageColor: "#4ECDC4",
     imageIcon: "🎨",
     price: 4200,
@@ -396,7 +396,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Aerosoles",
     sku: "LAG16",
     description: "Aerosol multipropósito color cromo. 450ml. Secado rápido.",
-    image: "/products/mota_p006.jpeg",
+    image: "/products/mota_sections/mota_LAG23.jpeg",
     imageColor: "#4ECDC4",
     imageIcon: "🎨",
     price: 4200,
@@ -411,7 +411,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Aerosoles",
     sku: "LAG17",
     description: "Aerosol multipropósito color bronce. 450ml. Secado rápido.",
-    image: "/products/mota_p006.jpeg",
+    image: "/products/mota_sections/mota_LAG23.jpeg",
     imageColor: "#4ECDC4",
     imageIcon: "🎨",
     price: 4200,
@@ -426,7 +426,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Aerosoles",
     sku: "LAG21",
     description: "Aerosol multipropósito color verde flúo. 450ml. Secado rápido.",
-    image: "/products/mota_p006.jpeg",
+    image: "/products/mota_sections/mota_LAG23.jpeg",
     imageColor: "#4ECDC4",
     imageIcon: "🎨",
     price: 4200,
@@ -441,7 +441,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Aerosoles",
     sku: "LAG22",
     description: "Aerosol multipropósito color naranja flúo. 450ml. Secado rápido.",
-    image: "/products/mota_p006.jpeg",
+    image: "/products/mota_sections/mota_LAG23.jpeg",
     imageColor: "#4ECDC4",
     imageIcon: "🎨",
     price: 4200,
@@ -456,7 +456,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Aerosoles",
     sku: "LAG23",
     description: "Aerosol multipropósito color amarillo flúo. 450ml. Secado rápido.",
-    image: "/products/mota_p006.jpeg",
+    image: "/products/mota_sections/mota_LAG23.jpeg",
     imageColor: "#4ECDC4",
     imageIcon: "🎨",
     price: 4200,
@@ -471,7 +471,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Aerosoles",
     sku: "LAG40",
     description: "Aerosol multipropósito color negro mate. 450ml. Secado rápido.",
-    image: "/products/mota_p006.jpeg",
+    image: "/products/mota_sections/mota_LAG23.jpeg",
     imageColor: "#4ECDC4",
     imageIcon: "🎨",
     price: 4200,
@@ -486,7 +486,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Aerosoles",
     sku: "LAG41",
     description: "Aerosol multipropósito color blanco mate. 450ml. Secado rápido.",
-    image: "/products/mota_p006.jpeg",
+    image: "/products/mota_sections/mota_LAG23.jpeg",
     imageColor: "#4ECDC4",
     imageIcon: "🎨",
     price: 4200,
@@ -501,7 +501,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Aerosoles",
     sku: "LAG50",
     description: "Aerosol multipropósito color antióxido rojo. 450ml. Secado rápido.",
-    image: "/products/mota_p006.jpeg",
+    image: "/products/mota_sections/mota_LAG23.jpeg",
     imageColor: "#4ECDC4",
     imageIcon: "🎨",
     price: 4200,
@@ -516,7 +516,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Aerosoles",
     sku: "LAG51",
     description: "Aerosol multipropósito color antióxido gris. 450ml. Secado rápido.",
-    image: "/products/mota_p006.jpeg",
+    image: "/products/mota_sections/mota_LAG62.jpeg",
     imageColor: "#4ECDC4",
     imageIcon: "🎨",
     price: 4200,
@@ -531,7 +531,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Aerosoles",
     sku: "LAG60",
     description: "Aerosol multipropósito color esmalte negro brillante. 450ml. Secado rápido.",
-    image: "/products/mota_p006.jpeg",
+    image: "/products/mota_sections/mota_LAG62.jpeg",
     imageColor: "#4ECDC4",
     imageIcon: "🎨",
     price: 4200,
@@ -546,7 +546,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Aerosoles",
     sku: "LAG61",
     description: "Aerosol multipropósito color esmalte blanco brillante. 450ml. Secado rápido.",
-    image: "/products/mota_p006.jpeg",
+    image: "/products/mota_sections/mota_LAG62.jpeg",
     imageColor: "#4ECDC4",
     imageIcon: "🎨",
     price: 4200,
@@ -561,7 +561,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Aerosoles",
     sku: "LAG62",
     description: "Aerosol multipropósito color esmalte gris. 450ml. Secado rápido.",
-    image: "/products/mota_p006.jpeg",
+    image: "/products/mota_sections/mota_LAG62.jpeg",
     imageColor: "#4ECDC4",
     imageIcon: "🎨",
     price: 4200,
@@ -576,7 +576,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Aerosoles",
     sku: "LAG71",
     description: "Aerosol multipropósito color transparente. 450ml. Secado rápido.",
-    image: "/products/mota_p006.jpeg",
+    image: "/products/mota_sections/mota_LAG62.jpeg",
     imageColor: "#4ECDC4",
     imageIcon: "🎨",
     price: 4200,
@@ -966,7 +966,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Lubricantes y Químicos",
     sku: "LB125",
     description: "Lubricante multiuso. Protege, lubrica y desoxida. 125ml.",
-    image: "/products/mota_p008.jpeg",
+    image: "/products/mota_sections/mota_LB216.jpeg",
     imageColor: "#FFE66D",
     imageIcon: "🧴",
     price: 2200,
@@ -982,7 +982,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Lubricantes y Químicos",
     sku: "LB216",
     description: "Lubricante multiuso. Protege, lubrica y desoxida. 216ml.",
-    image: "/products/mota_p008.jpeg",
+    image: "/products/mota_sections/mota_LB216.jpeg",
     imageColor: "#FFE66D",
     imageIcon: "🧴",
     price: 3200,
@@ -998,7 +998,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Lubricantes y Químicos",
     sku: "LB450",
     description: "Lubricante multiuso. Protege, lubrica y desoxida. 450ml.",
-    image: "/products/mota_p008.jpeg",
+    image: "/products/mota_sections/mota_LB216.jpeg",
     imageColor: "#FFE66D",
     imageIcon: "🧴",
     price: 5500,
@@ -1014,7 +1014,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Lubricantes y Químicos",
     sku: "LC02",
     description: "Limpiador eléctrico dieléctrico. Ideal para contactos y circuitos.",
-    image: "/products/mota_p009.jpeg",
+    image: "/products/mota_sections/mota_LC02.jpeg",
     imageColor: "#FFE66D",
     imageIcon: "🧴",
     price: 5800,
@@ -1029,7 +1029,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Lubricantes y Químicos",
     sku: "LCG02",
     description: "Limpiador eléctrico en base gas. Alta volatilidad.",
-    image: "/products/mota_p009.jpeg",
+    image: "/products/mota_sections/mota_LC02.jpeg",
     imageColor: "#FFE66D",
     imageIcon: "🧴",
     price: 6200,
@@ -1044,7 +1044,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Lubricantes y Químicos",
     sku: "LM01",
     description: "Membrana líquida impermeabilizante. Aplicación en frío.",
-    image: "/products/mota_p010.jpeg",
+    image: "/products/mota_sections/mota_LM02.jpeg",
     imageColor: "#FFE66D",
     imageIcon: "🧴",
     price: 7800,
@@ -1060,7 +1060,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Lubricantes y Químicos",
     sku: "LM02",
     description: "Membrana líquida impermeabilizante. Aplicación en frío. Balde 4L.",
-    image: "/products/mota_p010.jpeg",
+    image: "/products/mota_sections/mota_LM02.jpeg",
     imageColor: "#FFE66D",
     imageIcon: "🧴",
     price: 24000,
@@ -1076,7 +1076,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Lubricantes y Químicos",
     sku: "LM03",
     description: "Membrana líquida impermeabilizante. Balde 10L.",
-    image: "/products/mota_p010.jpeg",
+    image: "/products/mota_sections/mota_LM02.jpeg",
     imageColor: "#FFE66D",
     imageIcon: "🧴",
     price: 54000,
@@ -1092,7 +1092,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Lubricantes y Químicos",
     sku: "LM04",
     description: "Membrana líquida impermeabilizante. Balde 20L.",
-    image: "/products/mota_p010.jpeg",
+    image: "/products/mota_sections/mota_LM02.jpeg",
     imageColor: "#FFE66D",
     imageIcon: "🧴",
     price: 98000,
@@ -1108,7 +1108,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Lubricantes y Químicos",
     sku: "LM05",
     description: "Membrana con fibra de vidrio. Alta resistencia. Balde 4L.",
-    image: "/products/mota_p010.jpeg",
+    image: "/products/mota_sections/mota_LM02.jpeg",
     imageColor: "#FFE66D",
     imageIcon: "🧴",
     price: 29000,
@@ -1326,7 +1326,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Herramientas Neumáticas",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_PHIN.jpeg",
     specs: {},
   },
   {
@@ -10311,7 +10311,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Martillos",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_MHP.jpeg",
     specs: {},
   },
     {
@@ -10322,7 +10322,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Martillos",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_MHP.jpeg",
     specs: {},
   },
     {
@@ -10333,7 +10333,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Martillos",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_MHP.jpeg",
     specs: {},
   },
   {
@@ -12686,7 +12686,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BPO81625.jpeg",
     specs: {},
   },
   {
@@ -12697,7 +12697,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BPO81625.jpeg",
     specs: {},
   },
   {
@@ -12708,7 +12708,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BPO81625.jpeg",
     specs: {},
   },
   {
@@ -12719,7 +12719,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BPH125.jpeg",
     specs: {},
   },
   {
@@ -12730,7 +12730,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BPH125.jpeg",
     specs: {},
   },
   {
@@ -12741,7 +12741,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BPH125.jpeg",
     specs: {},
   },
   {
@@ -12752,7 +12752,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BPH125.jpeg",
     specs: {},
   },
   {
@@ -12763,7 +12763,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BPH125.jpeg",
     specs: {},
   },
   {
@@ -12774,7 +12774,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BPH125.jpeg",
     specs: {},
   },
   {
@@ -12785,7 +12785,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BPH125.jpeg",
     specs: {},
   },
   {
@@ -12796,7 +12796,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BPH125.jpeg",
     specs: {},
   },
   {
@@ -12807,7 +12807,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BPH125.jpeg",
     specs: {},
   },
   {
@@ -12818,7 +12818,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BPH125.jpeg",
     specs: {},
   },
   {
@@ -12829,7 +12829,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Herramientas de Construcción",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BPO81625.jpeg",
     specs: {},
   },
   {
@@ -12840,7 +12840,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BPZ125.jpeg",
     specs: {},
   },
   {
@@ -12851,7 +12851,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BPZ125.jpeg",
     specs: {},
   },
   {
@@ -12862,7 +12862,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BPZ125.jpeg",
     specs: {},
   },
   {
@@ -12873,7 +12873,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BPZ125.jpeg",
     specs: {},
   },
   {
@@ -12884,7 +12884,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BPZ125.jpeg",
     specs: {},
   },
   {
@@ -12895,7 +12895,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BPZ125.jpeg",
     specs: {},
   },
   {
@@ -12906,7 +12906,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BPZ125.jpeg",
     specs: {},
   },
   {
@@ -12917,7 +12917,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BPZ125.jpeg",
     specs: {},
   },
   {
@@ -12928,7 +12928,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Herramientas de Construcción",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BRB3048.jpeg",
     specs: {},
   },
   {
@@ -12939,7 +12939,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Herramientas de Construcción",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BRV3048.jpeg",
     specs: {},
   },
   {
@@ -12950,7 +12950,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BT2050.jpeg",
     specs: {},
   },
   {
@@ -12961,7 +12961,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BT2050.jpeg",
     specs: {},
   },
   {
@@ -12972,7 +12972,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BT2050.jpeg",
     specs: {},
   },
   {
@@ -12983,7 +12983,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BT2050.jpeg",
     specs: {},
   },
   {
@@ -12994,7 +12994,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BT2050.jpeg",
     specs: {},
   },
   {
@@ -13005,7 +13005,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BT2050.jpeg",
     specs: {},
   },
   {
@@ -13016,7 +13016,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BTH0725.jpeg",
     specs: {},
   },
   {
@@ -13027,7 +13027,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BTH0725.jpeg",
     specs: {},
   },
   {
@@ -13038,7 +13038,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BTH0725.jpeg",
     specs: {},
   },
   {
@@ -13049,7 +13049,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BTH0725.jpeg",
     specs: {},
   },
   {
@@ -13060,7 +13060,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BTH0725.jpeg",
     specs: {},
   },
   {
@@ -13071,7 +13071,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BVH11.jpeg",
     specs: {},
   },
   {
@@ -13082,7 +13082,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BVH11.jpeg",
     specs: {},
   },
   {
@@ -13093,7 +13093,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BVH11.jpeg",
     specs: {},
   },
   {
@@ -13104,7 +13104,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BVH516.jpeg",
     specs: {},
   },
   {
@@ -13115,7 +13115,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BVH516.jpeg",
     specs: {},
   },
   {
@@ -13126,7 +13126,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BVH516.jpeg",
     specs: {},
   },
   {
@@ -13181,7 +13181,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Bolsos y Organizadores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BZ06.jpeg",
     specs: {},
   },
   {
@@ -13192,7 +13192,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Bolsos y Organizadores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BZ07.jpeg",
     specs: {},
   },
   {
@@ -13203,7 +13203,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Bolsos y Organizadores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BZ15.jpeg",
     specs: {},
   },
   {
@@ -13247,7 +13247,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Herramientas de Construcción",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_C05.jpeg",
     specs: {},
   },
   {
@@ -13258,7 +13258,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Herramientas de Construcción",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_C05.jpeg",
     specs: {},
   },
   {
@@ -13302,7 +13302,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Herramientas de Construcción",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_C109.jpeg",
     specs: {},
   },
   {
@@ -13313,7 +13313,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Herramientas de Construcción",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_C118.jpeg",
     specs: {},
   },
   {
@@ -13324,7 +13324,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Herramientas de Construcción",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_C118.jpeg",
     specs: {},
   },
   {
@@ -13335,7 +13335,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Herramientas de Construcción",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_C119.jpeg",
     specs: {},
   },
   {
@@ -13346,7 +13346,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Herramientas de Construcción",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_C119.jpeg",
     specs: {},
   },
   {
@@ -13390,7 +13390,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Herramientas de Construcción",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_C05.jpeg",
     specs: {},
   },
   {
@@ -13401,7 +13401,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Herramientas de Construcción",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_C05.jpeg",
     specs: {},
   },
   {
@@ -13511,7 +13511,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Herramientas de Construcción",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_CPXN16.jpeg",
     specs: {},
   },
   {
@@ -13522,7 +13522,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Herramientas de Construcción",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_CPXN16.jpeg",
     specs: {},
   },
   {
@@ -13533,7 +13533,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Herramientas de Construcción",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_CPXN16.jpeg",
     specs: {},
   },
   {
@@ -13544,7 +13544,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Herramientas de Construcción",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_CPXN16.jpeg",
     specs: {},
   },
   {
@@ -13555,7 +13555,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Herramientas de Construcción",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_CPXN16.jpeg",
     specs: {},
   },
   {
@@ -13566,7 +13566,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Herramientas de Construcción",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_CPXN16.jpeg",
     specs: {},
   },
   {
@@ -13797,7 +13797,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -13808,7 +13808,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -13819,7 +13819,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -13830,7 +13830,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -13841,7 +13841,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -13852,7 +13852,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -13863,7 +13863,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -13874,7 +13874,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -13885,7 +13885,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -13896,7 +13896,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -13907,7 +13907,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -13918,7 +13918,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -13929,7 +13929,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -14072,7 +14072,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -14083,7 +14083,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -14094,7 +14094,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -14105,7 +14105,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -14116,7 +14116,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -14127,7 +14127,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -14138,7 +14138,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -14149,7 +14149,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -14160,7 +14160,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -14171,7 +14171,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -14182,7 +14182,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -14193,7 +14193,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -14204,7 +14204,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -14215,7 +14215,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -14226,7 +14226,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -14237,7 +14237,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -14248,7 +14248,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -14259,7 +14259,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -14270,7 +14270,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -14281,7 +14281,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_E610.jpeg",
     specs: {},
   },
   {
@@ -14303,7 +14303,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Herramientas de Construcción",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_EB16.jpeg",
     specs: {},
   },
   {
@@ -14314,7 +14314,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Herramientas de Construcción",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_EB16.jpeg",
     specs: {},
   },
   {
@@ -14347,7 +14347,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_EP26.jpeg",
     specs: {},
   },
   {
@@ -14358,7 +14358,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_EF625.jpeg",
     specs: {},
   },
   {
@@ -14369,7 +14369,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_EP26.jpeg",
     specs: {},
   },
   {
@@ -14380,7 +14380,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_EK311.jpeg",
     specs: {},
   },
   {
@@ -14391,7 +14391,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_EK311.jpeg",
     specs: {},
   },
   {
@@ -14402,7 +14402,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_EK161.jpeg",
     specs: {},
   },
   {
@@ -14413,7 +14413,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_EK270.jpeg",
     specs: {},
   },
   {
@@ -14424,7 +14424,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_EK111.jpeg",
     specs: {},
   },
   {
@@ -14435,7 +14435,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_EK111.jpeg",
     specs: {},
   },
   {
@@ -14446,7 +14446,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_EK311.jpeg",
     specs: {},
   },
   {
@@ -14457,7 +14457,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_EK311.jpeg",
     specs: {},
   },
   {
@@ -14468,7 +14468,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_EK161.jpeg",
     specs: {},
   },
   {
@@ -14479,7 +14479,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_EK161.jpeg",
     specs: {},
   },
   {
@@ -14490,7 +14490,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_EK161.jpeg",
     specs: {},
   },
   {
@@ -14501,7 +14501,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_EK161.jpeg",
     specs: {},
   },
   {
@@ -14512,7 +14512,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_EK270.jpeg",
     specs: {},
   },
   {
@@ -14523,7 +14523,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_EB16.jpeg",
     specs: {},
   },
   {
@@ -14534,7 +14534,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_EK311.jpeg",
     specs: {},
   },
   {
@@ -14545,7 +14545,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_EK321.jpeg",
     specs: {},
   },
   {
@@ -14556,7 +14556,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_EP23.jpeg",
     specs: {},
   },
   {
@@ -14567,7 +14567,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_EP26.jpeg",
     specs: {},
   },
   {
@@ -14578,7 +14578,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_EP23.jpeg",
     specs: {},
   },
   {
@@ -14589,7 +14589,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Herramientas de Construcción",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_EP23.jpeg",
     specs: {},
   },
   {
@@ -14600,7 +14600,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Herramientas de Construcción",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_EP23.jpeg",
     specs: {},
   },
   {
@@ -14611,7 +14611,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Herramientas de Construcción",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_EU12.jpeg",
     specs: {},
   },
   {
@@ -14776,7 +14776,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_EX26.jpeg",
     specs: {},
   },
   {
@@ -14787,7 +14787,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_EX26.jpeg",
     specs: {},
   },
   {
@@ -15304,7 +15304,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15315,7 +15315,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15326,7 +15326,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15337,7 +15337,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15348,7 +15348,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15359,7 +15359,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15370,7 +15370,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15381,7 +15381,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15392,7 +15392,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15403,7 +15403,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15414,7 +15414,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15425,7 +15425,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15436,7 +15436,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15447,7 +15447,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15458,7 +15458,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15469,7 +15469,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15480,7 +15480,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15491,7 +15491,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15502,7 +15502,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15513,7 +15513,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15524,7 +15524,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15535,7 +15535,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15546,7 +15546,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15557,7 +15557,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15568,7 +15568,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15579,7 +15579,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15590,7 +15590,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15601,7 +15601,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15612,7 +15612,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15623,7 +15623,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15634,7 +15634,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15645,7 +15645,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15656,7 +15656,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15667,7 +15667,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15678,7 +15678,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Llaves",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -15689,7 +15689,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Brocas",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_W10.jpeg",
     specs: {},
   },
   {
@@ -15700,7 +15700,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Brocas",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_W10.jpeg",
     specs: {},
   },
   {
@@ -15711,7 +15711,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Brocas",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_W10.jpeg",
     specs: {},
   },
   {
@@ -15722,7 +15722,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Brocas",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_W10.jpeg",
     specs: {},
   },
   {
@@ -15733,7 +15733,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Brocas",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_W10.jpeg",
     specs: {},
   },
   {
@@ -15744,7 +15744,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Brocas",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_W10.jpeg",
     specs: {},
   },
   {
@@ -15755,7 +15755,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Brocas",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_W10.jpeg",
     specs: {},
   },
   {
@@ -15766,7 +15766,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Brocas",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_W10.jpeg",
     specs: {},
   },
   {
@@ -15777,7 +15777,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Brocas",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_W10.jpeg",
     specs: {},
   },
   {
@@ -15788,7 +15788,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Brocas",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_W10.jpeg",
     specs: {},
   },
   {
@@ -15799,7 +15799,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Brocas",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_W10.jpeg",
     specs: {},
   },
   {
@@ -15810,7 +15810,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Brocas",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_W10.jpeg",
     specs: {},
   },
   {
@@ -16305,7 +16305,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_DPH315.jpeg",
     specs: {},
   },
   {
@@ -16459,7 +16459,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Alicates",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_Q702.jpeg",
     specs: {},
   },
   {
@@ -16470,7 +16470,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Alicates",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_Q704.jpeg",
     specs: {},
   },
   {
@@ -16481,7 +16481,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Alicates",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_Q705.jpeg",
     specs: {},
   },
   {
@@ -16492,7 +16492,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Alicates",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_Q706.jpeg",
     specs: {},
   },
   {
@@ -16503,7 +16503,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Alicates",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_Q800.jpeg",
     specs: {},
   },
   {
@@ -16514,7 +16514,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Alicates",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_Q817.jpeg",
     specs: {},
   },
   {
@@ -16525,7 +16525,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Alicates",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_Q817.jpeg",
     specs: {},
   },
   {
@@ -16536,7 +16536,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Alicates",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_Q817.jpeg",
     specs: {},
   },
   {
@@ -16635,7 +16635,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Herramientas de Construcción",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_C05.jpeg",
     specs: {},
   },
   {
@@ -16789,7 +16789,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Sierras y Accesorios",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_SYCJ02.jpeg",
     specs: {},
   },
   {
@@ -16800,7 +16800,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Sierras y Accesorios",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_SYCJ02.jpeg",
     specs: {},
   },
   {
@@ -16811,7 +16811,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Sierras y Accesorios",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_SYCJ02.jpeg",
     specs: {},
   },
   {
@@ -16844,7 +16844,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BT2050.jpeg",
     specs: {},
   },
   {
@@ -16855,7 +16855,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BT2050.jpeg",
     specs: {},
   },
   {
@@ -16866,7 +16866,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BT2050.jpeg",
     specs: {},
   },
   {
@@ -16877,7 +16877,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_BT2050.jpeg",
     specs: {},
   },
   {
@@ -16888,7 +16888,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -16899,7 +16899,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -16910,7 +16910,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -16921,7 +16921,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -16954,7 +16954,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -16965,7 +16965,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -16987,7 +16987,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LX025.jpeg",
     specs: {},
   },
   {
@@ -16998,7 +16998,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LR92.jpeg",
     specs: {},
   },
   {
@@ -17009,7 +17009,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Destornilladores",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_LR92.jpeg",
     specs: {},
   },
   {
@@ -17097,7 +17097,7 @@ export const DEFAULT_PRODUCTS = [
     category: "Herramientas de Construcción",
     price: 0,
     description: "",
-    image: "",
+    image: "/products/mota_sections/mota_WS0841.jpeg",
     specs: {},
   },
 ] as Product[];
