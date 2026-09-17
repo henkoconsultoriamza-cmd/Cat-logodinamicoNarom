@@ -112,6 +112,7 @@ export const BRANDS = [
   "SIKA",
   "GAMA PINTURAS",
   "TELPLAST",
+  "JMG",
 ] as const;
 
 export type Brand = typeof BRANDS[number];
@@ -18131,4 +18132,16 @@ export const DEFAULT_PRODUCTS = [
     image: "/products/mota_sections/mota_WS0841.jpeg",
     specs: {},
   },
+  // ── JMG Diluyentes ──────────────────────────────────────────────────────
+  { id: "JMG-AG01", name: "Aguarrás Mineral JMG - 1 LT", brand: "JMG", category: "Diluyentes", sku: "AG01", description: "Aguarrás mineral para dilución de pinturas, barnices y limpieza de pinceles. Presentación: 1 LT.", image: "", imageColor: "#e67e22", imageIcon: "🧪", price: 3798.3, salePrice: 3453, minQty: 1, stock: 100, onSale: true },
+  { id: "JMG-AG02", name: "Aguarrás Mineral JMG - 5 LT", brand: "JMG", category: "Diluyentes", sku: "AG02", description: "Aguarrás mineral para dilución de pinturas, barnices y limpieza de pinceles. Presentación: 5 LT.", image: "", imageColor: "#e67e22", imageIcon: "🧪", price: 18991.5, salePrice: 17265, minQty: 1, stock: 100, onSale: true },
+  { id: "JMG-AG03", name: "Aguarrás Mineral JMG - 200 LT", brand: "JMG", category: "Diluyentes", sku: "AG03", description: "Aguarrás mineral para dilución de pinturas, barnices y limpieza de pinceles. Presentación: 200 LT.", image: "", imageColor: "#e67e22", imageIcon: "🧪", price: 715000, salePrice: 650000, minQty: 1, stock: 100, onSale: true },
+  { id: "JMG-TH01", name: "Thinner 500 JMG - 1 LT", brand: "JMG", category: "Diluyentes", sku: "TH01", description: "Thinner de alta calidad para diluir esmaltes, lacas y pinturas. Presentación: 1 LT.", image: "", imageColor: "#c0392b", imageIcon: "🧪", price: 5017.1, salePrice: 4561, minQty: 1, stock: 100, onSale: true },
+  { id: "JMG-TH02", name: "Thinner 500 JMG - 5 LT", brand: "JMG", category: "Diluyentes", sku: "TH02", description: "Thinner de alta calidad para diluir esmaltes, lacas y pinturas. Presentación: 5 LT.", image: "", imageColor: "#c0392b", imageIcon: "🧪", price: 25080, salePrice: 22800, minQty: 1, stock: 100, onSale: true },
+  { id: "JMG-TH03", name: "Thinner 500 JMG - 200 LT", brand: "JMG", category: "Diluyentes", sku: "TH03", description: "Thinner de alta calidad para diluir esmaltes, lacas y pinturas. Presentación: 200 LT.", image: "", imageColor: "#c0392b", imageIcon: "🧪", price: 948948, salePrice: 862680, minQty: 1, stock: 100, onSale: true },
+  { id: "JMG-THU01", name: "Thinner STD JMG - 1 LT", brand: "JMG", category: "Diluyentes", sku: "THU01", description: "Thinner standard para dilución general de pinturas y esmaltes. Presentación: 1 LT.", image: "", imageColor: "#8e44ad", imageIcon: "🧪", price: 4712.4, salePrice: 4284, minQty: 1, stock: 100, onSale: true },
+  { id: "JMG-THU02", name: "Thinner STD JMG - 5 LT", brand: "JMG", category: "Diluyentes", sku: "THU02", description: "Thinner standard para dilución general de pinturas y esmaltes. Presentación: 5 LT.", image: "", imageColor: "#8e44ad", imageIcon: "🧪", price: 23562, salePrice: 21420, minQty: 1, stock: 100, onSale: true },
+  { id: "JMG-THU03", name: "Thinner STD JMG - 200 LT", brand: "JMG", category: "Diluyentes", sku: "THU03", description: "Thinner standard para dilución general de pinturas y esmaltes. Presentación: 200 LT.", image: "", imageColor: "#8e44ad", imageIcon: "🧪", price: 942480, salePrice: 856800, minQty: 1, stock: 100, onSale: true },
+  { id: "JMG-RM-GL-1", name: "Removedor en Gel JMG - 1 KG", brand: "JMG", category: "Diluyentes", sku: "RM-GL-1", description: "Removedor en gel para pinturas, barnices y esmaltes. No chorrea. Presentación: 1 KG.", image: "", imageColor: "#27ae60", imageIcon: "🧪", price: 10780, salePrice: 9800, minQty: 1, stock: 100, onSale: true },
+  { id: "JMG-RM-GL-4", name: "Removedor en Gel JMG - 4 KG", brand: "JMG", category: "Diluyentes", sku: "RM-GL-4", description: "Removedor en gel para pinturas, barnices y esmaltes. No chorrea. Presentación: 4 KG.", image: "", imageColor: "#27ae60", imageIcon: "🧪", price: 0, minQty: 1, stock: 100, onSale: false },
 ] as Product[];
