@@ -28,7 +28,6 @@ export async function mergeSupabasePrices(products: Product[]): Promise<Product[
         ...p,
         price:       override.price,
         salePrice:   override.sale_price ?? undefined,
-        onSale:      override.on_sale,
         description: override.description ?? p.description,
       };
     });
