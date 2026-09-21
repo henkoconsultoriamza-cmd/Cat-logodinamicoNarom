@@ -605,7 +605,6 @@ export default function Catalog() {
             ) : (
               <div className="product-grid" style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(auto-fill, minmax(200px, 1fr))", gap: isMobile ? 8 : 12 }}>
                 {filtered.slice(0, visibleCount).map(p => {
-                  const price = p.onSale && p.salePrice ? p.salePrice : p.price;
                   const inStock = p.stock > 0;
                   const cartQty = cart.filter(i => i.productId === p.id).reduce((s, i) => s + i.quantity, 0);
                   return (
@@ -627,11 +626,23 @@ export default function Catalog() {
                         <div style={{ fontSize: 9, fontWeight: 800, color: "#94a3b8", letterSpacing: ".12em", textTransform: "uppercase" as const }}>{p.brand}</div>
                         <div style={{ fontSize: 13, fontWeight: 600, color: "#0f172a", lineHeight: 1.35 }}>{p.name}</div>
                         <div style={{ fontSize: 10, color: "#94a3b8", fontFamily: "monospace", marginTop: 1 }}>{ingcoCodeMap[p.sku] || p.sku}</div>
-                        <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginTop: 8 }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 2, marginTop: 8 }}>
                           {user ? (
                             <>
-                              <span style={{ fontSize: 17, fontWeight: 800, color: p.onSale ? "#dc2626" : "#0f172a", letterSpacing: "-0.03em" }}>{fmt(price, settings.currency)}</span>
-                              {p.onSale && <span style={{ fontSize: 11, color: "#94a3b8", textDecoration: "line-through" }}>{fmt(p.price, settings.currency)}</span>}
+                              {p.salePrice ? (
+                                <>
+                                  <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+                                    <span style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", letterSpacing: ".06em" }}>LISTA</span>
+                                    <span style={{ fontSize: 13, fontWeight: 600, color: "#64748b", letterSpacing: "-0.02em" }}>{fmt(p.price, settings.currency)}</span>
+                                  </div>
+                                  <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+                                    <span style={{ fontSize: 10, fontWeight: 700, color: "#0369a1", letterSpacing: ".06em" }}>C/D</span>
+                                    <span style={{ fontSize: 17, fontWeight: 800, color: "#0f172a", letterSpacing: "-0.03em" }}>{fmt(p.salePrice, settings.currency)}</span>
+                                  </div>
+                                </>
+                              ) : (
+                                <span style={{ fontSize: 17, fontWeight: 800, color: "#0f172a", letterSpacing: "-0.03em" }}>{fmt(p.price, settings.currency)}</span>
+                              )}
                             </>
                           ) : (
                             <button onClick={e => { e.stopPropagation(); e.preventDefault(); setLoginOpen(true); }} style={{ fontSize: 12, color: accent, fontWeight: 700, display: "flex", alignItems: "center", gap: 4, background: "none", border: "none", cursor: "pointer", padding: 0 }}>
@@ -817,13 +828,31 @@ export default function Catalog() {
 
               {/* Price */}
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 22, fontWeight: 800, color: selected.onSale ? "#f87171" : "var(--text)" }}>
-                  {fmt(currentPrice * detailQty, settings.currency)}
-                </div>
-                <div style={{ fontSize: 12, color: "var(--text3)" }}>
-                  {fmt(currentPrice, settings.currency)} c/u · mín. {selected.minQty} u.
-                  {selected.priceRetail && <span> · PVP {fmt(selected.priceRetail, settings.currency)}</span>}
-                </div>
+                {selected.salePrice ? (
+                  <>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
+                      <span style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", letterSpacing: ".08em" }}>LISTA</span>
+                      <span style={{ fontSize: 15, fontWeight: 600, color: "#64748b" }}>{fmt(selected.price, settings.currency)}</span>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ fontSize: 10, fontWeight: 700, color: "#0369a1", letterSpacing: ".08em" }}>C/D</span>
+                      <span style={{ fontSize: 22, fontWeight: 800, color: "var(--text)" }}>{fmt(selected.salePrice * detailQty, settings.currency)}</span>
+                    </div>
+                    <div style={{ fontSize: 12, color: "var(--text3)", marginTop: 2 }}>
+                      {fmt(selected.salePrice, settings.currency)} c/u · mín. {selected.minQty} u.
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div style={{ fontSize: 22, fontWeight: 800, color: "var(--text)" }}>
+                      {fmt(currentPrice * detailQty, settings.currency)}
+                    </div>
+                    <div style={{ fontSize: 12, color: "var(--text3)" }}>
+                      {fmt(currentPrice, settings.currency)} c/u · mín. {selected.minQty} u.
+                      {selected.priceRetail && <span> · PVP {fmt(selected.priceRetail, settings.currency)}</span>}
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Add */}
