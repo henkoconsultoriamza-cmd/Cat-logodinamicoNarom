@@ -116,7 +116,7 @@ export const BRANDS = [
 
 export type Brand = typeof BRANDS[number];
 
-export const PRODUCTS_KEY = "mota_products_v3";
+export const PRODUCTS_KEY = "mota_products_v4";
 export const CART_KEY = "mota_cart_v1";
 export const APP_SETTINGS_KEY = "mota_app_settings_v1";
 
