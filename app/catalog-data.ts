@@ -111,6 +111,13 @@ export const CATEGORIES = [
   "Pistolas de Silicona",
   "Prensas y Criques",
   "Taladros y Rotomartillos",
+  "HIDRÓFUGO",
+  "LIGANTE",
+  "POTENCIADOR LÁTEX",
+  "INFILTRACIÓN",
+  "PASTINAS EN POLVO",
+  "BASE COAT NF",
+  "ADHESIVO PASTA",
 ] as const;
 
 export type Category = typeof CATEGORIES[number];
@@ -127,11 +134,12 @@ export const BRANDS = [
   "GAMA PINTURAS",
   "TELPLAST",
   "JMG",
+  "SINTEPLAST",
 ] as const;
 
 export type Brand = typeof BRANDS[number];
 
-export const PRODUCTS_KEY = "mota_products_v5";
+export const PRODUCTS_KEY = "mota_products_v6";
 export const CART_KEY = "mota_cart_v1";
 export const APP_SETTINGS_KEY = "mota_app_settings_v1";
 
@@ -18670,4 +18678,35 @@ export const DEFAULT_PRODUCTS = [
   { id: "ING-HKPS28216", name: "Set Alicate Combinado 8Plg + Alicate Corte Diagonal 7Plg", brand: "INGCO", category: "Herramientas INGCO", sku: "701239", description: "Herramienta profesional INGCO.", image: "", imageColor: "#c0392b", imageIcon: "🔧", price: 17128.06, minQty: 1, stock: 100, onSale: true, salePrice: 15430.68 },
   { id: "ING-COS230910", name: "Set Bolso 16Plg + Bolso Carrito 20Plg + Chaleco + Riñonera Triple", brand: "INGCO", category: "Sets y Combos", sku: "701240", description: "Herramienta profesional INGCO.", image: "/products/ingco_extracted/ingco_p078_00.jpeg", imageColor: "#b7950b", imageIcon: "🔧", price: 139289.09, minQty: 1, stock: 100, onSale: true, salePrice: 125485.67 },
   { id: "ING-DMD0511503", name: "Set X3 Discos Diamantados 115X22.2 Turbo", brand: "INGCO", category: "Herramientas INGCO", sku: "701275", description: "Herramienta profesional INGCO.", image: "/products/ingco_extracted/ingco_p057_00.jpeg", imageColor: "#c0392b", imageIcon: "🔧", price: 20271.45, minQty: 1, stock: 100, onSale: true, salePrice: 18262.57 }
+,
+  { id: "SINT-SP-DC6F56FF", name: "Aditivo Hidrófugo para morteros 1 kg", brand: "SINTEPLAST", category: "HIDRÓFUGO", sku: "SP-DC6F56FF", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#1a5276", imageIcon: "🏗️", price: 1947.75, minQty: 1, stock: 100, onSale: false },
+  { id: "SINT-SP-8799A91B", name: "Aditivo Hidrófugo para morteros 5 kg", brand: "SINTEPLAST", category: "HIDRÓFUGO", sku: "SP-8799A91B", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#1a5276", imageIcon: "🏗️", price: 6149.22, minQty: 1, stock: 100, onSale: false },
+  { id: "SINT-SP-53D19EC2", name: "Aditivo Hidrófugo para morteros 10kg", brand: "SINTEPLAST", category: "HIDRÓFUGO", sku: "SP-53D19EC2", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#1a5276", imageIcon: "🏗️", price: 12004.83, minQty: 1, stock: 100, onSale: false },
+  { id: "SINT-SP-6BC90DEC", name: "Aditivo Hidrófugo para morteros 20 kg", brand: "SINTEPLAST", category: "HIDRÓFUGO", sku: "SP-6BC90DEC", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#1a5276", imageIcon: "🏗️", price: 23680.42, minQty: 1, stock: 100, onSale: false },
+  { id: "SINT-SP-56D82AEB", name: "Aditivo Hidrófugo para morteros 200 kg", brand: "SINTEPLAST", category: "HIDRÓFUGO", sku: "SP-56D82AEB", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#1a5276", imageIcon: "🏗️", price: 184313.74, minQty: 1, stock: 100, onSale: false },
+  { id: "SINT-82930013", name: "Aditivo vinílico multiuso 1 kg", brand: "SINTEPLAST", category: "LIGANTE", sku: "82930013", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#117a65", imageIcon: "🏗️", price: 6401.84, minQty: 1, stock: 100, onSale: false },
+  { id: "SINT-82930015", name: "Aditivo vinílico multiuso 5 kg", brand: "SINTEPLAST", category: "LIGANTE", sku: "82930015", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#117a65", imageIcon: "🏗️", price: 27966.49, minQty: 1, stock: 100, onSale: false },
+  { id: "SINT-82930017", name: "Aditivo vinílico multiuso 20 kg", brand: "SINTEPLAST", category: "LIGANTE", sku: "82930017", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#117a65", imageIcon: "🏗️", price: 106470.04, minQty: 1, stock: 100, onSale: false },
+  { id: "SINT-82930019", name: "Aditivo vinílico multiuso 200 kg", brand: "SINTEPLAST", category: "LIGANTE", sku: "82930019", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#117a65", imageIcon: "🏗️", price: 945766.15, minQty: 1, stock: 100, onSale: false },
+  { id: "SINT-82930023", name: "Reforzador de morteros 1 kg", brand: "SINTEPLAST", category: "POTENCIADOR LÁTEX", sku: "82930023", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#117a65", imageIcon: "🏗️", price: 13831.96, minQty: 1, stock: 100, onSale: false },
+  { id: "SINT-82930025", name: "Reforzador de morteros 5 kg", brand: "SINTEPLAST", category: "POTENCIADOR LÁTEX", sku: "82930025", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#117a65", imageIcon: "🏗️", price: 68806.52, minQty: 1, stock: 100, onSale: false },
+  { id: "SINT-82930027", name: "Reforzador de morteros 20 kg", brand: "SINTEPLAST", category: "POTENCIADOR LÁTEX", sku: "82930027", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#117a65", imageIcon: "🏗️", price: 273004.79, minQty: 1, stock: 100, onSale: false },
+  { id: "SINT-82930029", name: "Reforzador de morteros 200 kg", brand: "SINTEPLAST", category: "POTENCIADOR LÁTEX", sku: "82930029", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#117a65", imageIcon: "🏗️", price: 2401158.46, minQty: 1, stock: 100, onSale: false },
+  { id: "SINT-82930055", name: "Impermeabilizante para humedad ascendente 5 Kg", brand: "SINTEPLAST", category: "INFILTRACIÓN", sku: "82930055", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#1a5276", imageIcon: "🏗️", price: 18316.76, minQty: 1, stock: 100, onSale: false },
+  { id: "SINT-82930056", name: "Impermeabilizante para humedad ascendente 10 Kg", brand: "SINTEPLAST", category: "INFILTRACIÓN", sku: "82930056", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#1a5276", imageIcon: "🏗️", price: 31638.91, minQty: 1, stock: 100, onSale: false },
+  { id: "SINT-60404623", name: "Pastina en polvo Beige 1,25kg", brand: "SINTEPLAST", category: "PASTINAS EN POLVO", sku: "60404623", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#6e2f8c", imageIcon: "🏗️", price: 2600.0, minQty: 1, stock: 100, onSale: false },
+  { id: "SINT-60404603", name: "Pastina en polvo Blanca 1,25kg", brand: "SINTEPLAST", category: "PASTINAS EN POLVO", sku: "60404603", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#6e2f8c", imageIcon: "🏗️", price: 2600.0, minQty: 1, stock: 100, onSale: false },
+  { id: "SINT-60404643", name: "Pastina en polvo Gris 1,25kg", brand: "SINTEPLAST", category: "PASTINAS EN POLVO", sku: "60404643", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#6e2f8c", imageIcon: "🏗️", price: 2600.0, minQty: 1, stock: 100, onSale: false },
+  { id: "SINT-60404633", name: "Pastina en polvo Habano 1,25kg", brand: "SINTEPLAST", category: "PASTINAS EN POLVO", sku: "60404633", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#6e2f8c", imageIcon: "🏗️", price: 2600.0, minQty: 1, stock: 100, onSale: false },
+  { id: "SINT-60404613", name: "Pastina en polvo Hueso 1,25kg", brand: "SINTEPLAST", category: "PASTINAS EN POLVO", sku: "60404613", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#6e2f8c", imageIcon: "🏗️", price: 2600.0, minQty: 1, stock: 100, onSale: false },
+  { id: "SINT-60404653", name: "Pastina en polvo Negro 1,25kg", brand: "SINTEPLAST", category: "PASTINAS EN POLVO", sku: "60404653", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#6e2f8c", imageIcon: "🏗️", price: 2600.0, minQty: 1, stock: 100, onSale: false },
+  { id: "SINT-60404624", name: "Pastina en polvo Beige 5kg", brand: "SINTEPLAST", category: "PASTINAS EN POLVO", sku: "60404624", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#6e2f8c", imageIcon: "🏗️", price: 8100.0, minQty: 1, stock: 100, onSale: false },
+  { id: "SINT-60404604", name: "Pastina en polvo Blanca 5kg", brand: "SINTEPLAST", category: "PASTINAS EN POLVO", sku: "60404604", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#6e2f8c", imageIcon: "🏗️", price: 8100.0, minQty: 1, stock: 100, onSale: false },
+  { id: "SINT-60404644", name: "Pastina en polvo Gris 5kg", brand: "SINTEPLAST", category: "PASTINAS EN POLVO", sku: "60404644", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#6e2f8c", imageIcon: "🏗️", price: 8100.0, minQty: 1, stock: 100, onSale: false },
+  { id: "SINT-60404634", name: "Pastina en polvo Habano 5kg", brand: "SINTEPLAST", category: "PASTINAS EN POLVO", sku: "60404634", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#6e2f8c", imageIcon: "🏗️", price: 8100.0, minQty: 1, stock: 100, onSale: false },
+  { id: "SINT-60404614", name: "Pastina en polvo Hueso 5kg", brand: "SINTEPLAST", category: "PASTINAS EN POLVO", sku: "60404614", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#6e2f8c", imageIcon: "🏗️", price: 8100.0, minQty: 1, stock: 100, onSale: false },
+  { id: "SINT-60404654", name: "Pastina en polvo Negro", brand: "SINTEPLAST", category: "PASTINAS EN POLVO", sku: "60404654", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#6e2f8c", imageIcon: "🏗️", price: 8100.0, minQty: 1, stock: 100, onSale: false },
+  { id: "SINT-SP-20568F8F", name: "Revoque monocomponente nivelador de superficies", brand: "SINTEPLAST", category: "BASE COAT NF", sku: "SP-20568F8F", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#784212", imageIcon: "🏗️", price: 17881.0, minQty: 1, stock: 100, onSale: false },
+  { id: "SINT-SP-C56D6A67", name: "Adhesivo pasta 7kg", brand: "SINTEPLAST", category: "ADHESIVO PASTA", sku: "SP-C56D6A67", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#784212", imageIcon: "🏗️", price: 20162.0, minQty: 1, stock: 100, onSale: false },
+  { id: "SINT-SP-9189AD3C", name: "Adhesivo pasta 25kg", brand: "SINTEPLAST", category: "ADHESIVO PASTA", sku: "SP-9189AD3C", description: "Producto SINTEPLAST para construcción.", image: "", imageColor: "#784212", imageIcon: "🏗️", price: 65256.0, minQty: 1, stock: 100, onSale: false }
 ] as Product[];
