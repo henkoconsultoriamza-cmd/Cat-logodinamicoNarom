@@ -21,7 +21,6 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  basePath: "/catalogo",
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
