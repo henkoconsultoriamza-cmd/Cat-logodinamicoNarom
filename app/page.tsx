@@ -173,12 +173,11 @@ export default function Catalog() {
       } else {
         base = DEFAULT_PRODUCTS as Product[];
       }
-      // Apply INGCO section images and replace model-code SKU with 7xxx display code
+      // Apply INGCO section images
       base = base.map((x: any) => {
         if (x.brand === 'INGCO') {
-          const code = codeMap[x.sku];
-          const newImg = code ? imgMap[code] : undefined;
-          return { ...x, image: newImg || x.image, sku: code || x.sku };
+          const newImg = imgMap[x.sku];
+          if (newImg) return { ...x, image: newImg };
         }
         return x;
       });
