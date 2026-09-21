@@ -7,10 +7,14 @@ const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 // GET — public, returns all prices
 export async function GET() {
-  const sb = createClient(url, anonKey, { db: { schema: "catalog" } });
-  const { data, error } = await sb.from("prices").select("sku, brand, price, sale_price, on_sale, description");
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json(data ?? []);
+  try {
+    const sb = createClient(url, anonKey, { db: { schema: "catalog" } });
+    const { data, error } = await sb.from("prices").select("sku, brand, price, sale_price, on_sale, description");
+    if (error) return NextResponse.json([]);
+    return NextResponse.json(data ?? []);
+  } catch {
+    return NextResponse.json([]);
+  }
 }
 
 // POST — admin only, upsert one or many rows
