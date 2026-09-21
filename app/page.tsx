@@ -6,6 +6,7 @@ import {
   DEFAULT_APP_SETTINGS, DEFAULT_PRODUCTS, Product, PRODUCTS_KEY, Variant,
 } from "./catalog-data";
 import { supabase } from "./lib/supabase";
+import { mergeSupabasePrices } from "./lib/prices";
 
 type CartItem = {
   productId: string;
@@ -161,37 +162,36 @@ export default function Catalog() {
     const s = localStorage.getItem(APP_SETTINGS_KEY);
     if (s) { try { setSettings({ ...DEFAULT_APP_SETTINGS, ...JSON.parse(s) }); } catch { localStorage.removeItem(APP_SETTINGS_KEY); } }
     // Load INGCO sections map (numeric codes + section crop images)
-    fetch('/products/ingco_sections/sections_map.json').then(r => r.json()).then((sectMap: any) => {
+    fetch('/products/ingco_sections/sections_map.json').then(r => r.json()).then(async (sectMap: any) => {
       const codeMap: Record<string, string> = sectMap.sku_to_code || {};
       const imgMap: Record<string, string> = sectMap.code_to_image || {};
       setIngcoCodeMap(codeMap);
       const p2 = localStorage.getItem(PRODUCTS_KEY);
+      let base: Product[];
       if (p2) {
-        try {
-          const parsed = JSON.parse(p2);
-          setProducts(parsed.map((x: any) => {
-            if (x.brand === 'INGCO') {
-              const code = codeMap[x.sku];
-              const newImg = code ? imgMap[code] : undefined;
-              if (newImg) return { ...x, image: newImg };
-            }
-            return x;
-          }));
-        } catch { localStorage.removeItem(PRODUCTS_KEY); }
+        try { base = JSON.parse(p2); } catch { localStorage.removeItem(PRODUCTS_KEY); base = DEFAULT_PRODUCTS as Product[]; }
       } else {
-        // Load DEFAULT_PRODUCTS with section images applied
-        setProducts(DEFAULT_PRODUCTS.map((x: any) => {
-          if (x.brand === 'INGCO') {
-            const code = codeMap[x.sku];
-            const newImg = code ? imgMap[code] : undefined;
-            if (newImg) return { ...x, image: newImg };
-          }
-          return x;
-        }));
+        base = DEFAULT_PRODUCTS as Product[];
       }
-    }).catch(() => {
+      // Apply INGCO section images
+      base = base.map((x: any) => {
+        if (x.brand === 'INGCO') {
+          const code = codeMap[x.sku];
+          const newImg = code ? imgMap[code] : undefined;
+          if (newImg) return { ...x, image: newImg };
+        }
+        return x;
+      });
+      // Merge Supabase price overrides
+      base = await mergeSupabasePrices(base);
+      setProducts(base);
+    }).catch(async () => {
       const p2 = localStorage.getItem(PRODUCTS_KEY);
-      if (p2) { try { setProducts(JSON.parse(p2)); } catch { localStorage.removeItem(PRODUCTS_KEY); } }
+      let base: Product[];
+      if (p2) { try { base = JSON.parse(p2); } catch { localStorage.removeItem(PRODUCTS_KEY); base = DEFAULT_PRODUCTS as Product[]; } }
+      else { base = DEFAULT_PRODUCTS as Product[]; }
+      base = await mergeSupabasePrices(base);
+      setProducts(base);
     });
     const c = localStorage.getItem(CART_KEY);
     if (c) { try { setCart(JSON.parse(c)); } catch { localStorage.removeItem(CART_KEY); } }

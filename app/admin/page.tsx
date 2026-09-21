@@ -8,6 +8,7 @@ import {
 } from "../catalog-data";
 import { supabase } from "../lib/supabase";
 import { Order, OrderStatus } from "../lib/orders";
+import PricesTab from "./PricesTab";
 
 // ── Icons ────────────────────────────────────────────────────────────────────
 function Icon({ name, size = 18 }) {
@@ -462,6 +463,7 @@ export default function Admin() {
           </div>
 
           <NavItem id="config" icon="settings" label="Catálogo" />
+          <NavItem id="prices" icon="dollar" label="Precios" />
 
           <div style={{ flex: 1 }} />
         </nav>
@@ -1042,6 +1044,11 @@ export default function Admin() {
               </div>
             </div>
           )}
+          {/* ── PRECIOS ──────────────────────────────────────────────────── */}
+          {activeTab === "prices" && (
+            <PricesTab products={products} getToken={getToken} />
+          )}
+
         </div>
       </main>
 
