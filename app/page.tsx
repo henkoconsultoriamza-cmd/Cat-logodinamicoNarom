@@ -362,7 +362,7 @@ export default function Catalog() {
       return p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q) || displaySku.includes(q) || p.brand.toLowerCase().includes(q);
     }
     return true;
-  }), [products, activeCategory, activeBrands, onlySale, onlyStock, query]);
+  }), [products, activeCategory, activeBrands, onlySale, onlyStock, query, ingcoCodeMap]);
 
   function toggleBrand(b: string) {
     setActiveBrands(prev => prev.includes(b) ? prev.filter(x => x !== b) : [...prev, b]);
