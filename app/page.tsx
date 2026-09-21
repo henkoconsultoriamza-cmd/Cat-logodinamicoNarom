@@ -15,6 +15,7 @@ type CartItem = {
   name: string;
   brand: string;
   unitPrice: number;
+  cdPrice?: number;
   quantity: number;
   image: string;
   imageColor: string;
@@ -230,12 +231,13 @@ export default function Catalog() {
   }
 
   function addToCart(p: Product, qty: number, variant?: Variant | null) {
-    const unitPrice = effectivePrice(p, variant);
+    const unitPrice = p.price;
+    const cdPrice = p.salePrice ?? undefined;
     setCart(prev => {
       const key = variant?.sku ?? p.id;
       const existing = prev.find(i => (i.variantSku ?? i.productId) === key);
       if (existing) return prev.map(i => (i.variantSku ?? i.productId) === key ? { ...i, quantity: i.quantity + qty } : i);
-      return [...prev, { productId: p.id, variantSku: variant?.sku, variantLabel: variant?.label, name: p.name, brand: p.brand, unitPrice, quantity: qty, image: p.image, imageColor: p.imageColor, imageIcon: p.imageIcon }];
+      return [...prev, { productId: p.id, variantSku: variant?.sku, variantLabel: variant?.label, name: p.name, brand: p.brand, unitPrice, cdPrice, quantity: qty, image: p.image, imageColor: p.imageColor, imageIcon: p.imageIcon }];
     });
     setSelected(null);
   }
@@ -249,6 +251,7 @@ export default function Catalog() {
   }
 
   const cartTotal = cart.reduce((s, i) => s + i.unitPrice * i.quantity, 0);
+  const cartTotalCD = cart.reduce((s, i) => s + (i.cdPrice ?? i.unitPrice) * i.quantity, 0);
   const cartCount = cart.reduce((s, i) => s + i.quantity, 0);
 
   function buildWhatsAppMsg() {
@@ -710,7 +713,10 @@ export default function Catalog() {
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.3, color: "#0f172a" }}>{item.name}</div>
                       {item.variantLabel && <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 1 }}>{item.variantLabel}</div>}
-                      <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 1 }}>{fmt(item.unitPrice, settings.currency)} c/u · {fmt(item.unitPrice * item.quantity, settings.currency)}</div>
+                      <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 1 }}>
+                        <span>Lista: {fmt(item.unitPrice * item.quantity, settings.currency)}</span>
+                        {item.cdPrice && <span style={{ marginLeft: 8, color: "#0369a1", fontWeight: 600 }}>C/D: {fmt(item.cdPrice * item.quantity, settings.currency)}</span>}
+                      </div>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6 }}>
                         <button onClick={() => updateQty(key, -1)} style={{ width: 24, height: 24, borderRadius: 5, border: "1.5px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "center", color: "#475569" }}>
                           <Icon name="minus" size={12} />
@@ -729,9 +735,23 @@ export default function Catalog() {
               })}
             </div>
             <div style={{ padding: "14px 18px", borderTop: "1px solid #e2e8f0" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 14 }}>
-                <span style={{ fontSize: 13, color: "#475569" }}>Total estimado</span>
-                <span style={{ fontSize: 22, fontWeight: 800, color: "#02152C" }}>{fmt(cartTotal, settings.currency)}</span>
+              <div style={{ marginBottom: 14 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 4 }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: "#94a3b8", letterSpacing: ".06em" }}>TOTAL LISTA</span>
+                  <span style={{ fontSize: 16, fontWeight: 700, color: "#64748b" }}>{fmt(cartTotal, settings.currency)}</span>
+                </div>
+                {cartTotalCD < cartTotal && (
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: "#0369a1", letterSpacing: ".06em" }}>TOTAL C/D</span>
+                    <span style={{ fontSize: 22, fontWeight: 800, color: "#02152C" }}>{fmt(cartTotalCD, settings.currency)}</span>
+                  </div>
+                )}
+                {cartTotalCD >= cartTotal && (
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                    <span style={{ fontSize: 13, color: "#475569" }}>Total estimado</span>
+                    <span style={{ fontSize: 22, fontWeight: 800, color: "#02152C" }}>{fmt(cartTotal, settings.currency)}</span>
+                  </div>
+                )}
               </div>
               {user && <div style={{ fontSize: 12, color: "#94a3b8", marginBottom: 8, textAlign: "center" as const }}>Pedido como <strong style={{ color: "#475569" }}>{user.name}</strong></div>}
               <button onClick={handleSendOrder} disabled={cart.length === 0 || orderSending}
