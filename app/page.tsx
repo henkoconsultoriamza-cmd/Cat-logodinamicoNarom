@@ -625,7 +625,7 @@ export default function Catalog() {
                       <div style={{ padding: "10px 12px", flex: 1, display: "flex", flexDirection: "column", gap: 3 }}>
                         <div style={{ fontSize: 9, fontWeight: 800, color: "#94a3b8", letterSpacing: ".12em", textTransform: "uppercase" as const }}>{p.brand}</div>
                         <div style={{ fontSize: 13, fontWeight: 600, color: "#0f172a", lineHeight: 1.35 }}>{p.name}</div>
-                        <div style={{ fontSize: 10, color: "#94a3b8", fontFamily: "monospace", marginTop: 1 }}>{ingcoCodeMap[p.sku] || p.sku}</div>
+                        <div style={{ fontSize: 10, color: "#94a3b8", fontFamily: "monospace", marginTop: 1 }}>{ingcoCodeMap[p.sku] || p.sku}{p.minQty > 1 && <span style={{ marginLeft: 6, color: "#0369a1", fontFamily: "inherit" }}>Mín. {p.minQty} u.</span>}</div>
                         <div style={{ display: "flex", flexDirection: "column", gap: 2, marginTop: 8 }}>
                           {user ? (
                             <>
