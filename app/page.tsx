@@ -358,7 +358,8 @@ export default function Catalog() {
     if (onlyStock && p.stock === 0) return false;
     if (query) {
       const q = query.toLowerCase();
-      return p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q);
+      const displaySku = (ingcoCodeMap[p.sku] || p.sku).toLowerCase();
+      return p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q) || displaySku.includes(q) || p.brand.toLowerCase().includes(q);
     }
     return true;
   }), [products, activeCategory, activeBrands, onlySale, onlyStock, query]);
