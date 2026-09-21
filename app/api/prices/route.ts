@@ -11,7 +11,7 @@ export async function GET() {
   try {
     const sb = createClient(url, anonKey, { db: { schema: "catalog" } });
     const { data, error } = await sb.from("prices").select("sku, brand, price, sale_price, on_sale, description");
-    if (error) return NextResponse.json([]);
+    if (error) { console.error("Supabase prices error:", error.message, error.code); return NextResponse.json([]); }
     return NextResponse.json(data ?? []);
   } catch {
     return NextResponse.json([]);
