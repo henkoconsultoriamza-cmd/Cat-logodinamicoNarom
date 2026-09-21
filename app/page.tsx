@@ -389,6 +389,7 @@ export default function Catalog() {
     "SIKA": "/brands/sika.png",
     "GAMA PINTURAS": "/brands/gama.png",
     "TELPLAS": "/brands/telplas.png",
+    "TELPLAST": "/brands/telplas.png",
   };
 
   return (
