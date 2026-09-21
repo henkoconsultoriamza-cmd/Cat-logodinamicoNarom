@@ -392,6 +392,7 @@ export default function Catalog() {
     "GAMA PINTURAS": "/brands/gama.png",
     "TELPLAS": "/brands/telplas.png",
     "TELPLAST": "/brands/telplas.png",
+    "SINTEPLAST": "/brands/sinteplast.jpg",
   };
 
   return (
