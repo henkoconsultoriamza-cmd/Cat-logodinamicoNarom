@@ -173,12 +173,12 @@ export default function Catalog() {
       } else {
         base = DEFAULT_PRODUCTS as Product[];
       }
-      // Apply INGCO section images
+      // Apply INGCO section images and replace model-code SKU with 7xxx display code
       base = base.map((x: any) => {
         if (x.brand === 'INGCO') {
           const code = codeMap[x.sku];
           const newImg = code ? imgMap[code] : undefined;
-          if (newImg) return { ...x, image: newImg };
+          return { ...x, image: newImg || x.image, sku: code || x.sku };
         }
         return x;
       });
@@ -358,11 +358,10 @@ export default function Catalog() {
     if (onlyStock && p.stock === 0) return false;
     if (query) {
       const q = query.toLowerCase();
-      const displaySku = (ingcoCodeMap[p.sku] || p.sku).toLowerCase();
-      return p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q) || displaySku.includes(q) || p.brand.toLowerCase().includes(q);
+      return p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q);
     }
     return true;
-  }), [products, activeCategory, activeBrands, onlySale, onlyStock, query, ingcoCodeMap]);
+  }), [products, activeCategory, activeBrands, onlySale, onlyStock, query]);
 
   function toggleBrand(b: string) {
     setActiveBrands(prev => prev.includes(b) ? prev.filter(x => x !== b) : [...prev, b]);
