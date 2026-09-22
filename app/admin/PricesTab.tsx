@@ -176,7 +176,7 @@ export default function PricesTab({ products, getToken }: { products: Product[];
       try {
         const data = ev.target?.result;
         if (!data) { setImportMsg("Error: el archivo llegó vacío."); return; }
-        const wb = XLSX.read(data, { type: "array" });
+        const wb = XLSX.read(new Uint8Array(data as ArrayBuffer), { type: "array" });
         if (!wb.SheetNames.length) { setImportMsg("El archivo no tiene hojas."); return; }
         const ws = wb.Sheets[wb.SheetNames[0]];
         const rows: any[][] = XLSX.utils.sheet_to_json(ws, { header: 1 });
