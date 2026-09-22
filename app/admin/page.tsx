@@ -200,8 +200,11 @@ export default function Admin() {
     setProductsLoading(true);
     fetch("/api/products")
       .then(r => r.ok ? r.json() : Promise.reject(r.status))
-      .then(data => { if (Array.isArray(data) && data.length > 0) setProducts(data); })
-      .catch(() => {/* fallback a DEFAULT_PRODUCTS ya cargado */})
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0)
+          setProducts(data.filter(p => p != null && p.id != null));
+      })
+      .catch(() => {})
       .finally(() => setProductsLoading(false));
 
     const sl = localStorage.getItem(BANNER_KEY);
@@ -474,15 +477,16 @@ export default function Admin() {
   const inPrepOrders = orders.filter(o => o.status === "en_preparacion").length;
   const deliveredOrders = orders.filter(o => o.status === "entregado").length;
   const totalRevenue = orders.reduce((acc, o) => acc + (o.total || 0), 0);
-  const onSaleCount = products.filter(p => p.onSale).length;
-  const noStockCount = products.filter(p => p.stock === 0).length;
+  const safeProds = products.filter(p => p != null && p.id != null);
+  const onSaleCount = safeProds.filter(p => p.onSale).length;
+  const noStockCount = safeProds.filter(p => p.stock === 0).length;
 
   // ── Filtered products ────────────────────────────────────────────────────
-  const filteredProds = products.filter(p => {
+  const filteredProds = safeProds.filter(p => {
     if (prodBrand !== "Todas" && p.brand !== prodBrand) return false;
     if (prodSearch) {
       const q = prodSearch.toLowerCase();
-      return p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q);
+      return (p.name ?? "").toLowerCase().includes(q) || (p.sku ?? "").toLowerCase().includes(q);
     }
     return true;
   });
