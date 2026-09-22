@@ -938,6 +938,15 @@ export default function Admin() {
                                   <button onClick={() => moveOrder(o.id, NEXT_STATUS[col])}
                                     style={{ fontSize: 10, padding: "3px 8px", borderRadius: 5, background: COL_COLOR[NEXT_STATUS[col]] + "15", color: COL_COLOR[NEXT_STATUS[col]], border: "none", fontWeight: 700, cursor: "pointer" }}>→</button>
                                 )}
+                                <button onClick={async () => {
+                                    if (!confirm("¿Eliminar este pedido?")) return;
+                                    const headers = await authHeaders();
+                                    const res = await fetch("/api/delete-order", { method: "DELETE", headers, body: JSON.stringify({ id: o.id }) });
+                                    const json = await res.json();
+                                    if (json.error) { alert("Error: " + json.error); return; }
+                                    setOrders(prev => prev.filter(x => x.id !== o.id));
+                                  }}
+                                  style={{ fontSize: 10, padding: "3px 8px", borderRadius: 5, background: N.danger + "18", color: N.danger, border: "none", fontWeight: 700, cursor: "pointer" }}>✕</button>
                               </div>
                             </div>
                           </div>
