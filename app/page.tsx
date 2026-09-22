@@ -193,7 +193,7 @@ export default function Catalog() {
     async function loadProducts() {
       let base: Product[];
       try {
-        const res = await fetch("/api/products");
+        const res = await fetch("/api/products", { cache: "no-store" });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         const clean = Array.isArray(data) ? data.filter((p: any) => p != null && p.id != null) : [];

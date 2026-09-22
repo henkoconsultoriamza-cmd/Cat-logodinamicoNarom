@@ -86,7 +86,9 @@ export async function GET() {
       });
     });
 
-    return NextResponse.json(merged);
+    const resp = NextResponse.json(merged);
+    resp.headers.set("Cache-Control", "no-store, no-cache, must-revalidate");
+    return resp;
   } catch (e: any) {
     console.error("products GET exception:", e.message);
     return NextResponse.json([], { status: 200 });

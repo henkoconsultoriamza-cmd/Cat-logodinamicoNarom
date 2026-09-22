@@ -198,7 +198,7 @@ export default function Admin() {
 
     // Cargar productos desde Supabase
     setProductsLoading(true);
-    fetch("/api/products")
+    fetch("/api/products", { cache: "no-store" })
       .then(r => r.ok ? r.json() : Promise.reject(r.status))
       .then(data => {
         if (Array.isArray(data) && data.length > 0)
@@ -345,7 +345,7 @@ export default function Admin() {
   async function reloadProducts() {
     setProductsLoading(true);
     try {
-      const data = await fetch("/api/products").then(r => r.json());
+      const data = await fetch("/api/products", { cache: "no-store" }).then(r => r.json());
       if (Array.isArray(data) && data.length > 0) setProducts(data);
     } catch {}
     setProductsLoading(false);
