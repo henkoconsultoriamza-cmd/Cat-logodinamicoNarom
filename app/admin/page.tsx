@@ -2,10 +2,10 @@
 "use client";
 
 import { CSSProperties, useEffect, useRef, useState } from "react";
+import { AppSettings, Product } from "../catalog-data";
 import {
-  APP_SETTINGS_KEY, AppSettings, BRANDS, CATEGORIES, DEFAULT_APP_SETTINGS,
-  Product,
-} from "../catalog-data";
+  APP_SETTINGS_KEY, BRANDS, CATEGORIES, DEFAULT_APP_SETTINGS,
+} from "../catalog-constants";
 import { supabase } from "../lib/supabase";
 import { Order, OrderStatus } from "../lib/orders";
 import PricesTab from "./PricesTab";
