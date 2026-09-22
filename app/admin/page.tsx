@@ -339,7 +339,7 @@ export default function Admin() {
     const XLSX = await import("xlsx");
     const rows = products.map(p => ({
       SKU: p.sku, Nombre: p.name, Marca: p.brand, Categoria: p.category,
-      Precio: p.price, PrecioOferta: p.salePrice ?? "", EnOferta: p.onSale ? "SI" : "NO",
+      "Precio Lista": p.price, "Precio Con Descuento": p.salePrice ?? "",
       Stock: p.stock, MinQty: p.minQty,
     }));
     const ws = XLSX.utils.json_to_sheet(rows);
