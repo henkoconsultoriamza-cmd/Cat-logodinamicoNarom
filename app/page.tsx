@@ -3,10 +3,9 @@
 import { CSSProperties, useEffect, useMemo, useRef, useState } from "react";
 import {
   APP_SETTINGS_KEY, AppSettings, BRANDS, CART_KEY, CATEGORIES,
-  DEFAULT_APP_SETTINGS, DEFAULT_PRODUCTS, Product, PRODUCTS_KEY, Variant,
+  DEFAULT_APP_SETTINGS, DEFAULT_PRODUCTS, Product, Variant,
 } from "./catalog-data";
 import { supabase } from "./lib/supabase";
-import { mergeSupabasePrices } from "./lib/prices";
 
 type CartItem = {
   productId: string;
@@ -174,8 +173,21 @@ export default function Catalog() {
   const accent = settings.accentColor;
 
   useEffect(() => {
-    const s = localStorage.getItem(APP_SETTINGS_KEY);
-    if (s) { try { setSettings({ ...DEFAULT_APP_SETTINGS, ...JSON.parse(s) }); } catch { localStorage.removeItem(APP_SETTINGS_KEY); } }
+    // Cargar settings desde Supabase, con fallback a localStorage
+    fetch("/api/settings")
+      .then(r => r.ok ? r.json() : null)
+      .then(remote => {
+        if (remote && Object.keys(remote).length > 0) {
+          setSettings(s => ({ ...s, ...remote }));
+        } else {
+          const s = localStorage.getItem(APP_SETTINGS_KEY);
+          if (s) { try { setSettings({ ...DEFAULT_APP_SETTINGS, ...JSON.parse(s) }); } catch {} }
+        }
+      })
+      .catch(() => {
+        const s = localStorage.getItem(APP_SETTINGS_KEY);
+        if (s) { try { setSettings({ ...DEFAULT_APP_SETTINGS, ...JSON.parse(s) }); } catch {} }
+      });
 
     // Cargar productos desde Supabase (via API), con fallback a DEFAULT_PRODUCTS
     async function loadProducts() {

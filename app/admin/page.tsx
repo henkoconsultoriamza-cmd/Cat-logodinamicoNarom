@@ -308,13 +308,29 @@ export default function Admin() {
     setSaved(true);
     try {
       const token = await getToken();
-      const res = await fetch("/api/products", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-        body: JSON.stringify({ products }),
-      });
-      const json = await res.json();
-      if (json.error) { alert("Error al guardar productos: " + json.error); setSaved(false); return; }
+      // Guardar productos y settings en paralelo
+      const [prodRes, settRes] = await Promise.all([
+        fetch("/api/products", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+          body: JSON.stringify({ products }),
+        }),
+        fetch("/api/settings", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+          body: JSON.stringify({ settings: {
+            whatsappNumber: settings.whatsappNumber,
+            currency:       settings.currency,
+            businessName:   settings.businessName,
+            accentColor:    settings.accentColor,
+            tagline:        settings.tagline,
+          }}),
+        }),
+      ]);
+      const prodJson = await prodRes.json();
+      if (prodJson.error) { alert("Error al guardar productos: " + prodJson.error); setSaved(false); return; }
+      const settJson = await settRes.json();
+      if (settJson.error) { console.warn("Error al guardar settings:", settJson.error); }
     } catch (e: any) {
       alert("Error de red al guardar: " + e.message);
       setSaved(false);
@@ -340,6 +356,18 @@ export default function Admin() {
 
   function updateProduct(id, key, value) {
     setProducts(prev => prev.map(p => p.id === id ? { ...p, [key]: value } : p));
+  }
+
+  // Guarda un único producto a Supabase inmediatamente
+  async function saveOneProduct(updated: any) {
+    try {
+      const token = await getToken();
+      await fetch("/api/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        body: JSON.stringify({ products: [updated] }),
+      });
+    } catch {}
   }
 
   async function exportExcel() {
@@ -1083,13 +1111,26 @@ export default function Admin() {
                           <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
                             {p.stock !== 0 && (
                               <button style={{ ...btn("#dc2626", true), height: 34, fontSize: 12 }}
-                                onClick={() => updateProduct(p.id, "stock", 0)}>
+                                onClick={() => {
+                                  const updated = { ...p, stock: 0 };
+                                  setProducts(prev => prev.map(x => x.id === p.id ? updated : x));
+                                  saveOneProduct(updated);
+                                }}>
                                 Sin stock
                               </button>
                             )}
                             <button style={{ ...btn(isEditing ? N.navy : "#64748b", !isEditing), height: 34, fontSize: 12 }}
-                              onClick={() => setEditingId(isEditing ? null : p.id)}>
-                              <Icon name="edit" size={13} />{isEditing ? "Cerrar" : "Editar"}
+                              onClick={() => {
+                                if (isEditing) {
+                                  // Al cerrar el formulario, guardar este producto en Supabase
+                                  const current = products.find(x => x.id === p.id) ?? p;
+                                  saveOneProduct(current);
+                                  setEditingId(null);
+                                } else {
+                                  setEditingId(p.id);
+                                }
+                              }}>
+                              <Icon name="edit" size={13} />{isEditing ? "Guardar" : "Editar"}
                             </button>
                             <button style={{ color: N.danger, background: N.danger + "12", border: "none", borderRadius: 8, width: 34, height: 34, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
                               onClick={async () => {
