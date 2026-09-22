@@ -66,8 +66,8 @@ export default function PricesTab({ products, getToken }: { products: Product[];
   });
 
   const filtered = merged.filter(p => {
-    const matchBrand = brandFilter === "TODAS" || p.brand === brandFilter;
-    const matchSearch = !search || p.name.toLowerCase().includes(search.toLowerCase()) || p.sku.toLowerCase().includes(search.toLowerCase());
+    const matchBrand = brandFilter === "TODAS" || (p.brand ?? "").trim().toUpperCase() === brandFilter.trim().toUpperCase();
+    const matchSearch = !search || p.name.toLowerCase().includes(search.toLowerCase()) || (p.sku ?? "").toLowerCase().includes(search.toLowerCase());
     return matchBrand && matchSearch;
   });
 
