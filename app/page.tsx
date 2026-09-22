@@ -484,7 +484,7 @@ export default function Catalog() {
                 fontSize: 12, fontWeight: on ? 700 : 400, cursor: "pointer", textAlign: "left" as const,
               }}>
                 <span style={{ width: 5, height: 5, borderRadius: "50%", background: on ? "#F4AA24" : "rgba(255,255,255,.15)", flexShrink: 0 }} />
-                <span style={{ flex: 1 }}>{cat}</span>
+                <span style={{ flex: 1 }}>{cat === "Todos" ? cat : cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase()}</span>
               </button>
             );
           })}
@@ -545,7 +545,7 @@ export default function Catalog() {
           ) : (
             <span style={{ fontSize: 13, color: "#94a3b8", flexShrink: 0 }}>
               {filtered.length} producto{filtered.length !== 1 ? "s" : ""}
-              {activeCategory !== "Todos" && ` · ${activeCategory}`}
+              {activeCategory !== "Todos" && ` · ${activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1).toLowerCase()}`}
             </span>
           )}
           <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center", flexShrink: 0 }}>
