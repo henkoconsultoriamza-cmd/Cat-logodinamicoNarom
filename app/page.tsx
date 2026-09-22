@@ -240,7 +240,7 @@ export default function Catalog() {
 
   function effectivePrice(p: Product, v?: Variant | null) {
     if (v) return v.price;
-    if (p.onSale && p.salePrice) return p.salePrice;
+    if (p.salePrice) return p.salePrice;
     return p.price;
   }
 
