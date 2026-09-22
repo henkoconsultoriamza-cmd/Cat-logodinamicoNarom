@@ -174,21 +174,12 @@ export default function PricesTab({ products, getToken }: { products: Product[];
     reader.onerror = () => setImportMsg("Error al leer el archivo. Intentá de nuevo.");
     reader.onload = ev => {
       try {
-        setImportMsg("Paso 1: parseando Excel...");
         const data = ev.target?.result;
         if (!data) { setImportMsg("Error: el archivo llegó vacío."); return; }
-        let wb: any;
-        try {
-          wb = XLSX.read(new Uint8Array(data as ArrayBuffer), { type: "array" });
-        } catch (xlsxErr: any) {
-          setImportMsg("Error XLSX: " + xlsxErr?.message + ". Intentando modo binario...");
-          return;
-        }
+        const wb = XLSX.read(data, { type: "binary" });
         if (!wb.SheetNames.length) { setImportMsg("El archivo no tiene hojas."); return; }
-        setImportMsg("Paso 2: leyendo filas...");
         const ws = wb.Sheets[wb.SheetNames[0]];
-        const rows: any[][] = XLSX.utils.sheet_to_json(ws, { header: 1 });
-        setImportMsg(`Paso 3: ${rows.length} filas leídas. Buscando encabezado...`);
+        const rows: any[][] = XLSX.utils.sheet_to_json(ws, { header: 1, defval: null });
 
         const hIdx = rows.findIndex(r => r.some(c => /SKU|C[OÓ]D|ART[IÍ]CULO/i.test(String(c))));
         if (hIdx === -1) {
@@ -236,7 +227,7 @@ export default function PricesTab({ products, getToken }: { products: Product[];
         setImportMsg("Error al procesar el Excel: " + (err?.message ?? String(err)));
       }
     };
-    reader.readAsArrayBuffer(file);
+    reader.readAsBinaryString(file);
     e.target.value = "";
   }
 
