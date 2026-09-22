@@ -174,13 +174,21 @@ export default function PricesTab({ products, getToken }: { products: Product[];
     reader.onerror = () => setImportMsg("Error al leer el archivo. Intentá de nuevo.");
     reader.onload = ev => {
       try {
+        setImportMsg("Paso 1: parseando Excel...");
         const data = ev.target?.result;
         if (!data) { setImportMsg("Error: el archivo llegó vacío."); return; }
-        const wb = XLSX.read(new Uint8Array(data as ArrayBuffer), { type: "array" });
+        let wb: any;
+        try {
+          wb = XLSX.read(new Uint8Array(data as ArrayBuffer), { type: "array" });
+        } catch (xlsxErr: any) {
+          setImportMsg("Error XLSX: " + xlsxErr?.message + ". Intentando modo binario...");
+          return;
+        }
         if (!wb.SheetNames.length) { setImportMsg("El archivo no tiene hojas."); return; }
+        setImportMsg("Paso 2: leyendo filas...");
         const ws = wb.Sheets[wb.SheetNames[0]];
         const rows: any[][] = XLSX.utils.sheet_to_json(ws, { header: 1 });
-        setImportMsg(`Archivo leído: ${rows.length} filas. Buscando encabezado...`);
+        setImportMsg(`Paso 3: ${rows.length} filas leídas. Buscando encabezado...`);
 
         const hIdx = rows.findIndex(r => r.some(c => /SKU|C[OÓ]D|ART[IÍ]CULO/i.test(String(c))));
         if (hIdx === -1) {
@@ -199,8 +207,10 @@ export default function PricesTab({ products, getToken }: { products: Product[];
           return;
         }
 
+        setImportMsg(`Paso 4: merged tiene ${merged.length} productos, construyendo mapa...`);
         const dataRows = rows.slice(hIdx + 1).filter(r => r[iSku]);
-        const skuMap = new Map(merged.map(p => [p.sku, p]));
+        const validMerged = merged.filter((p): p is NonNullable<typeof p> => p != null && p.sku != null);
+        const skuMap = new Map(validMerged.map(p => [String(p.sku), p]));
 
         setImportMsg(`Columnas: SKU="${header[iSku]}" Precio="${header[iPri] ?? '—'}" C/D="${header[iSale] ?? '—'}" | ${dataRows.length} filas | ${skuMap.size} productos en catálogo`);
 
