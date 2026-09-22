@@ -20,8 +20,11 @@ export async function GET(req: NextRequest) {
     id: u.id,
     email: u.email,
     name: u.user_metadata?.name ?? u.email,
-    user_metadata: u.user_metadata ?? {},
-    app_metadata: u.app_metadata ?? {},
+    business: u.user_metadata?.business ?? null,
+    phone: u.user_metadata?.phone ?? null,
+    address: u.user_metadata?.address ?? null,
+    tax_id: u.user_metadata?.tax_id ?? null,
+    is_admin: u.app_metadata?.is_admin ?? false,
     created_at: u.created_at,
   }));
 
