@@ -324,18 +324,23 @@ export default function PricesTab({ products, getToken }: { products: Product[];
         <div style={{ fontSize: 14, fontWeight: 700, color: N.text, marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
           <Icon name="upload" size={15} /> Importar desde Excel
         </div>
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: preview ? 16 : 0 }}>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 12 }}>
           <button style={btnS(N.navy, true)} onClick={downloadTemplate}>
             <Icon name="download" size={14} /> Descargar plantilla
           </button>
-          <button style={btnS(N.navy)} onClick={() => fileRef.current?.click()}>
+          <label style={{ ...btnS(N.navy), cursor: "pointer" }}>
             <Icon name="upload" size={14} /> Subir Excel
-          </button>
-          <input ref={fileRef} type="file" accept=".xlsx,.xls" style={{ display: "none" }} onChange={handleFile} />
+            <input type="file" accept=".xlsx,.xls,.csv" style={{ display: "none" }} onChange={handleFile} />
+          </label>
         </div>
 
         {importMsg && (
-          <div style={{ fontSize: 13, color: importMsg.startsWith("Error") ? N.danger : N.success, marginTop: 8 }}>{importMsg}</div>
+          <div style={{ fontSize: 13, fontWeight: 600, padding: "8px 12px", borderRadius: 8, marginBottom: 12,
+            background: importMsg.startsWith("Error") ? "#fef2f2" : "#f0fdf4",
+            color: importMsg.startsWith("Error") ? N.danger : N.success,
+            border: `1px solid ${importMsg.startsWith("Error") ? "#fca5a5" : "#86efac"}` }}>
+            {importMsg}
+          </div>
         )}
 
         {/* Preview table */}
