@@ -2,7 +2,7 @@
 "use client";
 
 import { CSSProperties, useEffect, useRef, useState } from "react";
-import { AppSettings, Product } from "../catalog-data";
+import type { AppSettings, Product } from "../catalog-data";
 import {
   APP_SETTINGS_KEY, BRANDS, CATEGORIES, DEFAULT_APP_SETTINGS,
 } from "../catalog-constants";

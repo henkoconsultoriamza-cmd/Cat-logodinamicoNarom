@@ -2,7 +2,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { BRANDS, Product } from "../catalog-data";
+import { BRANDS } from "../catalog-constants";
+import type { Product } from "../catalog-data";
 import * as XLSX from "xlsx";
 
 const N = {
