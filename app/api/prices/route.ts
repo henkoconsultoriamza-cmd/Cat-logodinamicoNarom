@@ -32,13 +32,13 @@ export async function POST(req: NextRequest) {
   if (!Array.isArray(rows) || rows.length === 0)
     return NextResponse.json({ error: "Sin datos" }, { status: 400 });
 
-  const SKU_RE = /^[a-zA-Z0-9\-_./\s]{1,80}$/;
   for (const r of rows) {
+    const sku = String(r.sku ?? "").trim();
     const price = Number(r.price);
     const salePrice = r.sale_price != null ? Number(r.sale_price) : null;
-    if (!SKU_RE.test(String(r.sku).trim())) return NextResponse.json({ error: "SKU inválido" }, { status: 400 });
-    if (!price || price <= 0) return NextResponse.json({ error: "Precio debe ser mayor a 0" }, { status: 400 });
-    if (salePrice !== null && salePrice <= 0) return NextResponse.json({ error: "Precio con descuento debe ser mayor a 0" }, { status: 400 });
+    if (!sku || sku.length > 100) return NextResponse.json({ error: `SKU inválido: "${sku}"` }, { status: 400 });
+    if (!price || price <= 0) return NextResponse.json({ error: `Precio debe ser mayor a 0 (SKU: ${sku})` }, { status: 400 });
+    if (salePrice !== null && salePrice <= 0) return NextResponse.json({ error: `Precio con descuento debe ser mayor a 0 (SKU: ${sku})` }, { status: 400 });
   }
 
   const sb = createClient(url, serviceKey, { db: { schema: "catalog" } });
