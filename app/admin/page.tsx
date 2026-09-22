@@ -349,21 +349,35 @@ export default function Admin() {
     XLSX.writeFile(wb, "Productos_Narom.xlsx");
   }
 
-  async function importExcel(e) {
+  function importExcel(e) {
     const file = e.target.files[0];
     if (!file) return;
-    const XLSX = await import("xlsx");
-    const buf = await file.arrayBuffer();
-    const wb = XLSX.read(buf);
-    const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-    let updated = 0;
-    setProducts(prev => prev.map(p => {
-      const row = rows.find(r => r.SKU === p.sku);
-      if (!row) return p;
-      updated++;
-      return { ...p, price: Number(row.Precio) || p.price, salePrice: row.PrecioOferta ? Number(row.PrecioOferta) : p.salePrice, onSale: row.EnOferta === "SI", stock: row.Stock !== undefined ? Number(row.Stock) : p.stock, minQty: row.MinQty !== undefined ? Number(row.MinQty) : p.minQty };
-    }));
-    alert(`✅ ${updated} productos actualizados. Guardá los cambios para aplicarlos.`);
+    const reader = new FileReader();
+    reader.onload = async ev => {
+      try {
+        const XLSX = await import("xlsx");
+        const wb = XLSX.read(ev.target.result, { type: "binary" });
+        const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: null });
+        let updated = 0;
+        setProducts(prev => prev.map(p => {
+          const row: any = rows.find((r: any) => String(r.SKU).trim() === String(p.sku).trim());
+          if (!row) return p;
+          updated++;
+          return {
+            ...p,
+            price:     row.Precio     != null ? Number(row.Precio)      || p.price     : p.price,
+            salePrice: row.PrecioOferta != null ? Number(row.PrecioOferta) || undefined : p.salePrice,
+            onSale:    row.EnOferta != null ? String(row.EnOferta).toUpperCase() === "SI" : p.onSale,
+            stock:     row.Stock    != null ? Number(row.Stock)    : p.stock,
+            minQty:    row.MinQty   != null ? Number(row.MinQty)   : p.minQty,
+          };
+        }));
+        alert(`✅ ${updated} productos actualizados. Guardá los cambios para aplicarlos.`);
+      } catch (err: any) {
+        alert("Error al importar: " + (err?.message ?? String(err)));
+      }
+    };
+    reader.readAsBinaryString(file);
     e.target.value = "";
   }
 
@@ -978,8 +992,7 @@ export default function Admin() {
                   </select>
                   <button style={{ ...btn("#16a34a"), height: 36 }} onClick={() => { setNewProd({ name: "", brand: BRANDS[0] ?? "", category: CATEGORIES[0] ?? "", sku: "", description: "", image: "", price: "", salePrice: "", minQty: "1" }); setNewProdMsg(""); setShowNewProduct(true); }}>+ Nuevo producto</button>
                   <button style={{ ...btn("#16a34a", true), height: 36 }} onClick={exportExcel}><Icon name="download" size={14} />Exportar Excel</button>
-                  <button style={{ ...btn("#2563eb", true), height: 36 }} onClick={() => xlsxRef.current?.click()}><Icon name="upload" size={14} />Importar Excel</button>
-                  <input ref={xlsxRef} type="file" accept=".xlsx,.xls" style={{ display: "none" }} onChange={importExcel} />
+                  <label style={{ ...btn("#2563eb", true), height: 36, cursor: "pointer" }}><Icon name="upload" size={14} />Importar Excel<input type="file" accept=".xlsx,.xls" style={{ display: "none" }} onChange={importExcel} /></label>
                 </div>
 
                 <div style={{ padding: "0 24px" }}>
