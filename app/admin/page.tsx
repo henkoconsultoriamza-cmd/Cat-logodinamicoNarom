@@ -3,8 +3,8 @@
 
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import {
-  APP_SETTINGS_KEY, AppSettings, BRANDS, CATEGORIES, DEFAULT_APP_SETTINGS, DEFAULT_PRODUCTS,
-  PRODUCTS_KEY, Product, cloneProducts,
+  APP_SETTINGS_KEY, AppSettings, BRANDS, CATEGORIES, DEFAULT_APP_SETTINGS,
+  Product,
 } from "../catalog-data";
 import { supabase } from "../lib/supabase";
 import { Order, OrderStatus } from "../lib/orders";
@@ -117,7 +117,7 @@ function MiniStat({ label, value, color }: any) {
 // ─────────────────────────────────────────────────────────────────────────────
 export default function Admin() {
   const [settings, setSettings] = useState(DEFAULT_APP_SETTINGS);
-  const [products, setProducts] = useState(DEFAULT_PRODUCTS);
+  const [products, setProducts] = useState<any[]>([]);
   const [productsLoading, setProductsLoading] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const [saved, setSaved] = useState(false);
