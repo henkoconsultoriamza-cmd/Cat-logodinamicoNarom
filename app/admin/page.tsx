@@ -1118,16 +1118,14 @@ export default function Admin() {
                             </div>
                           </div>
                           <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                            {p.stock !== 0 && (
-                              <button style={{ ...btn("#dc2626", true), height: 34, fontSize: 12 }}
-                                onClick={() => {
-                                  const updated = { ...p, stock: 0 };
-                                  setProducts(prev => prev.map(x => x.id === p.id ? updated : x));
-                                  saveOneProduct(updated);
-                                }}>
-                                Sin stock
-                              </button>
-                            )}
+                            <button style={{ ...btn(p.stock === 0 ? "#16a34a" : "#dc2626", p.stock !== 0), height: 34, fontSize: 12 }}
+                              onClick={() => {
+                                const updated = { ...p, stock: p.stock === 0 ? 100 : 0 };
+                                setProducts(prev => prev.map(x => x.id === p.id ? updated : x));
+                                saveOneProduct(updated);
+                              }}>
+                              {p.stock === 0 ? "Con stock" : "Sin stock"}
+                            </button>
                             <button style={{ ...btn(isEditing ? N.navy : "#64748b", !isEditing), height: 34, fontSize: 12 }}
                               onClick={() => {
                                 if (isEditing) {
