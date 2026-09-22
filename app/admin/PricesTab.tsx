@@ -437,12 +437,13 @@ export default function PricesTab({ products, getToken }: { products: Product[];
                 ))}
               </tr>
             </thead>
-            <tbody>
-              {filtered.map(p => {
+            <tbody key={`${brandFilter}||${search}`}>
+              {filtered.map((p, idx) => {
+                const rowKey = `${idx}||${p.brand}||${p.sku}`;
                 const k = key(p);
                 const ed = editing[k];
                 return (
-                  <tr key={k} style={{ borderBottom: `1px solid ${N.border}` }}
+                  <tr key={rowKey} style={{ borderBottom: `1px solid ${N.border}` }}
                     onMouseEnter={e => (e.currentTarget.style.background = N.surface2)}
                     onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
                     <td style={{ padding: "10px 14px", fontWeight: 700, color: N.text, whiteSpace: "nowrap" }}>{p.sku || "—"}</td>
