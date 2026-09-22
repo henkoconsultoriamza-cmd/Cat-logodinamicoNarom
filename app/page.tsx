@@ -645,9 +645,9 @@ export default function Catalog() {
                       <div style={{ height: 140, background: "#f8fafc", position: "relative", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
                         <CardImg product={p} />
                         {p.tag && <div style={{ position: "absolute", top: 8, left: 8 }}><Tag label={p.tag} accent={accent} /></div>}
-                        {!inStock && (
-                          <div style={{ position: "absolute", inset: 0, background: "rgba(241,245,249,.8)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <span style={{ fontSize: 10, fontWeight: 800, color: "#94a3b8", letterSpacing: ".1em", textTransform: "uppercase" as const }}>Sin stock</span>
+                        {p.stock === 0 && (
+                          <div style={{ position: "absolute", top: 8, right: 8 }}>
+                            <span style={{ fontSize: 9, fontWeight: 800, color: "#94a3b8", letterSpacing: ".1em", textTransform: "uppercase" as const, background: "rgba(241,245,249,.9)", padding: "2px 6px", borderRadius: 4 }}>Sin stock</span>
                           </div>
                         )}
                       </div>
