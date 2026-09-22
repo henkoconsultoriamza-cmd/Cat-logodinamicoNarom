@@ -1080,6 +1080,9 @@ export default function Admin() {
 
                         {isEditing && (
                           <div style={{ marginTop: 12, background: N.surface2, borderRadius: 10, padding: 16, display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "1fr 1fr 1fr", gap: 12, border: `1px solid ${N.border}` }}>
+                            <div style={field}><span style={labelS}>SKU</span>
+                              <input style={inputS} value={p.sku ?? ""} onChange={e => updateProduct(p.id, "sku", e.target.value)} />
+                            </div>
                             <div style={field}><span style={labelS}>Precio</span>
                               <input type="number" style={inputS} value={p.price} onChange={e => updateProduct(p.id, "price", Number(e.target.value))} />
                             </div>
