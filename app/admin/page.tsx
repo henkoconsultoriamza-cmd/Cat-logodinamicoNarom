@@ -369,25 +369,48 @@ export default function Admin() {
         const stockKey = keys.find(k => /^stock$/i.test(k));
         const minQtyKey = keys.find(k => /minqty|min_qty|minimo/i.test(k));
         if (!skuKey) { alert(`No se encontró columna SKU. Columnas detectadas: ${keys.join(", ")}`); return; }
-        let updated = 0;
-        setProducts(prev => prev.map(p => {
-          const row = rows.find(r => String(r[skuKey] ?? "").trim() === String(p.sku).trim());
-          if (!row) return p;
-          updated++;
-          return {
-            ...p,
-            price:     precioKey && row[precioKey] != null ? Number(row[precioKey]) || p.price : p.price,
-            salePrice: ofertaKey && row[ofertaKey] != null ? Number(row[ofertaKey]) || undefined : p.salePrice,
-            onSale:    enOfertaKey && row[enOfertaKey] != null ? String(row[enOfertaKey]).toUpperCase() === "SI" : p.onSale,
-            stock:     stockKey && row[stockKey] != null ? Number(row[stockKey]) : p.stock,
-            minQty:    minQtyKey && row[minQtyKey] != null ? Number(row[minQtyKey]) : p.minQty,
-          };
-        }));
-        if (updated === 0) {
-          alert(`0 productos actualizados.\nColumnas detectadas: ${keys.join(", ")}\nColumna SKU usada: "${skuKey}"\nPrimer SKU del archivo: "${firstRow[skuKey]}"`);
-        } else {
-          alert(`✅ ${updated} productos actualizados.\nGuardá los cambios (pestaña Configuración → Guardar cambios).`);
-        }
+        const nombreKey = keys.find(k => /nombre|name|descripci/i.test(k));
+        const marcaKey  = keys.find(k => /marca|brand/i.test(k));
+        const catKey    = keys.find(k => /categ/i.test(k));
+        let updated = 0, added = 0;
+        setProducts(prev => {
+          const skuSet = new Map(prev.map(p => [String(p.sku).trim(), p]));
+          const next = prev.map(p => {
+            const row = rows.find(r => String(r[skuKey] ?? "").trim() === String(p.sku).trim());
+            if (!row) return p;
+            updated++;
+            return {
+              ...p,
+              price:     precioKey && row[precioKey] != null ? Number(row[precioKey]) || p.price : p.price,
+              salePrice: ofertaKey && row[ofertaKey] != null ? Number(row[ofertaKey]) || undefined : p.salePrice,
+              onSale:    enOfertaKey && row[enOfertaKey] != null ? String(row[enOfertaKey]).toUpperCase() === "SI" : p.onSale,
+              stock:     stockKey && row[stockKey] != null ? Number(row[stockKey]) : p.stock,
+              minQty:    minQtyKey && row[minQtyKey] != null ? Number(row[minQtyKey]) : p.minQty,
+            };
+          });
+          // Agregar productos nuevos (SKU no existe en el catálogo)
+          for (const row of rows) {
+            const sku = String(row[skuKey] ?? "").trim();
+            if (!sku || skuSet.has(sku)) continue;
+            added++;
+            next.push({
+              id: `import-${Date.now()}-${added}`,
+              sku,
+              name:        nombreKey ? String(row[nombreKey] ?? sku) : sku,
+              brand:       marcaKey  ? String(row[marcaKey]  ?? "")  : "",
+              category:    catKey    ? String(row[catKey]    ?? "")  : "",
+              description: "",
+              image: "", imageColor: "", imageIcon: "",
+              price:     precioKey && row[precioKey] != null ? Number(row[precioKey]) || 0 : 0,
+              salePrice: ofertaKey && row[ofertaKey] != null ? Number(row[ofertaKey]) || undefined : undefined,
+              onSale:    enOfertaKey ? String(row[enOfertaKey] ?? "").toUpperCase() === "SI" : false,
+              stock:     stockKey  && row[stockKey]  != null ? Number(row[stockKey])  : 0,
+              minQty:    minQtyKey && row[minQtyKey] != null ? Number(row[minQtyKey]) : 1,
+            });
+          }
+          return next;
+        });
+        alert(`✅ ${updated} actualizados · ${added} nuevos agregados.\nAndá a Configuración → Guardar cambios para persistir.`);
       } catch (err: any) {
         alert("Error al importar: " + (err?.message ?? String(err)));
       }
