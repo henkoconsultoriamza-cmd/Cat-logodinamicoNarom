@@ -131,7 +131,6 @@ export default function Catalog() {
   const [activeCategory, setActiveCategory] = useState("Todos");
   const [activeBrands, setActiveBrands] = useState<string[]>([]);
   const [onlySale, setOnlySale] = useState(false);
-  const [onlyStock, setOnlyStock] = useState(false);
 
   const [selected, setSelected] = useState<Product | null>(null);
   const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null);
@@ -379,20 +378,19 @@ export default function Catalog() {
     }
   }, [user]);
 
-  useEffect(() => { setVisibleCount(PAGE_SIZE); }, [query, activeCategory, activeBrands, onlySale, onlyStock]);
+  useEffect(() => { setVisibleCount(PAGE_SIZE); }, [query, activeCategory, activeBrands, onlySale]);
 
   const filtered = useMemo(() => products.filter(p => {
     if (p == null) return false;
     if (activeCategory !== "Todos" && p.category !== activeCategory) return false;
     if (activeBrands.length && !expandBrands(activeBrands).includes(p.brand)) return false;
     if (onlySale && !p.onSale) return false;
-    if (onlyStock && p.stock === 0) return false;
     if (query) {
       const q = query.toLowerCase();
       return (p.name ?? "").toLowerCase().includes(q) || (p.sku ?? "").toLowerCase().includes(q) || (p.brand ?? "").toLowerCase().includes(q);
     }
     return true;
-  }), [products, activeCategory, activeBrands, onlySale, onlyStock, query]);
+  }), [products, activeCategory, activeBrands, onlySale, query]);
 
   function toggleBrand(b: string) {
     setActiveBrands(prev => prev.includes(b) ? prev.filter(x => x !== b) : [...prev, b]);
@@ -493,7 +491,7 @@ export default function Catalog() {
 
           <div style={{ height: 1, background: "rgba(255,255,255,.08)", margin: "12px 6px" }} />
           <div style={{ fontSize: 9, fontWeight: 800, color: "rgba(255,255,255,.25)", letterSpacing: ".14em", textTransform: "uppercase" as const, padding: "0 10px", marginBottom: 4 }}>Filtros</div>
-          {[{ key: "sale", label: "Solo en oferta", on: onlySale, toggle: () => { setOnlySale(o => !o); setSidebarOpen(false); } }, { key: "stock", label: "Con stock", on: onlyStock, toggle: () => { setOnlyStock(o => !o); setSidebarOpen(false); } }].map(f => (
+          {[{ key: "sale", label: "Solo en oferta", on: onlySale, toggle: () => { setOnlySale(o => !o); setSidebarOpen(false); } }].map(f => (
             <button key={f.key} onClick={f.toggle} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", height: 36, padding: "0 10px", borderRadius: 9, border: "none", borderLeft: f.on ? "3px solid #F4AA24" : "3px solid transparent", background: f.on ? "rgba(244,170,36,.1)" : "transparent", color: f.on ? "#F4AA24" : "rgba(255,255,255,.45)", fontSize: 12, fontWeight: f.on ? 700 : 400, cursor: "pointer", textAlign: "left" as const }}>
               <span style={{ width: 5, height: 5, borderRadius: "50%", background: f.on ? "#F4AA24" : "rgba(255,255,255,.15)", flexShrink: 0 }} />
               <span style={{ flex: 1 }}>{f.label}</span>
@@ -501,10 +499,10 @@ export default function Catalog() {
             </button>
           ))}
 
-          {(activeBrands.length > 0 || onlySale || onlyStock || activeCategory !== "Todos") && (
+          {(activeBrands.length > 0 || onlySale || activeCategory !== "Todos") && (
             <>
               <div style={{ height: 1, background: "rgba(255,255,255,.08)", margin: "12px 6px" }} />
-              <button onClick={() => { setActiveCategory("Todos"); setActiveBrands([]); setOnlySale(false); setOnlyStock(false); }} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", height: 36, padding: "0 10px", borderRadius: 9, border: "none", background: "transparent", color: "#F4AA24", fontSize: 12, fontWeight: 600, cursor: "pointer", textAlign: "left" as const }}>
+              <button onClick={() => { setActiveCategory("Todos"); setActiveBrands([]); setOnlySale(false); }} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", height: 36, padding: "0 10px", borderRadius: 9, border: "none", background: "transparent", color: "#F4AA24", fontSize: 12, fontWeight: 600, cursor: "pointer", textAlign: "left" as const }}>
                 <Icon name="close" size={12} />
                 <span>Limpiar filtros</span>
               </button>
@@ -634,7 +632,6 @@ export default function Catalog() {
             ) : (
               <div className="product-grid" style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(auto-fill, minmax(200px, 1fr))", gap: isMobile ? 8 : 12 }}>
                 {filtered.slice(0, visibleCount).map(p => {
-                  const inStock = p.stock > 0;
                   const cartQty = cart.filter(i => i.productId === p.id).reduce((s, i) => s + i.quantity, 0);
                   return (
                     <div key={p.id} onClick={() => openProduct(p)}
@@ -645,11 +642,6 @@ export default function Catalog() {
                       <div style={{ height: 140, background: "#f8fafc", position: "relative", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
                         <CardImg product={p} />
                         {p.tag && <div style={{ position: "absolute", top: 8, left: 8 }}><Tag label={p.tag} accent={accent} /></div>}
-                        {p.stock === 0 && (
-                          <div style={{ position: "absolute", top: 8, right: 8 }}>
-                            <span style={{ fontSize: 9, fontWeight: 800, color: "#94a3b8", letterSpacing: ".1em", textTransform: "uppercase" as const, background: "rgba(241,245,249,.9)", padding: "2px 6px", borderRadius: 4 }}>Sin stock</span>
-                          </div>
-                        )}
                       </div>
                       <div style={{ padding: "10px 12px", flex: 1, display: "flex", flexDirection: "column", gap: 3 }}>
                         <div style={{ fontSize: 9, fontWeight: 800, color: "#94a3b8", letterSpacing: ".12em", textTransform: "uppercase" as const }}>{p.brand}</div>
@@ -692,13 +684,13 @@ export default function Catalog() {
                               <Icon name="minus" size={12} />
                             </button>
                             <span style={{ fontSize: 14, fontWeight: 800, minWidth: 26, textAlign: "center" as const, color: "#02152C" }}>{cartQty}</span>
-                            <button onClick={e => { e.stopPropagation(); e.preventDefault(); if (inStock) addToCart(p, p.minQty); }} style={{ width: 28, height: 28, borderRadius: 7, background: accent, color: accent === "#F4AA24" ? "#02152C" : "#fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <button onClick={e => { e.stopPropagation(); e.preventDefault(); addToCart(p, p.minQty); }} style={{ width: 28, height: 28, borderRadius: 7, background: accent, color: accent === "#F4AA24" ? "#02152C" : "#fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
                               <Icon name="plus" size={12} />
                             </button>
                           </div>
                         ) : (
-                          <button onClick={e => { e.stopPropagation(); e.preventDefault(); if (inStock) addToCart(p, p.minQty); }}
-                            style={{ height: 30, padding: "0 12px", borderRadius: 8, background: inStock ? "#02152C" : "#f1f5f9", color: inStock ? "#F4AA24" : "#94a3b8", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", gap: 5, opacity: inStock ? 1 : 0.5 }}>
+                          <button onClick={e => { e.stopPropagation(); e.preventDefault(); addToCart(p, p.minQty); }}
+                            style={{ height: 30, padding: "0 12px", borderRadius: 8, background: "#02152C", color: "#F4AA24", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", gap: 5 }}>
                             <Icon name="plus" size={12} />
                             Agregar
                           </button>
@@ -816,9 +808,6 @@ export default function Catalog() {
               </button>
               <div style={{ position: "absolute", top: 12, left: 12, display: "flex", gap: 6 }}>
                 {selected.tag && <Tag label={selected.tag} accent={accent} />}
-                <span style={{ fontSize: 11, fontWeight: 600, padding: "2px 7px", borderRadius: 20, background: selected.stock > 0 ? "#052e16" : "#3b0000", color: selected.stock > 0 ? "#4ade80" : "#f87171" }}>
-                  {selected.stock > 0 ? `${selected.stock} en stock` : "Sin stock"}
-                </span>
               </div>
             </div>
 
@@ -852,10 +841,10 @@ export default function Catalog() {
                       const active = selectedVariant?.sku === v.sku;
                       return (
                         <button key={v.sku} onClick={() => setSelectedVariant(v)}
-                          style={{ padding: "8px 14px", borderRadius: 9, border: `1.5px solid ${active ? accent : "var(--border2)"}`, background: active ? accent + "15" : "transparent", color: active ? accent : v.stock === 0 ? "var(--text3)" : "var(--text)", fontSize: 13, fontWeight: active ? 600 : 400, opacity: v.stock === 0 ? 0.5 : 1 }}
+                          style={{ padding: "8px 14px", borderRadius: 9, border: `1.5px solid ${active ? accent : "var(--border2)"}`, background: active ? accent + "15" : "transparent", color: active ? accent : "var(--text)", fontSize: 13, fontWeight: active ? 600 : 400 }}
                         >
                           <div>{v.label}</div>
-                          <div style={{ fontSize: 11, color: active ? accent : "var(--text3)", marginTop: 2 }}>{fmt(v.price, settings.currency)} · {v.stock > 0 ? `${v.stock} u.` : "Sin stock"}</div>
+                          <div style={{ fontSize: 11, color: active ? accent : "var(--text3)", marginTop: 2 }}>{fmt(v.price, settings.currency)}</div>
                         </button>
                       );
                     })}
@@ -910,8 +899,7 @@ export default function Catalog() {
               {user ? (
                 <button
                   onClick={() => addToCart(selected, detailQty, selectedVariant)}
-                  disabled={selected.stock === 0}
-                  style={{ height: 46, padding: "0 24px", borderRadius: 10, background: selected.stock === 0 ? "var(--surface3)" : accent, color: selected.stock === 0 ? "var(--text3)" : "#000", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, flex: isMobile ? 1 : undefined }}
+                  style={{ height: 46, padding: "0 24px", borderRadius: 10, background: accent, color: "#000", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, flex: isMobile ? 1 : undefined }}
                 >
                   <Icon name="cart" size={16} />
                   Agregar al pedido
