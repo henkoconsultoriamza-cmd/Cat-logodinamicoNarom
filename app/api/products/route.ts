@@ -106,33 +106,39 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json();
   const items: any[] = body.products ?? (Array.isArray(body) ? body : []);
+  // preserveOnSale: true cuando viene de una importación masiva — nunca pisar el flag de oferta
+  const preserveOnSale: boolean = body.preserveOnSale === true;
   if (!items.length) return NextResponse.json({ error: "Sin datos" }, { status: 400 });
 
   const sb = createClient(url, serviceKey, { db: { schema: "catalog" } });
   const now = new Date().toISOString();
 
-  const payload = items.map((p: any) => ({
-    id:          String(p.id),
-    sku:         String(p.sku  ?? "").trim(),
-    name:        String(p.name ?? ""),
-    brand:       String(p.brand ?? ""),
-    category:    String(p.category ?? ""),
-    description: String(p.description ?? ""),
-    image:       String(p.image ?? ""),
-    image_color: String(p.imageColor ?? ""),
-    image_icon:  String(p.imageIcon ?? ""),
-    tag:         p.tag ?? null,
-    price:       Number(p.price) || 0,
-    price_retail:p.priceRetail ? Number(p.priceRetail) : null,
-    sale_price:  p.salePrice   ? Number(p.salePrice)   : null,
-    on_sale:     Boolean(p.onSale),
-    min_qty:     Number(p.minQty) || 1,
-    stock:       p.stock != null ? Number(p.stock) : 100,
-    specs:       p.specs    ?? null,
-    variants:    p.variants ?? null,
-    is_deleted:  false,
-    updated_at:  now,
-  }));
+  const payload = items.map((p: any) => {
+    const row: Record<string, any> = {
+      id:          String(p.id),
+      sku:         String(p.sku  ?? "").trim(),
+      name:        String(p.name ?? ""),
+      brand:       String(p.brand ?? ""),
+      category:    String(p.category ?? ""),
+      description: String(p.description ?? ""),
+      image:       String(p.image ?? ""),
+      image_color: String(p.imageColor ?? ""),
+      image_icon:  String(p.imageIcon ?? ""),
+      tag:         p.tag ?? null,
+      price:       Number(p.price) || 0,
+      price_retail:p.priceRetail ? Number(p.priceRetail) : null,
+      sale_price:  p.salePrice   ? Number(p.salePrice)   : null,
+      min_qty:     Number(p.minQty) || 1,
+      stock:       p.stock != null ? Number(p.stock) : 100,
+      specs:       p.specs    ?? null,
+      variants:    p.variants ?? null,
+      is_deleted:  false,
+      updated_at:  now,
+    };
+    // Solo incluir on_sale cuando no es una importación masiva (preserveOnSale=false)
+    if (!preserveOnSale) row.on_sale = Boolean(p.onSale);
+    return row;
+  });
 
   // Upsert en lotes de 500
   for (let i = 0; i < payload.length; i += 500) {

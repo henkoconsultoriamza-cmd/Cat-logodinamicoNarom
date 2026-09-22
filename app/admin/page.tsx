@@ -429,7 +429,7 @@ export default function Admin() {
             ...p,
             price:     precioKey && row[precioKey] != null ? Number(row[precioKey]) || p.price : p.price,
             salePrice: ofertaKey && row[ofertaKey] != null ? Number(row[ofertaKey]) || undefined : p.salePrice,
-            onSale:    enOfertaKey && row[enOfertaKey] != null ? String(row[enOfertaKey]).toUpperCase() === "SI" : p.onSale,
+            onSale:    p.onSale, // la oferta solo se cambia manualmente, nunca por importación
             stock:     stockKey && row[stockKey]   != null ? Number(row[stockKey])  : p.stock,
             minQty:    minQtyKey && row[minQtyKey] != null ? Number(row[minQtyKey]) : p.minQty,
           };
@@ -449,7 +449,7 @@ export default function Admin() {
             description: "", image: "", imageColor: "", imageIcon: "",
             price:     precioKey  && row[precioKey]  != null ? Number(row[precioKey])  || 0 : 0,
             salePrice: ofertaKey  && row[ofertaKey]  != null ? Number(row[ofertaKey])  || undefined : undefined,
-            onSale:    enOfertaKey ? String(row[enOfertaKey] ?? "").toUpperCase() === "SI" : false,
+            onSale:    false, // la oferta solo se activa manualmente
             stock:     stockKey   && row[stockKey]   != null ? Number(row[stockKey])  : 0,
             minQty:    minQtyKey  && row[minQtyKey]  != null ? Number(row[minQtyKey]) : 1,
           });
@@ -463,7 +463,7 @@ export default function Admin() {
         const res = await fetch("/api/products", {
           method: "POST",
           headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-          body: JSON.stringify({ products: finalList }),
+          body: JSON.stringify({ products: finalList, preserveOnSale: true }),
         });
         const json = await res.json();
         if (json.error) { alert("Error al guardar en Supabase: " + json.error); return; }
@@ -1166,13 +1166,13 @@ export default function Admin() {
                             <div style={field}><span style={labelS}>Min. qty</span>
                               <input type="number" style={inputS} value={p.minQty} onChange={e => updateProduct(p.id, "minQty", Number(e.target.value))} />
                             </div>
-                            <div style={field}><span style={labelS}>Precio oferta</span>
+                            <div style={field}><span style={labelS}>Precio con descuento</span>
                               <input type="number" style={inputS} value={p.salePrice ?? ""} onChange={e => updateProduct(p.id, "salePrice", Number(e.target.value) || undefined)} />
                             </div>
                             <div style={{ gridColumn: "1 / -1" }}>
                               <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 13, color: N.text }}>
                                 <input type="checkbox" checked={p.onSale} onChange={e => updateProduct(p.id, "onSale", e.target.checked)} />
-                                Marcar como oferta
+                                Marcar como oferta (manual — muestra badge rojo en el catálogo)
                               </label>
                             </div>
                             <div style={{ ...field, gridColumn: "1 / -1" }}>
@@ -1319,7 +1319,7 @@ export default function Admin() {
                 <input style={inputS} type="number" min="0" value={newProd.price} onChange={e => setNewProd(p => ({ ...p, price: e.target.value }))} placeholder="0" />
               </div>
               <div style={field}>
-                <span style={labelS}>Precio C/D (opcional)</span>
+                <span style={labelS}>Precio con descuento (opcional)</span>
                 <input style={inputS} type="number" min="0" value={newProd.salePrice} onChange={e => setNewProd(p => ({ ...p, salePrice: e.target.value }))} placeholder="0" />
               </div>
               <div style={field}>
