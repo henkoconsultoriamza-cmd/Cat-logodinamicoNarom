@@ -144,7 +144,7 @@ export const DEFAULT_APP_SETTINGS: AppSettings = {
   logoText: "NRM",
   accentColor: "#F4AA24",
   currency: "ARS",
-  whatsappNumber: "5491157648501",
+  whatsappNumber: "5492613020015",
   contactEmail: "ventas@naromgroup.com.ar",
 };
 
