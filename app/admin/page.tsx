@@ -1074,7 +1074,7 @@ export default function Admin() {
                         <button onClick={async () => {
                             if (!confirm(`¿Eliminar a ${c.name || c.email}? Esta acción no se puede deshacer.`)) return;
                             const headers = await authHeaders();
-                            const res = await fetch("/api/delete-client", { method: "DELETE", headers, body: JSON.stringify({ id: c.id }) });
+                            const res = await fetch("/api/delete-client", { method: "DELETE", headers, body: JSON.stringify({ id: c.id, email: c.email }) });
                             const json = await res.json();
                             if (json.error) { alert("Error: " + json.error); return; }
                             setSelectedClient(null);
