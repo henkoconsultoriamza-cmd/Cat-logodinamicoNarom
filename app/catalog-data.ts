@@ -134,25 +134,6 @@ export const BRANDS = [
 
 export type Brand = typeof BRANDS[number];
 
-export const CATEGORIES = [
-  "Abrazaderas y Aprietes","Accesorios","Adhesivos","Adhesivos para ceramica","Aditivos",
-  "Aerosoles","Albanileria","Alicates","Alicates y Pinzas","Amoladoras","Aspiradoras",
-  "Atornilladores","Automotriz","Baterias y Cargadores","Bolsos y Organizadores","Bombas",
-  "Brocas","Brocas y Accesorios","Canillas y Llaves","Cepilladoras","Cepillos Industriales",
-  "Cintas Adhesivas","Clavadoras","Cocinas y Sopletes","Compresor y Aire","Compresores y Accesorios",
-  "Cortadoras","Destornilladores","Diluyentes","Discos Abrasivos","Enduidos","Flexibles",
-  "Generadores","Grapadoras y Pistolas","Herramientas de Construcción","Herramientas de Jardin",
-  "Herramientas de Mano","Herramientas Neumáticas","Impermeabilizantes","Jardín","Lijadoras",
-  "Lijas y Abrasivos","Llaves","Llaves de Impacto","Llaves y Criques","Lubricantes y Químicos",
-  "Lubricantes y Selladores","Martillos","Martillos y Mazas","Masillas","Medición","Neumaticas",
-  "Organizacion","Pastinas","Pinzas y Alicates","Pistolas de Calor","Pistolas de Pintar",
-  "Pistolas de Silicona","Precintos y Fijación","Prensas y Criques","Pulidoras",
-  "Remachadoras y Accesorios","Reparadores","Repuestos","Repuestos Plomería","Revoques y enduidos",
-  "Riego","Rotomartillos","Selladores","Sets y Combos","Sierras","Sierras y Accesorios",
-  "Siliconas","Soldadura","Taladros","Taladros y Atornilladores","Taladros y Rotomartillos",
-  "Termofusión","Tijeras Industriales",
-] as const;
-
 export const PRODUCTS_KEY = "mota_products_v6";
 export const CART_KEY = "mota_cart_v1";
 export const APP_SETTINGS_KEY = "mota_app_settings_v1";
