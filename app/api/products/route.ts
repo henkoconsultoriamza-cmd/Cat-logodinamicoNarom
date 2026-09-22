@@ -36,7 +36,7 @@ export async function GET() {
     const sb = createClient(url, anonKey, { db: { schema: "catalog" } });
 
     const [{ data: products, error: prodErr }, { data: prices }] = await Promise.all([
-      sb.from("products").select("*").eq("is_deleted", false).order("brand").order("name"),
+      sb.from("products").select("*").eq("is_deleted", false).order("brand").order("name").limit(10000),
       sb.from("prices").select("sku, brand, price, sale_price, on_sale, description"),
     ]);
 
