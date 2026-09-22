@@ -118,6 +118,7 @@ function MiniStat({ label, value, color }: any) {
 export default function Admin() {
   const [settings, setSettings] = useState(DEFAULT_APP_SETTINGS);
   const [products, setProducts] = useState(DEFAULT_PRODUCTS);
+  const [productsLoading, setProductsLoading] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const [saved, setSaved] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -194,29 +195,15 @@ export default function Admin() {
   useEffect(() => {
     const s = localStorage.getItem(APP_SETTINGS_KEY);
     if (s) { try { setSettings({ ...DEFAULT_APP_SETTINGS, ...JSON.parse(s) }); } catch { localStorage.removeItem(APP_SETTINGS_KEY); } }
-    const p = localStorage.getItem(PRODUCTS_KEY);
-    if (p) {
-      try {
-        const parsed = JSON.parse(p);
-        const needsMigration = parsed.some((x: any) => x.image && (x.image.includes('ingco_page_') || x.image.includes('ingco_extracted')));
-        if (needsMigration) {
-          fetch('/products/ingco_sections/sections_map.json').then(r => r.json()).then((sectMap: any) => {
-            const codeMap: Record<string, string> = sectMap.sku_to_code || {};
-            const imgMap: Record<string, string> = sectMap.code_to_image || {};
-            setProducts(parsed.map((x: any) => {
-              if (x.brand === 'INGCO') {
-                const code = codeMap[x.sku];
-                const newImg = code ? imgMap[code] : undefined;
-                if (newImg) return { ...x, image: newImg };
-              }
-              return x;
-            }));
-          }).catch(() => setProducts(parsed));
-        } else {
-          setProducts(parsed);
-        }
-      } catch { localStorage.removeItem(PRODUCTS_KEY); }
-    }
+
+    // Cargar productos desde Supabase
+    setProductsLoading(true);
+    fetch("/api/products")
+      .then(r => r.ok ? r.json() : Promise.reject(r.status))
+      .then(data => { if (Array.isArray(data) && data.length > 0) setProducts(data); })
+      .catch(() => {/* fallback a DEFAULT_PRODUCTS ya cargado */})
+      .finally(() => setProductsLoading(false));
+
     const sl = localStorage.getItem(BANNER_KEY);
     if (sl) { try { setSlides(JSON.parse(sl)); } catch {} }
     setHydrated(true);
@@ -316,19 +303,39 @@ export default function Admin() {
     if (selectedOrder?.id === id) setSelectedOrder(o => ({ ...o, status }));
   }
 
-  function saveSettings() {
+  async function saveSettings() {
     localStorage.setItem(APP_SETTINGS_KEY, JSON.stringify(settings));
-    localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
     setSaved(true);
+    try {
+      const token = await getToken();
+      const res = await fetch("/api/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        body: JSON.stringify({ products }),
+      });
+      const json = await res.json();
+      if (json.error) { alert("Error al guardar productos: " + json.error); setSaved(false); return; }
+    } catch (e: any) {
+      alert("Error de red al guardar: " + e.message);
+      setSaved(false);
+      return;
+    }
     setTimeout(() => setSaved(false), 2500);
   }
 
+  async function reloadProducts() {
+    setProductsLoading(true);
+    try {
+      const data = await fetch("/api/products").then(r => r.json());
+      if (Array.isArray(data) && data.length > 0) setProducts(data);
+    } catch {}
+    setProductsLoading(false);
+  }
+
   function resetAll() {
-    if (!confirm("¿Restaurar todos los datos a los valores originales de demo?")) return;
+    if (!confirm("¿Restaurar la configuración a los valores originales?")) return;
     localStorage.removeItem(APP_SETTINGS_KEY);
-    localStorage.removeItem(PRODUCTS_KEY);
     setSettings(DEFAULT_APP_SETTINGS);
-    setProducts(cloneProducts(DEFAULT_PRODUCTS));
   }
 
   function updateProduct(id, key, value) {
@@ -414,9 +421,17 @@ export default function Admin() {
 
         const finalList = [...updatedList, ...newProds];
         setProducts(finalList);
-        // Guardar en localStorage directamente
-        localStorage.setItem(PRODUCTS_KEY, JSON.stringify(finalList));
-        alert(`✅ ${updated} actualizados · ${added} nuevos agregados al catálogo.`);
+
+        // Guardar en Supabase
+        const token = await getToken();
+        const res = await fetch("/api/products", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+          body: JSON.stringify({ products: finalList }),
+        });
+        const json = await res.json();
+        if (json.error) { alert("Error al guardar en Supabase: " + json.error); return; }
+        alert(`✅ ${updated} actualizados · ${added} nuevos · guardados para todos los usuarios.`);
       } catch (err: any) {
         alert("Error al importar: " + (err?.message ?? String(err)));
       }
@@ -1040,6 +1055,11 @@ export default function Admin() {
                 </div>
 
                 <div style={{ padding: "0 24px" }}>
+                  {productsLoading && (
+                    <div style={{ padding: "20px 0", textAlign: "center", fontSize: 13, color: N.text3 }}>
+                      Cargando productos desde Supabase…
+                    </div>
+                  )}
                   <div style={{ fontSize: 12, color: N.text3, padding: "12px 0 4px" }}>
                     Columnas de importación Excel: SKU · Precio · PrecioOferta · EnOferta (SI/NO) · Stock · MinQty
                   </div>
@@ -1072,7 +1092,14 @@ export default function Admin() {
                               <Icon name="edit" size={13} />{isEditing ? "Cerrar" : "Editar"}
                             </button>
                             <button style={{ color: N.danger, background: N.danger + "12", border: "none", borderRadius: 8, width: 34, height: 34, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
-                              onClick={() => { if (confirm(`¿Eliminar "${p.name}" del catálogo?`)) setProducts(prev => prev.filter(x => x.id !== p.id)); }}>
+                              onClick={async () => {
+                                if (!confirm(`¿Eliminar "${p.name}" del catálogo?`)) return;
+                                setProducts(prev => prev.filter(x => x.id !== p.id));
+                                try {
+                                  const token = await getToken();
+                                  await fetch("/api/products", { method: "DELETE", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` }, body: JSON.stringify({ id: p.id }) });
+                                } catch {}
+                              }}>
                               <Icon name="close" size={15} />
                             </button>
                           </div>
@@ -1266,30 +1293,32 @@ export default function Admin() {
             {newProdMsg && <div style={{ padding: "0 24px 12px", fontSize: 13, color: newProdMsg.startsWith("✓") ? N.success : N.danger }}>{newProdMsg}</div>}
             <div style={{ padding: "0 24px 24px", display: "flex", gap: 10, justifyContent: "flex-end" }}>
               <button style={{ ...btn(N.text2, true) }} onClick={() => setShowNewProduct(false)}>Cancelar</button>
-              <button style={btn(N.success)} onClick={() => {
+              <button style={btn(N.success)} onClick={async () => {
                 if (!newProd.name || !newProd.sku || !newProd.price || !newProd.category) { setNewProdMsg("Completá los campos obligatorios (*)"); return; }
                 const price = parseFloat(newProd.price);
                 const salePrice = newProd.salePrice ? parseFloat(newProd.salePrice) : undefined;
                 if (isNaN(price) || price <= 0) { setNewProdMsg("El precio debe ser mayor a 0"); return; }
                 const product = {
                   id: `${newProd.brand.toLowerCase().replace(/\s/g, "-")}-${newProd.sku}-${Date.now()}`,
-                  name: newProd.name,
-                  brand: newProd.brand,
-                  category: newProd.category,
-                  sku: newProd.sku,
-                  description: newProd.description || "",
-                  image: newProd.image || "",
-                  imageColor: "#64748b",
-                  imageIcon: "📦",
-                  price,
-                  salePrice,
-                  onSale: false,
-                  minQty: parseInt(newProd.minQty) || 1,
-                  stock: 100,
+                  name: newProd.name, brand: newProd.brand, category: newProd.category, sku: newProd.sku,
+                  description: newProd.description || "", image: newProd.image || "",
+                  imageColor: "#64748b", imageIcon: "📦", price, salePrice, onSale: false,
+                  minQty: parseInt(newProd.minQty) || 1, stock: 100,
                 };
+                setNewProdMsg("Guardando…");
+                try {
+                  const token = await getToken();
+                  const res = await fetch("/api/products", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                    body: JSON.stringify({ products: [product] }),
+                  });
+                  const json = await res.json();
+                  if (json.error) { setNewProdMsg("Error: " + json.error); return; }
+                } catch (e: any) { setNewProdMsg("Error de red: " + e.message); return; }
                 setProducts(prev => [product, ...prev]);
-                setNewProdMsg("✓ Producto creado. Guardá los cambios para publicarlo.");
-                setTimeout(() => { setShowNewProduct(false); setNewProdMsg(""); }, 1500);
+                setNewProdMsg("✓ Producto creado y publicado para todos los usuarios.");
+                setTimeout(() => { setShowNewProduct(false); setNewProdMsg(""); }, 1800);
               }}>Crear producto</button>
             </div>
           </div>

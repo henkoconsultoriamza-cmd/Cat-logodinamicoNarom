@@ -176,37 +176,38 @@ export default function Catalog() {
   useEffect(() => {
     const s = localStorage.getItem(APP_SETTINGS_KEY);
     if (s) { try { setSettings({ ...DEFAULT_APP_SETTINGS, ...JSON.parse(s) }); } catch { localStorage.removeItem(APP_SETTINGS_KEY); } }
-    // Load INGCO sections map (numeric codes + section crop images)
-    fetch('/products/ingco_sections/sections_map.json').then(r => r.json()).then(async (sectMap: any) => {
-      const codeMap: Record<string, string> = sectMap.sku_to_code || {};
-      const imgMap: Record<string, string> = sectMap.code_to_image || {};
-      setIngcoCodeMap(codeMap);
-      const p2 = localStorage.getItem(PRODUCTS_KEY);
+
+    // Cargar productos desde Supabase (via API), con fallback a DEFAULT_PRODUCTS
+    async function loadProducts() {
       let base: Product[];
-      if (p2) {
-        try { base = JSON.parse(p2); } catch { localStorage.removeItem(PRODUCTS_KEY); base = DEFAULT_PRODUCTS as Product[]; }
-      } else {
+      try {
+        const res = await fetch("/api/products");
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        base = Array.isArray(data) && data.length > 0 ? data : DEFAULT_PRODUCTS as Product[];
+      } catch {
         base = DEFAULT_PRODUCTS as Product[];
       }
-      // Apply INGCO section images
-      base = base.map((x: any) => {
-        if (x.brand === 'INGCO') {
-          const newImg = imgMap[x.sku];
-          if (newImg) return { ...x, image: newImg };
-        }
-        return x;
-      });
-      // Merge Supabase price overrides
-      base = await mergeSupabasePrices(base);
+
+      // Aplicar imágenes de secciones INGCO si están disponibles
+      try {
+        const sectMap = await fetch('/products/ingco_sections/sections_map.json').then(r => r.json());
+        const codeMap: Record<string, string> = sectMap.sku_to_code || {};
+        const imgMap: Record<string, string> = sectMap.code_to_image || {};
+        setIngcoCodeMap(codeMap);
+        base = base.map((x: any) => {
+          if (x.brand === 'INGCO') {
+            const newImg = imgMap[x.sku];
+            if (newImg) return { ...x, image: newImg };
+          }
+          return x;
+        });
+      } catch {}
+
       setProducts(base);
-    }).catch(async () => {
-      const p2 = localStorage.getItem(PRODUCTS_KEY);
-      let base: Product[];
-      if (p2) { try { base = JSON.parse(p2); } catch { localStorage.removeItem(PRODUCTS_KEY); base = DEFAULT_PRODUCTS as Product[]; } }
-      else { base = DEFAULT_PRODUCTS as Product[]; }
-      base = await mergeSupabasePrices(base);
-      setProducts(base);
-    });
+    }
+
+    loadProducts();
     const c = localStorage.getItem(CART_KEY);
     if (c) { try { setCart(JSON.parse(c)); } catch { localStorage.removeItem(CART_KEY); } }
     setHydrated(true);
