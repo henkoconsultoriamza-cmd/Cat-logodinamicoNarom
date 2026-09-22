@@ -168,46 +168,65 @@ export default function PricesTab({ products, getToken }: { products: Product[];
   function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+    setImportMsg("Leyendo archivo...");
+    setPreview(null);
     const reader = new FileReader();
+    reader.onerror = () => setImportMsg("Error al leer el archivo. Intentá de nuevo.");
     reader.onload = ev => {
-      const wb = XLSX.read(ev.target?.result, { type: "binary" });
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const rows: any[][] = XLSX.utils.sheet_to_json(ws, { header: 1 });
-      // Find header row — busca la fila que contenga algo parecido a SKU o CÓDIGO
-      const hIdx = rows.findIndex(r => r.some(c => /SKU|CÓD|COD|ARTÍCULO|ARTICULO/i.test(String(c))));
-      if (hIdx === -1) { setImportMsg("No se encontró columna SKU o Código en el archivo. Revisá que el Excel tenga encabezados."); return; }
-      // Detección directa sin normalize — regex case-insensitive sobre valores originales
-      const header = rows[hIdx].map(c => String(c).trim());
-      const iSku  = header.findIndex(h => /^sku$/i.test(h) || /^c[oó]digo$/i.test(h) || /^c[oó]d\.?$/i.test(h) || /^art[íi]culo$/i.test(h) || /sku/i.test(h));
-      const iDesc = header.findIndex(h => /descripci[oó]n/i.test(h) || /^nombre$/i.test(h) || /^detalle$/i.test(h) || /^producto$/i.test(h));
-      const iPri  = header.findIndex(h => /^precio$/i.test(h) || /precio\s*lista/i.test(h) || /^price$/i.test(h));
-      const iSale = header.findIndex(h => /descuento/i.test(h) || /c\/d/i.test(h) || /precio.{0,4}c.{0,4}d/i.test(h) || /oferta/i.test(h));
+      try {
+        const data = ev.target?.result;
+        if (!data) { setImportMsg("Error: el archivo llegó vacío."); return; }
+        const wb = XLSX.read(data, { type: "array" });
+        if (!wb.SheetNames.length) { setImportMsg("El archivo no tiene hojas."); return; }
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const rows: any[][] = XLSX.utils.sheet_to_json(ws, { header: 1 });
+        setImportMsg(`Archivo leído: ${rows.length} filas. Buscando encabezado...`);
 
-      const dataRows = rows.slice(hIdx + 1).filter(r => r[iSku]);
-      const skuMap = new Map(merged.map(p => [p.sku, p]));
+        const hIdx = rows.findIndex(r => r.some(c => /SKU|C[OÓ]D|ART[IÍ]CULO/i.test(String(c))));
+        if (hIdx === -1) {
+          setImportMsg(`No se encontró columna SKU o Código. Encabezados detectados: ${JSON.stringify(rows[0])}`);
+          return;
+        }
 
-      const parsed: PreviewRow[] = dataRows.map(r => {
-        const sku = String(r[iSku]).trim();
-        const existing = skuMap.get(sku);
-        const rawPrice = iPri >= 0 && r[iPri] != null ? parseFloat(r[iPri]) || 0 : 0;
-        const rawSale  = iSale >= 0 && r[iSale] != null ? parseFloat(r[iSale]) || null : null;
-        // Si solo tiene precio C/D (precio lista = 0 o vacío), usarlo como precio base
-        const price     = rawPrice > 0 ? rawPrice : (rawSale ?? 0);
-        const sale_price = rawPrice > 0 ? rawSale : null;
-        return {
-          sku,
-          brand:       existing?.brand ?? "—",
-          name:        existing?.name  ?? "— no encontrado —",
-          description: iDesc >= 0 && r[iDesc] ? String(r[iDesc]).trim() : (existing?.description ?? ""),
-          price,
-          sale_price,
-          exists:      !!existing,
-        };
-      });
-      setPreview(parsed);
-      setImportMsg("");
+        const header = rows[hIdx].map(c => String(c).trim());
+        const iSku  = header.findIndex(h => /^sku$/i.test(h) || /^c[oó]digo$/i.test(h) || /^c[oó]d\.?$/i.test(h) || /^art[íi]culo$/i.test(h) || /sku/i.test(h));
+        const iDesc = header.findIndex(h => /descripci[oó]n/i.test(h) || /^nombre$/i.test(h) || /^detalle$/i.test(h) || /^producto$/i.test(h));
+        const iPri  = header.findIndex(h => /^precio$/i.test(h) || /precio\s*lista/i.test(h) || /^price$/i.test(h));
+        const iSale = header.findIndex(h => /descuento/i.test(h) || /c\/d/i.test(h) || /precio.{0,4}c.{0,4}d/i.test(h) || /oferta/i.test(h));
+
+        if (iSku === -1) {
+          setImportMsg(`Encabezados encontrados: ${JSON.stringify(header)} — no se detectó columna de código.`);
+          return;
+        }
+
+        const dataRows = rows.slice(hIdx + 1).filter(r => r[iSku]);
+        const skuMap = new Map(merged.map(p => [p.sku, p]));
+
+        setImportMsg(`Columnas: SKU="${header[iSku]}" Precio="${header[iPri] ?? '—'}" C/D="${header[iSale] ?? '—'}" | ${dataRows.length} filas | ${skuMap.size} productos en catálogo`);
+
+        const parsed: PreviewRow[] = dataRows.map(r => {
+          const sku = String(r[iSku]).trim();
+          const existing = skuMap.get(sku);
+          const rawPrice = iPri >= 0 && r[iPri] != null ? parseFloat(r[iPri]) || 0 : 0;
+          const rawSale  = iSale >= 0 && r[iSale] != null ? parseFloat(r[iSale]) || null : null;
+          const price     = rawPrice > 0 ? rawPrice : (rawSale ?? 0);
+          const sale_price = rawPrice > 0 ? rawSale : null;
+          return {
+            sku,
+            brand:       existing?.brand ?? "—",
+            name:        existing?.name  ?? "— no encontrado —",
+            description: iDesc >= 0 && r[iDesc] ? String(r[iDesc]).trim() : (existing?.description ?? ""),
+            price,
+            sale_price,
+            exists:      !!existing,
+          };
+        });
+        setPreview(parsed);
+      } catch (err: any) {
+        setImportMsg("Error al procesar el Excel: " + (err?.message ?? String(err)));
+      }
     };
-    reader.readAsBinaryString(file);
+    reader.readAsArrayBuffer(file);
     e.target.value = "";
   }
 
