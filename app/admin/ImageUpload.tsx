@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 interface Props {
   value: string;
   onChange: (url: string) => void;
-  token: string;
+  token: string | (() => Promise<string>);
   folder?: string;
   hint?: string;
 }
@@ -17,12 +17,13 @@ export default function ImageUpload({ value, onChange, token, folder = "products
   async function handleFile(file: File) {
     setError("");
     setUploading(true);
+    const resolvedToken = typeof token === "function" ? await token() : token;
     const fd = new FormData();
     fd.append("file", file);
     fd.append("folder", folder);
     const res = await fetch("/api/upload-image", {
       method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${resolvedToken}` },
       body: fd,
     });
     const json = await res.json();

@@ -1226,7 +1226,7 @@ export default function Admin() {
                               <ImageUpload
                                 value={p.image ?? ""}
                                 onChange={url => updateProduct(p.id, "image", url)}
-                                token={adminToken}
+                                token={getToken}
                                 folder="products"
                                 hint="800×800 px · Fondo blanco · JPG o PNG · Máx. 2 MB"
                               />
@@ -1307,7 +1307,7 @@ export default function Admin() {
                       <ImageUpload
                         value={s.img}
                         onChange={url => setSlides(sl => sl.map((x, j) => j === i ? { ...x, img: url } : x))}
-                        token={adminToken}
+                        token={getToken}
                         folder="banners"
                         hint="1400×500 px recomendado · JPG o PNG · Máx. 2 MB"
                       />
@@ -1377,7 +1377,7 @@ export default function Admin() {
                 <ImageUpload
                   value={newProd.image}
                   onChange={url => setNewProd(p => ({ ...p, image: url }))}
-                  token={adminToken}
+                  token={getToken}
                   folder="products"
                 />
               </div>
