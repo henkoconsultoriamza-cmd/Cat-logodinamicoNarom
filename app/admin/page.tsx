@@ -1022,6 +1022,7 @@ export default function Admin() {
                             <div style={{ ...field, gridColumn: "1 / -1" }}>
                               <span style={labelS}>URL de imagen</span>
                               <input style={inputS} value={p.image ?? ""} placeholder='https://… o /products/nombre.jpeg' onChange={e => updateProduct(p.id, "image", e.target.value || "")} />
+                              <span style={{ fontSize: 10, color: "#64748b", marginTop: 3 }}>📐 Tamaño recomendado: <strong>800 × 800 px</strong> · Fondo blanco · JPG o PNG · Máx. 300 KB</span>
                             </div>
                           </div>
                         )}
