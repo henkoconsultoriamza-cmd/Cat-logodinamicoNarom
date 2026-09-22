@@ -170,6 +170,9 @@ export default function Admin() {
   const [editFields, setEditFields] = useState<any>({});
   const [editMsg, setEditMsg] = useState("");
 
+  // Dashboard month filter
+  const [dashMonth, setDashMonth] = useState<string>("all"); // "all" | "YYYY-MM"
+
   // Products filter
   const [prodSearch, setProdSearch] = useState("");
   const [prodBrand, setProdBrand] = useState("Todas");
@@ -530,14 +533,46 @@ export default function Admin() {
   }
 
   // ── Derived stats ────────────────────────────────────────────────────────
-  const pendingOrders = orders.filter(o => o.status === "pendiente").length;
-  const confirmedOrders = orders.filter(o => o.status === "confirmado").length;
-  const inPrepOrders = orders.filter(o => o.status === "en_preparacion").length;
-  const deliveredOrders = orders.filter(o => o.status === "entregado").length;
-  const totalRevenue = orders.reduce((acc, o) => acc + (o.total || 0), 0);
+  const filteredByMonth = dashMonth === "all"
+    ? orders
+    : orders.filter(o => o.created_at?.slice(0, 7) === dashMonth);
+
+  const pendingOrders   = orders.filter(o => o.status === "pendiente").length;
+  const confirmedOrders = filteredByMonth.filter(o => o.status === "confirmado").length;
+  const inPrepOrders    = orders.filter(o => o.status === "en_preparacion").length;
+  const deliveredOrders = filteredByMonth.filter(o => o.status === "entregado").length;
+  const totalRevenue    = filteredByMonth.reduce((acc, o) => acc + (o.total || 0), 0);
   const safeProds = products.filter(p => p != null && p.id != null);
   const onSaleCount = safeProds.filter(p => p.onSale).length;
   const noStockCount = safeProds.filter(p => p.stock === 0).length;
+
+  // Top clientes del período
+  const clientTotals = filteredByMonth.reduce((acc: Record<string, { name: string; total: number; count: number }>, o) => {
+    const key = o.client_name || "—";
+    if (!acc[key]) acc[key] = { name: key, total: 0, count: 0 };
+    acc[key].total += o.total || 0;
+    acc[key].count += 1;
+    return acc;
+  }, {});
+  const topClients = Object.values(clientTotals).sort((a, b) => b.total - a.total).slice(0, 5);
+
+  // Pedidos por mes (últimos 6 meses)
+  const last6Months = Array.from({ length: 6 }, (_, i) => {
+    const d = new Date();
+    d.setDate(1);
+    d.setMonth(d.getMonth() - (5 - i));
+    return d.toISOString().slice(0, 7);
+  });
+  const ordersByMonth = last6Months.map(m => ({
+    label: new Date(m + "-01").toLocaleDateString("es-AR", { month: "short", year: "2-digit" }),
+    month: m,
+    count: orders.filter(o => o.created_at?.slice(0, 7) === m).length,
+    total: orders.filter(o => o.created_at?.slice(0, 7) === m).reduce((s, o) => s + (o.total || 0), 0),
+  }));
+  const maxMonthTotal = Math.max(...ordersByMonth.map(m => m.total), 1);
+
+  // Opciones de meses para el selector
+  const monthOptions = Array.from(new Set(orders.map(o => o.created_at?.slice(0, 7)).filter(Boolean))).sort().reverse();
 
   // ── Filtered products ────────────────────────────────────────────────────
   const filteredProds = safeProds.filter(p => {
@@ -723,16 +758,22 @@ export default function Admin() {
           {/* ── DASHBOARD ──────────────────────────────────────────────── */}
           {activeTab === "dashboard" && (
             <div>
-              {/* Greeting */}
-              <div style={{ marginBottom: 28 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: N.amber, letterSpacing: ".14em", textTransform: "uppercase", marginBottom: 6 }}>
-                  CENTRO DE OPERACIONES
+              {/* Header + filtro mes */}
+              <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 12, marginBottom: 24 }}>
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: N.amber, letterSpacing: ".14em", textTransform: "uppercase", marginBottom: 6 }}>CENTRO DE OPERACIONES</div>
+                  <div style={{ fontSize: 28, fontWeight: 900, color: N.text, lineHeight: 1.1, marginBottom: 4 }}>Panel Narom Group</div>
+                  <div style={{ fontSize: 13, color: N.text2 }}>{orders.length} pedidos en total · {products.length.toLocaleString("es-AR")} productos en catálogo</div>
                 </div>
-                <div style={{ fontSize: 30, fontWeight: 900, color: N.text, lineHeight: 1.1, marginBottom: 6 }}>
-                  Panel Narom Group
-                </div>
-                <div style={{ fontSize: 14, color: N.text2 }}>
-                  {orders.length} pedidos en total · {products.length.toLocaleString("es-AR")} productos en catálogo
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: N.text2 }}>Período:</span>
+                  <select value={dashMonth} onChange={e => setDashMonth(e.target.value)}
+                    style={{ height: 36, borderRadius: 9, border: `1px solid ${N.border}`, background: N.surface, color: N.text, fontSize: 13, padding: "0 12px", outline: "none", cursor: "pointer" }}>
+                    <option value="all">Todos los meses</option>
+                    {monthOptions.map(m => (
+                      <option key={m} value={m}>{new Date(m + "-01").toLocaleDateString("es-AR", { month: "long", year: "numeric" })}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
@@ -744,67 +785,100 @@ export default function Admin() {
                 <StatCard icon="box" label="Productos" value={products.length.toLocaleString("es-AR")} sub={`${BRANDS.length} marcas en catálogo`} color={N.success} accent={N.amber} />
               </div>
 
-              {/* Secondary stats */}
-              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(3, 1fr)" : "repeat(5, 1fr)", gap: isMobile ? 8 : 12, marginBottom: isMobile ? 16 : 28 }}>
-                <MiniStat label="Confirmados" value={confirmedOrders} color={N.info} />
-                <MiniStat label="Entregados" value={deliveredOrders} color={N.success} />
-                <MiniStat label="Total pedidos" value={orders.length} />
-                <MiniStat label="En oferta" value={onSaleCount} color={N.warning} />
-                <MiniStat label="Sin stock" value={noStockCount} color={noStockCount > 0 ? N.danger : N.text3} />
-              </div>
-
-              {/* Status pipeline */}
-              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16 }}>
-                {/* Orders by status */}
-                <div style={{ background: N.surface, borderRadius: 14, border: `1px solid ${N.border}`, padding: 24 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: N.text2, letterSpacing: ".1em", textTransform: "uppercase", marginBottom: 16 }}>PEDIDOS POR ESTADO</div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                    {COL_STATUS.map(s => {
-                      const c = orders.filter(o => o.status === s).length;
-                      const pct = orders.length ? Math.round(c / orders.length * 100) : 0;
-                      return (
-                        <div key={s}>
-                          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                            <span style={{ fontSize: 13, fontWeight: 600, color: N.text }}>{COL_LABEL[s]}</span>
-                            <span style={{ fontSize: 13, fontWeight: 700, color: COL_COLOR[s] }}>{c}</span>
-                          </div>
-                          <div style={{ height: 6, borderRadius: 4, background: N.border }}>
-                            <div style={{ height: 6, borderRadius: 4, background: COL_COLOR[s], width: `${pct}%`, transition: "width .5s ease" }} />
-                          </div>
-                        </div>
-                      );
-                    })}
+              {/* Revenue + secondary stats */}
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 3fr", gap: isMobile ? 10 : 16, marginBottom: 20 }}>
+                {/* Total facturado */}
+                <div style={{ background: N.navy, borderRadius: 14, border: `1px solid ${N.border}`, padding: 24, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: N.amber, letterSpacing: ".12em", textTransform: "uppercase", marginBottom: 8 }}>
+                    {dashMonth === "all" ? "Total facturado" : "Facturado en el período"}
+                  </div>
+                  <div style={{ fontSize: 32, fontWeight: 900, color: "#fff", letterSpacing: "-0.03em" }}>
+                    $ {totalRevenue.toLocaleString("es-AR", { minimumFractionDigits: 0 })}
+                  </div>
+                  <div style={{ fontSize: 12, color: "rgba(255,255,255,.4)", marginTop: 4 }}>
+                    {filteredByMonth.length} pedido{filteredByMonth.length !== 1 ? "s" : ""} · {dashMonth === "all" ? "histórico total" : new Date(dashMonth + "-01").toLocaleDateString("es-AR", { month: "long", year: "numeric" })}
                   </div>
                 </div>
+                {/* Mini stats */}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: isMobile ? 8 : 12 }}>
+                  <MiniStat label="Confirmados" value={confirmedOrders} color={N.info} />
+                  <MiniStat label="Entregados" value={deliveredOrders} color={N.success} />
+                  <MiniStat label="En oferta" value={onSaleCount} color={N.warning} />
+                  <MiniStat label="Sin stock" value={noStockCount} color={noStockCount > 0 ? N.danger : N.text3} />
+                </div>
+              </div>
 
-                {/* Recent orders */}
+              {/* Bottom grid */}
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 16 }}>
+
+                {/* Ventas por mes */}
                 <div style={{ background: N.surface, borderRadius: 14, border: `1px solid ${N.border}`, padding: 24 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: N.text2, letterSpacing: ".1em", textTransform: "uppercase" }}>ÚLTIMOS PEDIDOS</div>
-                    <button onClick={() => setActiveTab("orders")} style={{ fontSize: 12, color: N.amber, fontWeight: 700, background: "none", border: "none", cursor: "pointer" }}>
-                      Ver todos →
-                    </button>
-                  </div>
-                  {orders.length === 0 && (
-                    <div style={{ fontSize: 13, color: N.text3, textAlign: "center", padding: "20px 0" }}>Sin pedidos aún</div>
-                  )}
+                  <div style={{ fontSize: 11, fontWeight: 700, color: N.text2, letterSpacing: ".1em", textTransform: "uppercase", marginBottom: 16 }}>VENTAS ÚLTIMOS 6 MESES</div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                    {orders.slice(0, 5).map(o => (
-                      <div key={o.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "8px 0", borderBottom: `1px solid ${N.border2}` }}>
-                        <div style={{ width: 34, height: 34, borderRadius: 8, background: COL_COLOR[o.status] + "18", display: "flex", alignItems: "center", justifyContent: "center", color: COL_COLOR[o.status], flexShrink: 0, fontSize: 13, fontWeight: 800 }}>
-                          {(o.client_name?.[0] || "?").toUpperCase()}
+                    {ordersByMonth.map(m => (
+                      <div key={m.month}>
+                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
+                          <span style={{ fontSize: 12, color: m.month === dashMonth ? N.amber : N.text, fontWeight: m.month === dashMonth ? 700 : 400, textTransform: "capitalize" }}>{m.label}</span>
+                          <span style={{ fontSize: 12, fontWeight: 700, color: N.text }}>
+                            {m.count} ped · $ {m.total.toLocaleString("es-AR", { maximumFractionDigits: 0 })}
+                          </span>
                         </div>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ fontSize: 13, fontWeight: 600, color: N.text }}>{o.client_name}</div>
-                          <div style={{ fontSize: 11, color: N.text3 }}>{o.items?.length || 0} productos</div>
-                        </div>
-                        <div style={{ textAlign: "right" }}>
-                          <div style={{ fontSize: 13, fontWeight: 800, color: N.text }}>$ {o.total?.toLocaleString("es-AR")}</div>
-                          <div style={{ fontSize: 10, fontWeight: 700, color: COL_COLOR[o.status] }}>{COL_LABEL[o.status]}</div>
+                        <div style={{ height: 5, borderRadius: 3, background: N.border }}>
+                          <div style={{ height: 5, borderRadius: 3, background: m.month === dashMonth ? N.amber : N.info, width: `${Math.round(m.total / maxMonthTotal * 100)}%`, transition: "width .5s ease" }} />
                         </div>
                       </div>
                     ))}
                   </div>
+                </div>
+
+                {/* Top clientes */}
+                <div style={{ background: N.surface, borderRadius: 14, border: `1px solid ${N.border}`, padding: 24 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: N.text2, letterSpacing: ".1em", textTransform: "uppercase", marginBottom: 16 }}>
+                    TOP CLIENTES {dashMonth !== "all" && `· ${new Date(dashMonth + "-01").toLocaleDateString("es-AR", { month: "short" }).toUpperCase()}`}
+                  </div>
+                  {topClients.length === 0
+                    ? <div style={{ fontSize: 13, color: N.text3, textAlign: "center", padding: "20px 0" }}>Sin pedidos en el período</div>
+                    : <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                        {topClients.map((c, i) => (
+                          <div key={c.name} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                            <div style={{ width: 24, height: 24, borderRadius: 6, background: i === 0 ? N.amber : N.border, color: i === 0 ? N.navy : N.text2, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, flexShrink: 0 }}>{i + 1}</div>
+                            <div style={{ flex: 1, overflow: "hidden" }}>
+                              <div style={{ fontSize: 13, fontWeight: 600, color: N.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.name}</div>
+                              <div style={{ fontSize: 11, color: N.text3 }}>{c.count} pedido{c.count !== 1 ? "s" : ""}</div>
+                            </div>
+                            <div style={{ fontSize: 13, fontWeight: 800, color: N.text, flexShrink: 0 }}>$ {c.total.toLocaleString("es-AR", { maximumFractionDigits: 0 })}</div>
+                          </div>
+                        ))}
+                      </div>
+                  }
+                </div>
+
+                {/* Últimos pedidos */}
+                <div style={{ background: N.surface, borderRadius: 14, border: `1px solid ${N.border}`, padding: 24 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: N.text2, letterSpacing: ".1em", textTransform: "uppercase" }}>ÚLTIMOS PEDIDOS</div>
+                    <button onClick={() => setActiveTab("orders")} style={{ fontSize: 12, color: N.amber, fontWeight: 700, background: "none", border: "none", cursor: "pointer" }}>Ver todos →</button>
+                  </div>
+                  {filteredByMonth.length === 0
+                    ? <div style={{ fontSize: 13, color: N.text3, textAlign: "center", padding: "20px 0" }}>Sin pedidos en el período</div>
+                    : <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                        {filteredByMonth.slice(0, 5).map(o => (
+                          <div key={o.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "8px 0", borderBottom: `1px solid ${N.border2}` }}>
+                            <div style={{ width: 34, height: 34, borderRadius: 8, background: COL_COLOR[o.status] + "18", display: "flex", alignItems: "center", justifyContent: "center", color: COL_COLOR[o.status], flexShrink: 0, fontSize: 13, fontWeight: 800 }}>
+                              {(o.client_name?.[0] || "?").toUpperCase()}
+                            </div>
+                            <div style={{ flex: 1 }}>
+                              <div style={{ fontSize: 13, fontWeight: 600, color: N.text }}>{o.client_name}</div>
+                              <div style={{ fontSize: 11, color: N.text3 }}>{o.items?.length || 0} productos</div>
+                            </div>
+                            <div style={{ textAlign: "right" }}>
+                              <div style={{ fontSize: 13, fontWeight: 800, color: N.text }}>$ {o.total?.toLocaleString("es-AR")}</div>
+                              <div style={{ fontSize: 10, fontWeight: 700, color: COL_COLOR[o.status] }}>{COL_LABEL[o.status]}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                  }
                 </div>
               </div>
             </div>
