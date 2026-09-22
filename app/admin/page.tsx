@@ -198,7 +198,7 @@ export default function Admin() {
 
     // Cargar productos desde Supabase
     setProductsLoading(true);
-    fetch("/api/products", { cache: "no-store" })
+    fetch("/api/products?t=" + Date.now(), { cache: "no-store" })
       .then(r => r.ok ? r.json() : Promise.reject(r.status))
       .then(data => {
         if (Array.isArray(data) && data.length > 0)
@@ -345,7 +345,7 @@ export default function Admin() {
   async function reloadProducts() {
     setProductsLoading(true);
     try {
-      const data = await fetch("/api/products", { cache: "no-store" }).then(r => r.json());
+      const data = await fetch("/api/products?t=" + Date.now(), { cache: "no-store" }).then(r => r.json());
       if (Array.isArray(data) && data.length > 0) setProducts(data);
     } catch {}
     setProductsLoading(false);
@@ -1364,9 +1364,16 @@ export default function Admin() {
                     body: JSON.stringify({ products: [product] }),
                   });
                   const json = await res.json();
-                  if (json.error) { setNewProdMsg("Error: " + json.error); return; }
+                  if (json.error) { setNewProdMsg("Error al guardar: " + json.error); return; }
                 } catch (e: any) { setNewProdMsg("Error de red: " + e.message); return; }
-                setProducts(prev => [product, ...prev]);
+                // Recargar desde Supabase para confirmar el guardado
+                try {
+                  const fresh = await fetch("/api/products?t=" + Date.now(), { cache: "no-store" }).then(r => r.json());
+                  if (Array.isArray(fresh) && fresh.length > 0)
+                    setProducts(fresh.filter((p: any) => p != null && p.id != null));
+                  else
+                    setProducts(prev => [product, ...prev]);
+                } catch { setProducts(prev => [product, ...prev]); }
                 setNewProdMsg("✓ Producto creado y publicado para todos los usuarios.");
                 setTimeout(() => { setShowNewProduct(false); setNewProdMsg(""); }, 1800);
               }}>Crear producto</button>
