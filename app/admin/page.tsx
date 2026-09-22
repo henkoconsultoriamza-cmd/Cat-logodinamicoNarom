@@ -372,45 +372,50 @@ export default function Admin() {
         const nombreKey = keys.find(k => /nombre|name|descripci/i.test(k));
         const marcaKey  = keys.find(k => /marca|brand/i.test(k));
         const catKey    = keys.find(k => /categ/i.test(k));
+
+        // Calcular todo sincrónicamente ANTES de setProducts
+        const currentSkus = new Map(products.map(p => [String(p.sku).trim(), p]));
         let updated = 0, added = 0;
-        setProducts(prev => {
-          const skuSet = new Map(prev.map(p => [String(p.sku).trim(), p]));
-          const next = prev.map(p => {
-            const row = rows.find(r => String(r[skuKey] ?? "").trim() === String(p.sku).trim());
-            if (!row) return p;
-            updated++;
-            return {
-              ...p,
-              price:     precioKey && row[precioKey] != null ? Number(row[precioKey]) || p.price : p.price,
-              salePrice: ofertaKey && row[ofertaKey] != null ? Number(row[ofertaKey]) || undefined : p.salePrice,
-              onSale:    enOfertaKey && row[enOfertaKey] != null ? String(row[enOfertaKey]).toUpperCase() === "SI" : p.onSale,
-              stock:     stockKey && row[stockKey] != null ? Number(row[stockKey]) : p.stock,
-              minQty:    minQtyKey && row[minQtyKey] != null ? Number(row[minQtyKey]) : p.minQty,
-            };
-          });
-          // Agregar productos nuevos (SKU no existe en el catálogo)
-          for (const row of rows) {
-            const sku = String(row[skuKey] ?? "").trim();
-            if (!sku || skuSet.has(sku)) continue;
-            added++;
-            next.push({
-              id: `import-${Date.now()}-${added}`,
-              sku,
-              name:        nombreKey ? String(row[nombreKey] ?? sku) : sku,
-              brand:       marcaKey  ? String(row[marcaKey]  ?? "")  : "",
-              category:    catKey    ? String(row[catKey]    ?? "")  : "",
-              description: "",
-              image: "", imageColor: "", imageIcon: "",
-              price:     precioKey && row[precioKey] != null ? Number(row[precioKey]) || 0 : 0,
-              salePrice: ofertaKey && row[ofertaKey] != null ? Number(row[ofertaKey]) || undefined : undefined,
-              onSale:    enOfertaKey ? String(row[enOfertaKey] ?? "").toUpperCase() === "SI" : false,
-              stock:     stockKey  && row[stockKey]  != null ? Number(row[stockKey])  : 0,
-              minQty:    minQtyKey && row[minQtyKey] != null ? Number(row[minQtyKey]) : 1,
-            });
-          }
-          return next;
+
+        const updatedList = products.map(p => {
+          const row: any = rows.find((r: any) => String(r[skuKey] ?? "").trim() === String(p.sku).trim());
+          if (!row) return p;
+          updated++;
+          return {
+            ...p,
+            price:     precioKey && row[precioKey] != null ? Number(row[precioKey]) || p.price : p.price,
+            salePrice: ofertaKey && row[ofertaKey] != null ? Number(row[ofertaKey]) || undefined : p.salePrice,
+            onSale:    enOfertaKey && row[enOfertaKey] != null ? String(row[enOfertaKey]).toUpperCase() === "SI" : p.onSale,
+            stock:     stockKey && row[stockKey]   != null ? Number(row[stockKey])  : p.stock,
+            minQty:    minQtyKey && row[minQtyKey] != null ? Number(row[minQtyKey]) : p.minQty,
+          };
         });
-        alert(`✅ ${updated} actualizados · ${added} nuevos agregados.\nAndá a Configuración → Guardar cambios para persistir.`);
+
+        const newProds: any[] = [];
+        for (const row of rows as any[]) {
+          const sku = String(row[skuKey] ?? "").trim();
+          if (!sku || currentSkus.has(sku)) continue;
+          added++;
+          newProds.push({
+            id: `imp-${Date.now()}-${added}`,
+            sku,
+            name:        nombreKey ? String(row[nombreKey] ?? sku).trim() : sku,
+            brand:       marcaKey  ? String(row[marcaKey]  ?? "").trim()  : "",
+            category:    catKey    ? String(row[catKey]    ?? "").trim()  : "",
+            description: "", image: "", imageColor: "", imageIcon: "",
+            price:     precioKey  && row[precioKey]  != null ? Number(row[precioKey])  || 0 : 0,
+            salePrice: ofertaKey  && row[ofertaKey]  != null ? Number(row[ofertaKey])  || undefined : undefined,
+            onSale:    enOfertaKey ? String(row[enOfertaKey] ?? "").toUpperCase() === "SI" : false,
+            stock:     stockKey   && row[stockKey]   != null ? Number(row[stockKey])  : 0,
+            minQty:    minQtyKey  && row[minQtyKey]  != null ? Number(row[minQtyKey]) : 1,
+          });
+        }
+
+        const finalList = [...updatedList, ...newProds];
+        setProducts(finalList);
+        // Guardar en localStorage directamente
+        localStorage.setItem(PRODUCTS_KEY, JSON.stringify(finalList));
+        alert(`✅ ${updated} actualizados · ${added} nuevos agregados al catálogo.`);
       } catch (err: any) {
         alert("Error al importar: " + (err?.message ?? String(err)));
       }
