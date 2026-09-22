@@ -357,8 +357,31 @@ export default function Admin() {
     setSettings(DEFAULT_APP_SETTINGS);
   }
 
-  function updateProduct(id, key, value) {
-    setProducts(prev => prev.map(p => p.id === id ? { ...p, [key]: value } : p));
+  const autoSaveTimer = useRef<any>(null);
+  const [savingId, setSavingId] = useState<string | null>(null);
+
+  function updateProduct(id: string, key: string, value: any) {
+    setProducts(prev => {
+      const next = prev.map(p => p.id === id ? { ...p, [key]: value } : p);
+      // Auto-save con debounce de 800ms
+      clearTimeout(autoSaveTimer.current);
+      autoSaveTimer.current = setTimeout(async () => {
+        const updated = next.find(p => p.id === id);
+        if (!updated) return;
+        setSavingId(id);
+        try {
+          const token = await getToken();
+          if (!token) return;
+          await fetch("/api/products", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+            body: JSON.stringify({ products: [updated] }),
+          });
+        } catch {}
+        setSavingId(null);
+      }, 800);
+      return next;
+    });
   }
 
   // Guarda un único producto a Supabase inmediatamente
@@ -1127,17 +1150,8 @@ export default function Admin() {
                               {p.stock === 0 ? "Con stock" : "Sin stock"}
                             </button>
                             <button style={{ ...btn(isEditing ? N.navy : "#64748b", !isEditing), height: 34, fontSize: 12 }}
-                              onClick={() => {
-                                if (isEditing) {
-                                  // Al cerrar el formulario, guardar este producto en Supabase
-                                  const current = products.find(x => x.id === p.id) ?? p;
-                                  saveOneProduct(current);
-                                  setEditingId(null);
-                                } else {
-                                  setEditingId(p.id);
-                                }
-                              }}>
-                              <Icon name="edit" size={13} />{isEditing ? "Guardar" : "Editar"}
+                              onClick={() => { if (isEditing) setEditingId(null); else setEditingId(p.id); }}>
+                              <Icon name="edit" size={13} />{isEditing ? (savingId === p.id ? "Guardando…" : "Cerrar") : "Editar"}
                             </button>
                             <button style={{ color: N.danger, background: N.danger + "12", border: "none", borderRadius: 8, width: 34, height: 34, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
                               onClick={async () => {
