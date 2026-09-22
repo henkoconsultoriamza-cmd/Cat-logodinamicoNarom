@@ -402,17 +402,47 @@ export default function Admin() {
   }
 
   async function exportExcel() {
-    const XLSX = await import("xlsx");
-    const rows = products.map(p => ({
-      SKU: p.sku, Nombre: p.name, Marca: p.brand, Categoria: p.category,
-      "Precio Lista": p.price, "Precio Con Descuento": p.salePrice ?? "",
-      Stock: p.stock, MinQty: p.minQty,
-    }));
-    const ws = XLSX.utils.json_to_sheet(rows);
-    ws["!cols"] = [{ wch: 16 }, { wch: 40 }, { wch: 14 }, { wch: 22 }, { wch: 12 }, { wch: 12 }, { wch: 10 }, { wch: 10 }, { wch: 8 }];
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Productos");
-    XLSX.writeFile(wb, "Productos_Narom.xlsx");
+    const ExcelJS = (await import("exceljs")).default;
+    const wb = new ExcelJS.Workbook();
+
+    // Hoja oculta con la lista de categorías (requerida para data validation)
+    const catSheet = wb.addWorksheet("__Categorias", { state: "veryHidden" });
+    CATEGORIES.forEach((c, i) => { catSheet.getCell(`A${i + 1}`).value = c; });
+    const catRange = `__Categorias!$A$1:$A$${CATEGORIES.length}`;
+
+    const ws = wb.addWorksheet("Productos");
+    ws.columns = [
+      { header: "SKU",                  key: "sku",       width: 16 },
+      { header: "Nombre",               key: "nombre",    width: 40 },
+      { header: "Marca",                key: "marca",     width: 14 },
+      { header: "Categoria",            key: "categoria", width: 26 },
+      { header: "Precio Lista",         key: "precio",    width: 14 },
+      { header: "Precio Con Descuento", key: "descuento", width: 22 },
+      { header: "MinQty",               key: "minqty",    width: 10 },
+    ];
+
+    products.forEach(p => {
+      ws.addRow({ sku: p.sku, nombre: p.name, marca: p.brand, categoria: p.category, precio: p.price, descuento: p.salePrice ?? "", minqty: p.minQty });
+    });
+
+    // Dropdown en columna D (Categoria) para todas las filas de datos
+    const dataRows = products.length + 1; // +1 por el header
+    for (let r = 2; r <= dataRows; r++) {
+      ws.getCell(`D${r}`).dataValidation = {
+        type: "list",
+        allowBlank: true,
+        formulae: [`${catRange}`],
+        showErrorMessage: true,
+        errorTitle: "Categoría inválida",
+        error: "Seleccioná una categoría de la lista.",
+      };
+    }
+
+    const buf = await wb.xlsx.writeBuffer();
+    const blob = new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = "Productos_Narom.xlsx"; a.click();
+    URL.revokeObjectURL(url);
   }
 
   function importExcel(e) {
