@@ -844,7 +844,7 @@ export default function Catalog() {
                           style={{ padding: "8px 14px", borderRadius: 9, border: `1.5px solid ${active ? accent : "var(--border2)"}`, background: active ? accent + "15" : "transparent", color: active ? accent : "var(--text)", fontSize: 13, fontWeight: active ? 600 : 400 }}
                         >
                           <div>{v.label}</div>
-                          <div style={{ fontSize: 11, color: active ? accent : "var(--text3)", marginTop: 2 }}>{fmt(v.price, settings.currency)}</div>
+                          {user && <div style={{ fontSize: 11, color: active ? accent : "var(--text3)", marginTop: 2 }}>{fmt(v.price, settings.currency)}</div>}
                         </button>
                       );
                     })}
@@ -868,30 +868,37 @@ export default function Catalog() {
 
               {/* Price */}
               <div style={{ flex: 1 }}>
-                {selected.salePrice ? (
-                  <>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
-                      <span style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", letterSpacing: ".08em" }}>LISTA</span>
-                      <span style={{ fontSize: 15, fontWeight: 600, color: "#64748b" }}>{fmt(selected.price, settings.currency)}</span>
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ fontSize: 10, fontWeight: 700, color: "#0369a1", letterSpacing: ".08em" }}>C/D</span>
-                      <span style={{ fontSize: 22, fontWeight: 800, color: "var(--text)" }}>{fmt(selected.salePrice * detailQty, settings.currency)}</span>
-                    </div>
-                    <div style={{ fontSize: 12, color: "var(--text3)", marginTop: 2 }}>
-                      {fmt(selected.salePrice, settings.currency)} c/u · mín. {selected.minQty} u.
-                    </div>
-                  </>
+                {user ? (
+                  selected.salePrice ? (
+                    <>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
+                        <span style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", letterSpacing: ".08em" }}>LISTA</span>
+                        <span style={{ fontSize: 15, fontWeight: 600, color: "#64748b" }}>{fmt(selected.price, settings.currency)}</span>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <span style={{ fontSize: 10, fontWeight: 700, color: "#0369a1", letterSpacing: ".08em" }}>C/D</span>
+                        <span style={{ fontSize: 22, fontWeight: 800, color: "var(--text)" }}>{fmt(selected.salePrice * detailQty, settings.currency)}</span>
+                      </div>
+                      <div style={{ fontSize: 12, color: "var(--text3)", marginTop: 2 }}>
+                        {fmt(selected.salePrice, settings.currency)} c/u · mín. {selected.minQty} u.
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div style={{ fontSize: 22, fontWeight: 800, color: "var(--text)" }}>
+                        {fmt(currentPrice * detailQty, settings.currency)}
+                      </div>
+                      <div style={{ fontSize: 12, color: "var(--text3)" }}>
+                        {fmt(currentPrice, settings.currency)} c/u · mín. {selected.minQty} u.
+                        {selected.priceRetail && <span> · PVP {fmt(selected.priceRetail, settings.currency)}</span>}
+                      </div>
+                    </>
+                  )
                 ) : (
-                  <>
-                    <div style={{ fontSize: 22, fontWeight: 800, color: "var(--text)" }}>
-                      {fmt(currentPrice * detailQty, settings.currency)}
-                    </div>
-                    <div style={{ fontSize: 12, color: "var(--text3)" }}>
-                      {fmt(currentPrice, settings.currency)} c/u · mín. {selected.minQty} u.
-                      {selected.priceRetail && <span> · PVP {fmt(selected.priceRetail, settings.currency)}</span>}
-                    </div>
-                  </>
+                  <button onClick={() => { setSelected(null); setLoginOpen(true); }}
+                    style={{ fontSize: 13, color: accent, fontWeight: 700, display: "flex", alignItems: "center", gap: 6, background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+                    🔒 Iniciá sesión para ver el precio
+                  </button>
                 )}
               </div>
 
