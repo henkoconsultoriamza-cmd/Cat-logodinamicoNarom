@@ -294,7 +294,7 @@ export default function Catalog() {
       setOrderSending(false);
       return;
     }
-    const safeNumber = settings.whatsappNumber.replace(/\D/g, "");
+    const safeNumber = "5492613020015";
     window.open(`https://wa.me/${safeNumber}?text=${encodeURIComponent(buildWhatsAppMsg())}`, "_blank");
     setCart([]);
     setCartOpen(false);
