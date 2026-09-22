@@ -176,14 +176,12 @@ export default function PricesTab({ products, getToken }: { products: Product[];
       // Find header row — busca la fila que contenga algo parecido a SKU o CÓDIGO
       const hIdx = rows.findIndex(r => r.some(c => /SKU|CÓD|COD|ARTÍCULO|ARTICULO/i.test(String(c))));
       if (hIdx === -1) { setImportMsg("No se encontró columna SKU o Código en el archivo. Revisá que el Excel tenga encabezados."); return; }
-      const header = rows[hIdx].map(c => String(c).toUpperCase().trim().normalize("NFD").replace(/[̀-ͯ]/g, ""));
-      // Detección flexible de columnas
-      const iSku  = header.findIndex(h => h === "SKU") !== -1
-        ? header.findIndex(h => h === "SKU")
-        : header.findIndex(h => /SKU|CODIGO|COD$|ARTICULO/.test(h));
-      const iDesc = header.findIndex(h => /DESC|NOMBRE|DETALLE|PRODUCTO/.test(h) && !h.includes("DESCUENTO"));
-      const iPri  = header.findIndex(h => /PRECIO|LISTA|PRICE/.test(h) && !/DESCUENTO|CON_DESC|C_D|CD$|OFERTA|SALE/.test(h));
-      const iSale = header.findIndex(h => /DESCUENTO|CON_DESC|C\/D|C_D|CD$|OFERTA|SALE/.test(h));
+      // Detección directa sin normalize — regex case-insensitive sobre valores originales
+      const header = rows[hIdx].map(c => String(c).trim());
+      const iSku  = header.findIndex(h => /^sku$/i.test(h) || /^c[oó]digo$/i.test(h) || /^c[oó]d\.?$/i.test(h) || /^art[íi]culo$/i.test(h) || /sku/i.test(h));
+      const iDesc = header.findIndex(h => /descripci[oó]n/i.test(h) || /^nombre$/i.test(h) || /^detalle$/i.test(h) || /^producto$/i.test(h));
+      const iPri  = header.findIndex(h => /^precio$/i.test(h) || /precio\s*lista/i.test(h) || /^price$/i.test(h));
+      const iSale = header.findIndex(h => /descuento/i.test(h) || /c\/d/i.test(h) || /precio.{0,4}c.{0,4}d/i.test(h) || /oferta/i.test(h));
 
       const dataRows = rows.slice(hIdx + 1).filter(r => r[iSku]);
       const skuMap = new Map(merged.map(p => [p.sku, p]));
@@ -191,13 +189,18 @@ export default function PricesTab({ products, getToken }: { products: Product[];
       const parsed: PreviewRow[] = dataRows.map(r => {
         const sku = String(r[iSku]).trim();
         const existing = skuMap.get(sku);
+        const rawPrice = iPri >= 0 && r[iPri] != null ? parseFloat(r[iPri]) || 0 : 0;
+        const rawSale  = iSale >= 0 && r[iSale] != null ? parseFloat(r[iSale]) || null : null;
+        // Si solo tiene precio C/D (precio lista = 0 o vacío), usarlo como precio base
+        const price     = rawPrice > 0 ? rawPrice : (rawSale ?? 0);
+        const sale_price = rawPrice > 0 ? rawSale : null;
         return {
           sku,
           brand:       existing?.brand ?? "—",
           name:        existing?.name  ?? "— no encontrado —",
           description: iDesc >= 0 && r[iDesc] ? String(r[iDesc]).trim() : (existing?.description ?? ""),
-          price:       iPri  >= 0 ? parseFloat(r[iPri])  || 0 : 0,
-          sale_price:  iSale >= 0 && r[iSale] ? parseFloat(r[iSale]) || null : null,
+          price,
+          sale_price,
           exists:      !!existing,
         };
       });
