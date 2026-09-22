@@ -374,10 +374,11 @@ export default function Admin() {
         const catKey    = keys.find(k => /categ/i.test(k));
 
         // Calcular todo sincrónicamente ANTES de setProducts
-        const currentSkus = new Map(products.map(p => [String(p.sku).trim(), p]));
+        const safeProducts = (products ?? []).filter(p => p != null && p.sku != null);
+        const currentSkus = new Map(safeProducts.map(p => [String(p.sku).trim(), p]));
         let updated = 0, added = 0;
 
-        const updatedList = products.map(p => {
+        const updatedList = safeProducts.map(p => {
           const row: any = rows.find((r: any) => String(r[skuKey] ?? "").trim() === String(p.sku).trim());
           if (!row) return p;
           updated++;
