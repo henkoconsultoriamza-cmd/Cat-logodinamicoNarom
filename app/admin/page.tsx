@@ -365,12 +365,17 @@ export default function Admin() {
   async function saveOneProduct(updated: any) {
     try {
       const token = await getToken();
-      await fetch("/api/products", {
+      if (!token) { alert("Sesión expirada. Cerrá sesión y volvé a entrar."); return; }
+      const res = await fetch("/api/products", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
         body: JSON.stringify({ products: [updated] }),
       });
-    } catch {}
+      const json = await res.json();
+      if (json.error) alert("Error al guardar: " + json.error);
+    } catch (e: any) {
+      alert("Error de red: " + (e?.message ?? String(e)));
+    }
   }
 
   async function exportExcel() {
