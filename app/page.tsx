@@ -114,6 +114,20 @@ export default function Catalog() {
   const [products, setProducts] = useState<Product[]>(DEFAULT_PRODUCTS);
   const [hydrated, setHydrated] = useState(false);
 
+  // Banner slides — must be here (before early return) to satisfy Rules of Hooks
+  const DEFAULT_SLIDES_CATALOG = [
+    { badge: "DESTACADO", brand: "MOTA", title: "Herramientas manuales profesionales", sub: "Juegos de llaves, alicates y destornilladores al precio de distribuidor.", img: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=1400&q=80", color: "#F5C800" },
+    { badge: "OFERTA", brand: "INGCO", title: "Máquinas y herramientas eléctricas", sub: "Amoladoras, taladros, sierras y lijadoras. Potencia profesional para cada obra.", img: "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=1400&q=80", color: "#F5A800" },
+    { badge: "NUEVO", brand: "SANIPLAST", title: "Cañerías PP-R y termofusión", sub: "La línea que instalan los mejores plomeros. Agua fría y caliente, garantía total.", img: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=1400&q=80", color: "#2d8a4e" },
+  ];
+  const [SLIDES, setSlidesState] = useState(DEFAULT_SLIDES_CATALOG);
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("narom_banner_slides_v1");
+      if (saved) setSlidesState(JSON.parse(saved));
+    } catch {}
+  }, []);
+
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("Todos");
   const [activeBrands, setActiveBrands] = useState<string[]>([]);
@@ -373,19 +387,6 @@ export default function Catalog() {
 
   if (!hydrated) return null;
 
-  // ── Banner slides (editable desde admin) ─────────────────────────────────
-  const DEFAULT_SLIDES_CATALOG = [
-    { badge: "DESTACADO", brand: "MOTA", title: "Herramientas manuales profesionales", sub: "Juegos de llaves, alicates y destornilladores al precio de distribuidor.", img: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=1400&q=80", color: "#F5C800" },
-    { badge: "OFERTA", brand: "INGCO", title: "Máquinas y herramientas eléctricas", sub: "Amoladoras, taladros, sierras y lijadoras. Potencia profesional para cada obra.", img: "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=1400&q=80", color: "#F5A800" },
-    { badge: "NUEVO", brand: "SANIPLAST", title: "Cañerías PP-R y termofusión", sub: "La línea que instalan los mejores plomeros. Agua fría y caliente, garantía total.", img: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=1400&q=80", color: "#2d8a4e" },
-  ];
-  const [SLIDES, setSlidesState] = useState(DEFAULT_SLIDES_CATALOG);
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem("narom_banner_slides_v1");
-      if (saved) setSlidesState(JSON.parse(saved));
-    } catch {}
-  }, []);
   // ── Brand logo map ────────────────────────────────────────────────────────
   const BRAND_LOGOS: Record<string, string> = {
     "MOTA": "/brands/mota.jpg",
@@ -540,11 +541,13 @@ export default function Catalog() {
                 {user.name[0]?.toUpperCase()}
               </span>
             )}
-            <button onClick={() => setCartOpen(o => !o)}
-              style={{ height: 36, padding: "0 14px", borderRadius: 9, display: "flex", alignItems: "center", gap: 8, color: cartCount > 0 ? "#fff" : "#475569", background: cartCount > 0 ? accent : "#f1f5f9", border: `1px solid ${cartCount > 0 ? accent : "#e2e8f0"}`, fontWeight: 700, fontSize: 13, boxShadow: cartCount > 0 ? `0 4px 16px ${accent}40` : "none", flexShrink: 0 }}>
-              <Icon name="cart" size={16} />
-              {cartCount > 0 && <span>{cartCount}</span>}
-            </button>
+            {user && (
+              <button onClick={() => setCartOpen(o => !o)}
+                style={{ height: 36, padding: "0 14px", borderRadius: 9, display: "flex", alignItems: "center", gap: 8, color: cartCount > 0 ? "#fff" : "#475569", background: cartCount > 0 ? accent : "#f1f5f9", border: `1px solid ${cartCount > 0 ? accent : "#e2e8f0"}`, fontWeight: 700, fontSize: 13, boxShadow: cartCount > 0 ? `0 4px 16px ${accent}40` : "none", flexShrink: 0 }}>
+                <Icon name="cart" size={16} />
+                {cartCount > 0 && <span>{cartCount}</span>}
+              </button>
+            )}
           </div>
         </div>
 
@@ -663,7 +666,12 @@ export default function Catalog() {
                         </div>
                       </div>
                       <div style={{ padding: "8px 12px 12px", display: "flex", alignItems: "center", justifyContent: "flex-end", borderTop: "1px solid #f1f5f9" }}>
-                        {cartQty > 0 ? (
+                        {!user ? (
+                          <button onClick={e => { e.stopPropagation(); e.preventDefault(); setLoginOpen(true); }}
+                            style={{ height: 30, padding: "0 12px", borderRadius: 8, background: "#f1f5f9", color: "#64748b", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", gap: 5, border: "1px solid #e2e8f0" }}>
+                            🔒 Iniciá sesión
+                          </button>
+                        ) : cartQty > 0 ? (
                           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                             <button onClick={e => { e.stopPropagation(); e.preventDefault(); updateQty(p.id, -p.minQty); }} style={{ width: 28, height: 28, borderRadius: 7, background: "#f1f5f9", color: "#475569", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid #e2e8f0" }}>
                               <Icon name="minus" size={12} />
@@ -884,14 +892,23 @@ export default function Catalog() {
               </div>
 
               {/* Add */}
-              <button
-                onClick={() => addToCart(selected, detailQty, selectedVariant)}
-                disabled={selected.stock === 0}
-                style={{ height: 46, padding: "0 24px", borderRadius: 10, background: selected.stock === 0 ? "var(--surface3)" : accent, color: selected.stock === 0 ? "var(--text3)" : "#000", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, flex: isMobile ? 1 : undefined }}
-              >
-                <Icon name="cart" size={16} />
-                Agregar al pedido
-              </button>
+              {user ? (
+                <button
+                  onClick={() => addToCart(selected, detailQty, selectedVariant)}
+                  disabled={selected.stock === 0}
+                  style={{ height: 46, padding: "0 24px", borderRadius: 10, background: selected.stock === 0 ? "var(--surface3)" : accent, color: selected.stock === 0 ? "var(--text3)" : "#000", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, flex: isMobile ? 1 : undefined }}
+                >
+                  <Icon name="cart" size={16} />
+                  Agregar al pedido
+                </button>
+              ) : (
+                <button
+                  onClick={() => { setSelected(null); setLoginOpen(true); }}
+                  style={{ height: 46, padding: "0 24px", borderRadius: 10, background: "#f1f5f9", color: "#475569", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, flex: isMobile ? 1 : undefined, border: "1px solid #e2e8f0" }}
+                >
+                  🔒 Iniciá sesión para pedir
+                </button>
+              )}
             </div>
           </div>
         </div>
