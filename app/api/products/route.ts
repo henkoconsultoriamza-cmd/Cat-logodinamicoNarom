@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { DEFAULT_PRODUCTS } from "../../catalog-data";
+import { requireAdmin } from "../_auth";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -97,12 +98,8 @@ export async function GET() {
 
 // POST — admin, upsert un batch de productos
 export async function POST(req: NextRequest) {
-  const token = req.headers.get("Authorization")?.replace("Bearer ", "");
-  if (!token) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-
-  const caller = createClient(url, anonKey);
-  const { data: { user } } = await caller.auth.getUser(token);
-  if (!user) return NextResponse.json({ error: "Sesión inválida" }, { status: 401 });
+  const authErr = await requireAdmin(req);
+  if (authErr) return NextResponse.json({ error: authErr.error }, { status: authErr.status });
 
   const body = await req.json();
   const items: any[] = body.products ?? (Array.isArray(body) ? body : []);
@@ -151,12 +148,8 @@ export async function POST(req: NextRequest) {
 
 // DELETE — admin, elimina un producto por id
 export async function DELETE(req: NextRequest) {
-  const token = req.headers.get("Authorization")?.replace("Bearer ", "");
-  if (!token) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-
-  const caller = createClient(url, anonKey);
-  const { data: { user } } = await caller.auth.getUser(token);
-  if (!user) return NextResponse.json({ error: "Sesión inválida" }, { status: 401 });
+  const authErr = await requireAdmin(req);
+  if (authErr) return NextResponse.json({ error: authErr.error }, { status: authErr.status });
 
   const { id } = await req.json();
   if (!id) return NextResponse.json({ error: "Sin id" }, { status: 400 });

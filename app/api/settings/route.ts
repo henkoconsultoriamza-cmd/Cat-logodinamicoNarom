@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { requireAdmin } from "../_auth";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -26,12 +27,8 @@ export async function GET() {
 // POST — admin, upsert settings
 // Body: { settings: { key: value, ... } }
 export async function POST(req: NextRequest) {
-  const token = req.headers.get("Authorization")?.replace("Bearer ", "");
-  if (!token) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-
-  const caller = createClient(url, anonKey);
-  const { data: { user } } = await caller.auth.getUser(token);
-  if (!user) return NextResponse.json({ error: "Sesión inválida" }, { status: 401 });
+  const authErr = await requireAdmin(req);
+  if (authErr) return NextResponse.json({ error: authErr.error }, { status: authErr.status });
 
   const { settings } = await req.json();
   if (!settings || typeof settings !== "object") return NextResponse.json({ error: "Sin datos" }, { status: 400 });
