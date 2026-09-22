@@ -350,13 +350,37 @@ export default function PricesTab({ products, getToken }: { products: Product[];
               <strong>{preview.filter(r => r.exists).length}</strong> productos encontrados ·{" "}
               <span style={{ color: preview.filter(r => !r.exists).length > 0 ? N.danger : N.text3 }}>{preview.filter(r => !r.exists).length} SKUs no reconocidos</span>
             </div>
+            {/* Botones ARRIBA de la tabla para que sean visibles sin scrollear */}
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 14 }}>
+              <button style={btnS(N.success)} disabled={importing || !preview.some(r => r.exists)} onClick={confirmImport}>
+                <Icon name="check" size={14} /> {importing ? "Importando…" : `Confirmar ${preview.filter(r => r.exists).length} productos`}
+              </button>
+              {preview.some(r => !r.exists) && (
+                <button style={btnS(N.warning, true)} onClick={() => {
+                  const notFound = preview.filter(r => !r.exists);
+                  const ws = XLSX.utils.aoa_to_sheet([
+                    ["SKU", "Descripción en Excel", "Precio en Excel"],
+                    ...notFound.map(r => [r.sku, r.description || "—", r.price || "—"]),
+                  ]);
+                  ws["!cols"] = [{ wch: 20 }, { wch: 50 }, { wch: 16 }];
+                  const wb2 = XLSX.utils.book_new();
+                  XLSX.utils.book_append_sheet(wb2, ws, "SKUs no encontrados");
+                  XLSX.writeFile(wb2, "SKUs_no_encontrados.xlsx");
+                }}>
+                  <Icon name="download" size={14} /> Descargar {preview.filter(r => !r.exists).length} no encontrados
+                </button>
+              )}
+              <button style={btnS("#64748b", true)} onClick={() => { setPreview(null); setImportMsg(""); }}>
+                <Icon name="close" size={14} /> Cancelar
+              </button>
+            </div>
             {preview.length > 0 && preview.filter(r => r.exists).length === 0 && (
               <div style={{ fontSize: 12, color: N.warning, background: "#fffbeb", border: "1px solid #fcd34d", borderRadius: 8, padding: "8px 12px", marginBottom: 10 }}>
                 Ningún SKU del Excel coincide con los productos del catálogo. Verificá que los códigos sean idénticos (mayúsculas, guiones).
                 El primer SKU del archivo: <strong>{preview[0]?.sku}</strong>
               </div>
             )}
-            <div style={{ overflowX: "auto", borderRadius: 10, border: `1px solid ${N.border}`, marginBottom: 14, maxHeight: 320, overflowY: "auto" }}>
+            <div style={{ overflowX: "auto", borderRadius: 10, border: `1px solid ${N.border}`, maxHeight: 260, overflowY: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
                 <thead>
                   <tr style={{ background: N.surface2 }}>
@@ -378,29 +402,6 @@ export default function PricesTab({ products, getToken }: { products: Product[];
                   ))}
                 </tbody>
               </table>
-            </div>
-            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-              <button style={btnS(N.success)} disabled={importing || !preview.some(r => r.exists)} onClick={confirmImport}>
-                <Icon name="check" size={14} /> {importing ? "Importando…" : `Confirmar ${preview.filter(r => r.exists).length} productos`}
-              </button>
-              {preview.some(r => !r.exists) && (
-                <button style={btnS(N.warning, true)} onClick={() => {
-                  const notFound = preview.filter(r => !r.exists);
-                  const ws = XLSX.utils.aoa_to_sheet([
-                    ["SKU", "Descripción en Excel", "Precio en Excel"],
-                    ...notFound.map(r => [r.sku, r.description || "—", r.price || "—"]),
-                  ]);
-                  ws["!cols"] = [{ wch: 20 }, { wch: 50 }, { wch: 16 }];
-                  const wb = XLSX.utils.book_new();
-                  XLSX.utils.book_append_sheet(wb, ws, "SKUs no encontrados");
-                  XLSX.writeFile(wb, "SKUs_no_encontrados.xlsx");
-                }}>
-                  <Icon name="download" size={14} /> Descargar {preview.filter(r => !r.exists).length} no encontrados
-                </button>
-              )}
-              <button style={btnS("#64748b", true)} onClick={() => { setPreview(null); setImportMsg(""); }}>
-                <Icon name="close" size={14} /> Cancelar
-              </button>
             </div>
           </div>
         )}
