@@ -3,7 +3,7 @@
 
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import {
-  APP_SETTINGS_KEY, AppSettings, BRANDS, DEFAULT_APP_SETTINGS, DEFAULT_PRODUCTS,
+  APP_SETTINGS_KEY, AppSettings, BRANDS, CATEGORIES, DEFAULT_APP_SETTINGS, DEFAULT_PRODUCTS,
   PRODUCTS_KEY, Product, cloneProducts,
 } from "../catalog-data";
 import { supabase } from "../lib/supabase";
@@ -176,7 +176,7 @@ export default function Admin() {
 
   // New product modal
   const [showNewProduct, setShowNewProduct] = useState(false);
-  const [newProd, setNewProd] = useState({ name: "", brand: BRANDS[0] ?? "", category: "", sku: "", description: "", image: "", price: "", salePrice: "", minQty: "1", stock: "100" });
+  const [newProd, setNewProd] = useState({ name: "", brand: BRANDS[0] ?? "", category: CATEGORIES[0] ?? "", sku: "", description: "", image: "", price: "", salePrice: "", minQty: "1" });
   const [newProdMsg, setNewProdMsg] = useState("");
 
   // Banner slides (stored in localStorage)
@@ -976,7 +976,7 @@ export default function Admin() {
                     <option>Todas</option>
                     {BRANDS.map(b => <option key={b}>{b}</option>)}
                   </select>
-                  <button style={{ ...btn("#16a34a"), height: 36 }} onClick={() => { setNewProd({ name: "", brand: BRANDS[0] ?? "", category: "", sku: "", description: "", image: "", price: "", salePrice: "", minQty: "1", stock: "100" }); setNewProdMsg(""); setShowNewProduct(true); }}>+ Nuevo producto</button>
+                  <button style={{ ...btn("#16a34a"), height: 36 }} onClick={() => { setNewProd({ name: "", brand: BRANDS[0] ?? "", category: CATEGORIES[0] ?? "", sku: "", description: "", image: "", price: "", salePrice: "", minQty: "1" }); setNewProdMsg(""); setShowNewProduct(true); }}>+ Nuevo producto</button>
                   <button style={{ ...btn("#16a34a", true), height: 36 }} onClick={exportExcel}><Icon name="download" size={14} />Exportar Excel</button>
                   <button style={{ ...btn("#2563eb", true), height: 36 }} onClick={() => xlsxRef.current?.click()}><Icon name="upload" size={14} />Importar Excel</button>
                   <input ref={xlsxRef} type="file" accept=".xlsx,.xls" style={{ display: "none" }} onChange={importExcel} />
@@ -1169,7 +1169,9 @@ export default function Admin() {
               </div>
               <div style={field}>
                 <span style={labelS}>Categoría *</span>
-                <input style={inputS} value={newProd.category} onChange={e => setNewProd(p => ({ ...p, category: e.target.value }))} placeholder="Ej: Herramientas Eléctricas" />
+                <select style={{ ...inputS }} value={newProd.category} onChange={e => setNewProd(p => ({ ...p, category: e.target.value }))}>
+                  {CATEGORIES.map(c => <option key={c}>{c}</option>)}
+                </select>
               </div>
               <div style={field}>
                 <span style={labelS}>SKU *</span>
@@ -1186,10 +1188,6 @@ export default function Admin() {
               <div style={field}>
                 <span style={labelS}>Cantidad mínima</span>
                 <input style={inputS} type="number" min="1" value={newProd.minQty} onChange={e => setNewProd(p => ({ ...p, minQty: e.target.value }))} />
-              </div>
-              <div style={field}>
-                <span style={labelS}>Stock</span>
-                <input style={inputS} type="number" min="0" value={newProd.stock} onChange={e => setNewProd(p => ({ ...p, stock: e.target.value }))} />
               </div>
               <div style={{ ...field, gridColumn: "1 / -1" }}>
                 <span style={labelS}>Descripción</span>
@@ -1227,7 +1225,7 @@ export default function Admin() {
                   salePrice,
                   onSale: false,
                   minQty: parseInt(newProd.minQty) || 1,
-                  stock: parseInt(newProd.stock) || 100,
+                  stock: 100,
                 };
                 setProducts(prev => [product, ...prev]);
                 setNewProdMsg("✓ Producto creado. Guardá los cambios para publicarlo.");
