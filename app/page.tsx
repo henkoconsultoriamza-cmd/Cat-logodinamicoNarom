@@ -854,69 +854,62 @@ export default function Catalog() {
             </div>
 
             {/* Modal footer */}
-            <div style={{ padding: "14px 18px", borderTop: "1px solid var(--border)", display: "flex", alignItems: "center", gap: 12, background: "var(--surface2)", flexWrap: isMobile ? "wrap" : "nowrap" as any }}>
-              {/* Qty */}
-              <div style={{ display: "flex", alignItems: "center", gap: 8, background: "var(--surface3)", borderRadius: 9, padding: "6px 6px" }}>
-                <button onClick={() => setDetailQty(q => Math.max(selected.minQty, q - 1))} style={{ width: 30, height: 30, borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text2)" }}>
-                  <Icon name="minus" size={14} />
-                </button>
-                <span style={{ fontSize: 15, fontWeight: 700, minWidth: 32, textAlign: "center" }}>{detailQty}</span>
-                <button onClick={() => setDetailQty(q => q + 1)} style={{ width: 30, height: 30, borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text2)" }}>
-                  <Icon name="plus" size={14} />
-                </button>
-              </div>
-
-              {/* Price */}
-              <div style={{ flex: 1 }}>
-                {user ? (
-                  selected.salePrice ? (
-                    <>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
-                        <span style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", letterSpacing: ".08em" }}>LISTA</span>
-                        <span style={{ fontSize: 15, fontWeight: 600, color: "#64748b" }}>{fmt(selected.price, settings.currency)}</span>
-                      </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <span style={{ fontSize: 10, fontWeight: 700, color: "#0369a1", letterSpacing: ".08em" }}>C/D</span>
-                        <span style={{ fontSize: 22, fontWeight: 800, color: "var(--text)" }}>{fmt(selected.salePrice * detailQty, settings.currency)}</span>
-                      </div>
-                      <div style={{ fontSize: 12, color: "var(--text3)", marginTop: 2 }}>
-                        {fmt(selected.salePrice, settings.currency)} c/u · mín. {selected.minQty} u.
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div style={{ fontSize: 22, fontWeight: 800, color: "var(--text)" }}>
-                        {fmt(currentPrice * detailQty, settings.currency)}
-                      </div>
-                      <div style={{ fontSize: 12, color: "var(--text3)" }}>
-                        {fmt(currentPrice, settings.currency)} c/u · mín. {selected.minQty} u.
-                        {selected.priceRetail && <span> · PVP {fmt(selected.priceRetail, settings.currency)}</span>}
-                      </div>
-                    </>
-                  )
-                ) : (
-                  <button onClick={() => { setSelected(null); setLoginOpen(true); }}
-                    style={{ fontSize: 13, color: accent, fontWeight: 700, display: "flex", alignItems: "center", gap: 6, background: "none", border: "none", cursor: "pointer", padding: 0 }}>
-                    🔒 Iniciá sesión para ver el precio
-                  </button>
-                )}
-              </div>
-
-              {/* Add */}
+            <div style={{ padding: "14px 18px", borderTop: "1px solid var(--border)", background: "var(--surface2)" }}>
               {user ? (
-                <button
-                  onClick={() => addToCart(selected, detailQty, selectedVariant)}
-                  style={{ height: 46, padding: "0 24px", borderRadius: 10, background: accent, color: "#000", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, flex: isMobile ? 1 : undefined }}
-                >
-                  <Icon name="cart" size={16} />
-                  Agregar al pedido
-                </button>
+                <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: isMobile ? "wrap" : "nowrap" as any }}>
+                  {/* Qty */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, background: "var(--surface3)", borderRadius: 9, padding: "6px 6px" }}>
+                    <button onClick={() => setDetailQty(q => Math.max(selected.minQty, q - 1))} style={{ width: 30, height: 30, borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text2)" }}>
+                      <Icon name="minus" size={14} />
+                    </button>
+                    <span style={{ fontSize: 15, fontWeight: 700, minWidth: 32, textAlign: "center" }}>{detailQty}</span>
+                    <button onClick={() => setDetailQty(q => q + 1)} style={{ width: 30, height: 30, borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text2)" }}>
+                      <Icon name="plus" size={14} />
+                    </button>
+                  </div>
+                  {/* Price */}
+                  <div style={{ flex: 1 }}>
+                    {selected.salePrice ? (
+                      <>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
+                          <span style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", letterSpacing: ".08em" }}>LISTA</span>
+                          <span style={{ fontSize: 15, fontWeight: 600, color: "#64748b" }}>{fmt(selected.price, settings.currency)}</span>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          <span style={{ fontSize: 10, fontWeight: 700, color: "#0369a1", letterSpacing: ".08em" }}>C/D</span>
+                          <span style={{ fontSize: 22, fontWeight: 800, color: "var(--text)" }}>{fmt(selected.salePrice * detailQty, settings.currency)}</span>
+                        </div>
+                        <div style={{ fontSize: 12, color: "var(--text3)", marginTop: 2 }}>
+                          {fmt(selected.salePrice, settings.currency)} c/u · mín. {selected.minQty} u.
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div style={{ fontSize: 22, fontWeight: 800, color: "var(--text)" }}>
+                          {fmt(currentPrice * detailQty, settings.currency)}
+                        </div>
+                        <div style={{ fontSize: 12, color: "var(--text3)" }}>
+                          {fmt(currentPrice, settings.currency)} c/u · mín. {selected.minQty} u.
+                          {selected.priceRetail && <span> · PVP {fmt(selected.priceRetail, settings.currency)}</span>}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  {/* Add */}
+                  <button
+                    onClick={() => addToCart(selected, detailQty, selectedVariant)}
+                    style={{ height: 46, padding: "0 24px", borderRadius: 10, background: accent, color: "#000", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, flex: isMobile ? 1 : undefined }}
+                  >
+                    <Icon name="cart" size={16} />
+                    Agregar al pedido
+                  </button>
+                </div>
               ) : (
                 <button
                   onClick={() => { setSelected(null); setLoginOpen(true); }}
-                  style={{ height: 46, padding: "0 24px", borderRadius: 10, background: "#f1f5f9", color: "#475569", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, flex: isMobile ? 1 : undefined, border: "1px solid #e2e8f0" }}
+                  style={{ width: "100%", height: 48, borderRadius: 12, background: accent, color: "#000", fontSize: 15, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, border: "none", cursor: "pointer" }}
                 >
-                  🔒 Iniciá sesión para pedir
+                  🔒 Iniciá sesión para ver precios y pedir
                 </button>
               )}
             </div>
