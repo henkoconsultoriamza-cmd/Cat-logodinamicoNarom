@@ -1071,6 +1071,18 @@ export default function Admin() {
                           style={{ fontSize: 12, fontWeight: 700, color: N.amber, background: N.amber + "18", border: "none", borderRadius: 8, padding: "6px 14px", cursor: "pointer", marginRight: 8 }}>
                           Editar
                         </button>
+                        <button onClick={async () => {
+                            if (!confirm(`¿Eliminar a ${c.name || c.email}? Esta acción no se puede deshacer.`)) return;
+                            const headers = await authHeaders();
+                            const res = await fetch("/api/delete-client", { method: "DELETE", headers, body: JSON.stringify({ id: c.id }) });
+                            const json = await res.json();
+                            if (json.error) { alert("Error: " + json.error); return; }
+                            setSelectedClient(null);
+                            loadClients();
+                          }}
+                          style={{ fontSize: 12, fontWeight: 700, color: N.danger, background: N.danger + "18", border: "none", borderRadius: 8, padding: "6px 14px", cursor: "pointer", marginRight: 8 }}>
+                          Eliminar
+                        </button>
                         <button onClick={() => { setSelectedClient(null); setEditingClient(false); }} style={{ color: "rgba(255,255,255,.4)", background: "none", border: "none", cursor: "pointer", fontSize: 20 }}>✕</button>
                       </div>
 
