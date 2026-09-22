@@ -196,7 +196,8 @@ export default function Catalog() {
         const res = await fetch("/api/products");
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        base = Array.isArray(data) && data.length > 0 ? data : DEFAULT_PRODUCTS as Product[];
+        const clean = Array.isArray(data) ? data.filter((p: any) => p != null && p.id != null) : [];
+        base = clean.length > 0 ? clean : DEFAULT_PRODUCTS as Product[];
       } catch {
         base = DEFAULT_PRODUCTS as Product[];
       }
@@ -381,13 +382,14 @@ export default function Catalog() {
   useEffect(() => { setVisibleCount(PAGE_SIZE); }, [query, activeCategory, activeBrands, onlySale, onlyStock]);
 
   const filtered = useMemo(() => products.filter(p => {
+    if (p == null) return false;
     if (activeCategory !== "Todos" && p.category !== activeCategory) return false;
     if (activeBrands.length && !expandBrands(activeBrands).includes(p.brand)) return false;
     if (onlySale && !p.onSale) return false;
     if (onlyStock && p.stock === 0) return false;
     if (query) {
       const q = query.toLowerCase();
-      return p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q);
+      return (p.name ?? "").toLowerCase().includes(q) || (p.sku ?? "").toLowerCase().includes(q) || (p.brand ?? "").toLowerCase().includes(q);
     }
     return true;
   }), [products, activeCategory, activeBrands, onlySale, onlyStock, query]);
