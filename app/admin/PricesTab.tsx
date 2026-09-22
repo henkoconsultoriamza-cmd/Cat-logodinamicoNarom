@@ -57,6 +57,9 @@ export default function PricesTab({ products, getToken }: { products: Product[];
     fetch("/api/prices").then(r => r.json()).then(setSupabasePrices).catch(() => {});
   }, []);
 
+  // Marcas reales presentes en los productos
+  const brandOptions = Array.from(new Set(products.map(p => p.brand).filter(Boolean))).sort();
+
   // Merge: products with Supabase overrides applied
   const merged = products.map(p => {
     const ov = supabasePrices.find(r => r.sku === p.sku && r.brand === p.brand);
@@ -66,7 +69,7 @@ export default function PricesTab({ products, getToken }: { products: Product[];
   });
 
   const filtered = merged.filter(p => {
-    const matchBrand = brandFilter === "TODAS" || (p.brand ?? "").trim().toUpperCase() === brandFilter.trim().toUpperCase();
+    const matchBrand = brandFilter === "TODAS" || p.brand === brandFilter;
     const matchSearch = !search || p.name.toLowerCase().includes(search.toLowerCase()) || (p.sku ?? "").toLowerCase().includes(search.toLowerCase());
     return matchBrand && matchSearch;
   });
@@ -295,7 +298,7 @@ export default function PricesTab({ products, getToken }: { products: Product[];
             <span style={{ fontSize: 11, fontWeight: 700, color: N.text3, textTransform: "uppercase", letterSpacing: ".08em" }}>Marca</span>
             <select style={{ ...inputS, width: 160 }} value={bulkBrand} onChange={e => setBulkBrand(e.target.value)}>
               <option value="TODAS">Todas las marcas</option>
-              {BRANDS.map(b => <option key={b} value={b}>{b}</option>)}
+              {brandOptions.map(b => <option key={b} value={b}>{b}</option>)}
             </select>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
@@ -416,7 +419,7 @@ export default function PricesTab({ products, getToken }: { products: Product[];
           </span>
           <select style={{ ...inputS, width: 160 }} value={brandFilter} onChange={e => setBrandFilter(e.target.value)}>
             <option value="TODAS">Todas las marcas</option>
-            {BRANDS.map(b => <option key={b} value={b}>{b}</option>)}
+            {brandOptions.map(b => <option key={b} value={b}>{b}</option>)}
           </select>
           <div style={{ display: "flex", alignItems: "center", gap: 8, background: N.surface2, borderRadius: 8, padding: "0 12px", height: 36, border: `1px solid ${N.border}` }}>
             <Icon name="search" size={14} />
