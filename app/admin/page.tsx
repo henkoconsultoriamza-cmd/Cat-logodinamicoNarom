@@ -357,22 +357,37 @@ export default function Admin() {
       try {
         const XLSX = await import("xlsx");
         const wb = XLSX.read(ev.target.result, { type: "binary" });
-        const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: null });
+        const rows: any[] = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: null });
+        if (!rows.length) { alert("El archivo está vacío o no tiene datos."); return; }
+        // Detectar columna SKU flexible (SKU, Código, Cod, etc.)
+        const firstRow = rows[0];
+        const keys = Object.keys(firstRow);
+        const skuKey = keys.find(k => /^sku$/i.test(k)) ?? keys.find(k => /c[oó]d/i.test(k)) ?? keys.find(k => /artículo|articulo/i.test(k));
+        const precioKey = keys.find(k => /^precio$/i.test(k) && !/oferta|descuento/i.test(k));
+        const ofertaKey = keys.find(k => /oferta|descuento|precioc/i.test(k));
+        const enOfertaKey = keys.find(k => /enoferta|en_oferta|oferta$/i.test(k));
+        const stockKey = keys.find(k => /^stock$/i.test(k));
+        const minQtyKey = keys.find(k => /minqty|min_qty|minimo/i.test(k));
+        if (!skuKey) { alert(`No se encontró columna SKU. Columnas detectadas: ${keys.join(", ")}`); return; }
         let updated = 0;
         setProducts(prev => prev.map(p => {
-          const row: any = rows.find((r: any) => String(r.SKU).trim() === String(p.sku).trim());
+          const row = rows.find(r => String(r[skuKey] ?? "").trim() === String(p.sku).trim());
           if (!row) return p;
           updated++;
           return {
             ...p,
-            price:     row.Precio     != null ? Number(row.Precio)      || p.price     : p.price,
-            salePrice: row.PrecioOferta != null ? Number(row.PrecioOferta) || undefined : p.salePrice,
-            onSale:    row.EnOferta != null ? String(row.EnOferta).toUpperCase() === "SI" : p.onSale,
-            stock:     row.Stock    != null ? Number(row.Stock)    : p.stock,
-            minQty:    row.MinQty   != null ? Number(row.MinQty)   : p.minQty,
+            price:     precioKey && row[precioKey] != null ? Number(row[precioKey]) || p.price : p.price,
+            salePrice: ofertaKey && row[ofertaKey] != null ? Number(row[ofertaKey]) || undefined : p.salePrice,
+            onSale:    enOfertaKey && row[enOfertaKey] != null ? String(row[enOfertaKey]).toUpperCase() === "SI" : p.onSale,
+            stock:     stockKey && row[stockKey] != null ? Number(row[stockKey]) : p.stock,
+            minQty:    minQtyKey && row[minQtyKey] != null ? Number(row[minQtyKey]) : p.minQty,
           };
         }));
-        alert(`✅ ${updated} productos actualizados. Guardá los cambios para aplicarlos.`);
+        if (updated === 0) {
+          alert(`0 productos actualizados.\nColumnas detectadas: ${keys.join(", ")}\nColumna SKU usada: "${skuKey}"\nPrimer SKU del archivo: "${firstRow[skuKey]}"`);
+        } else {
+          alert(`✅ ${updated} productos actualizados.\nGuardá los cambios (pestaña Configuración → Guardar cambios).`);
+        }
       } catch (err: any) {
         alert("Error al importar: " + (err?.message ?? String(err)));
       }
