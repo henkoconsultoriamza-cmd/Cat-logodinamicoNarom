@@ -373,12 +373,19 @@ export default function Catalog() {
 
   if (!hydrated) return null;
 
-  // ── Banner slides ────────────────────────────────────────────────────────
-  const SLIDES = [
+  // ── Banner slides (editable desde admin) ─────────────────────────────────
+  const DEFAULT_SLIDES_CATALOG = [
     { badge: "DESTACADO", brand: "MOTA", title: "Herramientas manuales profesionales", sub: "Juegos de llaves, alicates y destornilladores al precio de distribuidor.", img: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=1400&q=80", color: "#F5C800" },
     { badge: "OFERTA", brand: "INGCO", title: "Máquinas y herramientas eléctricas", sub: "Amoladoras, taladros, sierras y lijadoras. Potencia profesional para cada obra.", img: "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=1400&q=80", color: "#F5A800" },
     { badge: "NUEVO", brand: "SANIPLAST", title: "Cañerías PP-R y termofusión", sub: "La línea que instalan los mejores plomeros. Agua fría y caliente, garantía total.", img: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=1400&q=80", color: "#2d8a4e" },
   ];
+  const [SLIDES, setSlidesState] = useState(DEFAULT_SLIDES_CATALOG);
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("narom_banner_slides_v1");
+      if (saved) setSlidesState(JSON.parse(saved));
+    } catch {}
+  }, []);
   // ── Brand logo map ────────────────────────────────────────────────────────
   const BRAND_LOGOS: Record<string, string> = {
     "MOTA": "/brands/mota.jpg",

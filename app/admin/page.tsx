@@ -9,6 +9,7 @@ import {
 import { supabase } from "../lib/supabase";
 import { Order, OrderStatus } from "../lib/orders";
 import PricesTab from "./PricesTab";
+import ImageUpload from "./ImageUpload";
 
 // ── Icons ────────────────────────────────────────────────────────────────────
 function Icon({ name, size = 18 }) {
@@ -124,6 +125,7 @@ export default function Admin() {
 
   // Auth
   const [adminUser, setAdminUser] = useState(null);
+  const [adminToken, setAdminToken] = useState("");
   const [adminEmail, setAdminEmail] = useState("");
   const [adminPass, setAdminPass] = useState("");
   const [adminError, setAdminError] = useState("");
@@ -172,6 +174,21 @@ export default function Admin() {
   const [prodBrand, setProdBrand] = useState("Todas");
   const [prodPage, setProdPage] = useState(0);
 
+  // New product modal
+  const [showNewProduct, setShowNewProduct] = useState(false);
+  const [newProd, setNewProd] = useState({ name: "", brand: BRANDS[0] ?? "", category: "", sku: "", description: "", image: "", price: "", salePrice: "", minQty: "1", stock: "100" });
+  const [newProdMsg, setNewProdMsg] = useState("");
+
+  // Banner slides (stored in localStorage)
+  const BANNER_KEY = "narom_banner_slides_v1";
+  const DEFAULT_SLIDES = [
+    { badge: "DESTACADO", brand: "MOTA", title: "Herramientas manuales profesionales", sub: "Juegos de llaves, alicates y destornilladores al precio de distribuidor.", img: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=1400&q=80", color: "#F5C800" },
+    { badge: "OFERTA", brand: "INGCO", title: "Máquinas y herramientas eléctricas", sub: "Amoladoras, taladros, sierras y lijadoras. Potencia profesional para cada obra.", img: "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=1400&q=80", color: "#F5A800" },
+    { badge: "NUEVO", brand: "SANIPLAST", title: "Cañerías PP-R y termofusión", sub: "La línea que instalan los mejores plomeros. Agua fría y caliente, garantía total.", img: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=1400&q=80", color: "#2d8a4e" },
+  ];
+  const [slides, setSlides] = useState<any[]>(DEFAULT_SLIDES);
+  const [bannerSaved, setBannerSaved] = useState(false);
+
   const xlsxRef = useRef(null);
 
   useEffect(() => {
@@ -200,10 +217,12 @@ export default function Admin() {
         }
       } catch { localStorage.removeItem(PRODUCTS_KEY); }
     }
+    const sl = localStorage.getItem(BANNER_KEY);
+    if (sl) { try { setSlides(JSON.parse(sl)); } catch {} }
     setHydrated(true);
     supabase.auth.getSession().then(({ data }) => {
       const u = data.session?.user;
-      if (u && u.app_metadata?.is_admin) setAdminUser({ email: u.email ?? "", id: u.id });
+      if (u && u.app_metadata?.is_admin) { setAdminUser({ email: u.email ?? "", id: u.id }); setAdminToken(data.session?.access_token ?? ""); }
     });
   }, []);
 
@@ -222,6 +241,8 @@ export default function Admin() {
       return;
     }
     setAdminUser({ email: u.email ?? "", id: u.id });
+    const { data: sess } = await supabase.auth.getSession();
+    setAdminToken(sess.session?.access_token ?? "");
   }
 
   async function loadOrders() {
@@ -464,6 +485,7 @@ export default function Admin() {
 
           <NavItem id="config" icon="settings" label="Catálogo" />
           <NavItem id="prices" icon="dollar" label="Precios" />
+          <NavItem id="banner" icon="catalog" label="Banner" />
 
           <div style={{ flex: 1 }} />
         </nav>
@@ -954,6 +976,7 @@ export default function Admin() {
                     <option>Todas</option>
                     {BRANDS.map(b => <option key={b}>{b}</option>)}
                   </select>
+                  <button style={{ ...btn("#16a34a"), height: 36 }} onClick={() => { setNewProd({ name: "", brand: BRANDS[0] ?? "", category: "", sku: "", description: "", image: "", price: "", salePrice: "", minQty: "1", stock: "100" }); setNewProdMsg(""); setShowNewProduct(true); }}>+ Nuevo producto</button>
                   <button style={{ ...btn("#16a34a", true), height: 36 }} onClick={exportExcel}><Icon name="download" size={14} />Exportar Excel</button>
                   <button style={{ ...btn("#2563eb", true), height: 36 }} onClick={() => xlsxRef.current?.click()}><Icon name="upload" size={14} />Importar Excel</button>
                   <input ref={xlsxRef} type="file" accept=".xlsx,.xls" style={{ display: "none" }} onChange={importExcel} />
@@ -1020,9 +1043,14 @@ export default function Admin() {
                               <input style={inputS} value={p.tag ?? ""} placeholder='Nuevo, Más vendido…' onChange={e => updateProduct(p.id, "tag", e.target.value || undefined)} />
                             </div>
                             <div style={{ ...field, gridColumn: "1 / -1" }}>
-                              <span style={labelS}>URL de imagen</span>
-                              <input style={inputS} value={p.image ?? ""} placeholder='https://… o /products/nombre.jpeg' onChange={e => updateProduct(p.id, "image", e.target.value || "")} />
-                              <span style={{ fontSize: 10, color: "#64748b", marginTop: 3 }}>📐 Tamaño recomendado: <strong>800 × 800 px</strong> · Fondo blanco · JPG o PNG · Máx. 300 KB</span>
+                              <span style={labelS}>Imagen</span>
+                              <ImageUpload
+                                value={p.image ?? ""}
+                                onChange={url => updateProduct(p.id, "image", url)}
+                                token={adminToken}
+                                folder="products"
+                                hint="800×800 px · Fondo blanco · JPG o PNG · Máx. 2 MB"
+                              />
                             </div>
                           </div>
                         )}
@@ -1050,8 +1078,165 @@ export default function Admin() {
             <PricesTab products={products} getToken={getToken} />
           )}
 
+          {/* ── BANNER ───────────────────────────────────────────────────── */}
+          {activeTab === "banner" && (
+            <div style={{ padding: 24, maxWidth: 860, margin: "0 auto", display: "flex", flexDirection: "column", gap: 20 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <h2 style={{ fontSize: 18, fontWeight: 800, color: N.text, margin: 0 }}>Editor de Banner</h2>
+                <button style={btn(N.success)} onClick={() => { localStorage.setItem(BANNER_KEY, JSON.stringify(slides)); setBannerSaved(true); setTimeout(() => setBannerSaved(false), 2000); }}>
+                  {bannerSaved ? "✓ Guardado" : "Guardar cambios"}
+                </button>
+              </div>
+              <p style={{ fontSize: 13, color: N.text2, margin: 0 }}>Cada slide tiene una imagen de fondo, un título y un botón que filtra por marca. Tamaño recomendado: <strong>1400 × 500 px</strong>.</p>
+
+              {slides.map((s, i) => (
+                <div key={i} style={{ background: N.surface, borderRadius: 14, border: `1px solid ${N.border}`, padding: 20, display: "flex", flexDirection: "column", gap: 16 }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: N.text }}>Slide {i + 1}</span>
+                    <button style={{ ...btn(N.danger, true), height: 30, fontSize: 12 }} onClick={() => setSlides(sl => sl.filter((_, j) => j !== i))}>Eliminar</button>
+                  </div>
+
+                  {/* Preview */}
+                  {s.img && (
+                    <div style={{ width: "100%", height: 120, borderRadius: 8, overflow: "hidden", position: "relative", background: "#02152C" }}>
+                      <img src={s.img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.7 }} />
+                      <div style={{ position: "absolute", bottom: 8, left: 12, color: "#fff", fontWeight: 800, fontSize: 16, textShadow: "0 1px 4px rgba(0,0,0,.8)" }}>{s.title}</div>
+                    </div>
+                  )}
+
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+                    <div style={field}>
+                      <span style={labelS}>Título</span>
+                      <input style={inputS} value={s.title} onChange={e => setSlides(sl => sl.map((x, j) => j === i ? { ...x, title: e.target.value } : x))} />
+                    </div>
+                    <div style={field}>
+                      <span style={labelS}>Subtítulo</span>
+                      <input style={inputS} value={s.sub} onChange={e => setSlides(sl => sl.map((x, j) => j === i ? { ...x, sub: e.target.value } : x))} />
+                    </div>
+                    <div style={field}>
+                      <span style={labelS}>Badge (ej: OFERTA)</span>
+                      <input style={inputS} value={s.badge} onChange={e => setSlides(sl => sl.map((x, j) => j === i ? { ...x, badge: e.target.value } : x))} />
+                    </div>
+                    <div style={field}>
+                      <span style={labelS}>Marca (filtro al hacer clic)</span>
+                      <select style={{ ...inputS }} value={s.brand} onChange={e => setSlides(sl => sl.map((x, j) => j === i ? { ...x, brand: e.target.value } : x))}>
+                        {BRANDS.map(b => <option key={b}>{b}</option>)}
+                      </select>
+                    </div>
+                    <div style={{ ...field, gridColumn: "1 / -1" }}>
+                      <span style={labelS}>Imagen de fondo</span>
+                      <ImageUpload
+                        value={s.img}
+                        onChange={url => setSlides(sl => sl.map((x, j) => j === i ? { ...x, img: url } : x))}
+                        token={adminToken}
+                        folder="banners"
+                        hint="1400×500 px recomendado · JPG o PNG · Máx. 2 MB"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              <button style={{ ...btn(N.info, true), alignSelf: "flex-start" }} onClick={() => setSlides(sl => [...sl, { badge: "NUEVO", brand: BRANDS[0] ?? "", title: "Nuevo slide", sub: "", img: "", color: "#F5C800" }])}>
+                + Agregar slide
+              </button>
+            </div>
+          )}
+
         </div>
       </main>
+
+      {/* ── Modal nuevo producto ────────────────────────────────────────── */}
+      {showNewProduct && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.5)", zIndex: 300, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}
+          onClick={() => setShowNewProduct(false)}>
+          <div style={{ background: N.surface, borderRadius: 18, border: `1px solid ${N.border}`, width: "100%", maxWidth: 600, maxHeight: "90vh", overflow: "auto", boxShadow: "0 30px 80px rgba(0,0,0,.25)" }}
+            onClick={e => e.stopPropagation()}>
+            <div style={{ padding: "20px 24px", borderBottom: `1px solid ${N.border}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span style={{ fontSize: 17, fontWeight: 800, color: N.text }}>Nuevo producto</span>
+              <button style={{ background: "none", border: "none", cursor: "pointer", color: N.text3, fontSize: 20 }} onClick={() => setShowNewProduct(false)}>×</button>
+            </div>
+            <div style={{ padding: 24, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              <div style={{ ...field, gridColumn: "1 / -1" }}>
+                <span style={labelS}>Nombre del producto *</span>
+                <input style={inputS} value={newProd.name} onChange={e => setNewProd(p => ({ ...p, name: e.target.value }))} placeholder="Ej: Taladro percutor 800W" />
+              </div>
+              <div style={field}>
+                <span style={labelS}>Marca *</span>
+                <select style={{ ...inputS }} value={newProd.brand} onChange={e => setNewProd(p => ({ ...p, brand: e.target.value }))}>
+                  {BRANDS.map(b => <option key={b}>{b}</option>)}
+                </select>
+              </div>
+              <div style={field}>
+                <span style={labelS}>Categoría *</span>
+                <input style={inputS} value={newProd.category} onChange={e => setNewProd(p => ({ ...p, category: e.target.value }))} placeholder="Ej: Herramientas Eléctricas" />
+              </div>
+              <div style={field}>
+                <span style={labelS}>SKU *</span>
+                <input style={inputS} value={newProd.sku} onChange={e => setNewProd(p => ({ ...p, sku: e.target.value.toUpperCase() }))} placeholder="Ej: TD800" />
+              </div>
+              <div style={field}>
+                <span style={labelS}>Precio lista *</span>
+                <input style={inputS} type="number" min="0" value={newProd.price} onChange={e => setNewProd(p => ({ ...p, price: e.target.value }))} placeholder="0" />
+              </div>
+              <div style={field}>
+                <span style={labelS}>Precio C/D (opcional)</span>
+                <input style={inputS} type="number" min="0" value={newProd.salePrice} onChange={e => setNewProd(p => ({ ...p, salePrice: e.target.value }))} placeholder="0" />
+              </div>
+              <div style={field}>
+                <span style={labelS}>Cantidad mínima</span>
+                <input style={inputS} type="number" min="1" value={newProd.minQty} onChange={e => setNewProd(p => ({ ...p, minQty: e.target.value }))} />
+              </div>
+              <div style={field}>
+                <span style={labelS}>Stock</span>
+                <input style={inputS} type="number" min="0" value={newProd.stock} onChange={e => setNewProd(p => ({ ...p, stock: e.target.value }))} />
+              </div>
+              <div style={{ ...field, gridColumn: "1 / -1" }}>
+                <span style={labelS}>Descripción</span>
+                <input style={inputS} value={newProd.description} onChange={e => setNewProd(p => ({ ...p, description: e.target.value }))} placeholder="Descripción breve del producto" />
+              </div>
+              <div style={{ ...field, gridColumn: "1 / -1" }}>
+                <span style={labelS}>Imagen</span>
+                <ImageUpload
+                  value={newProd.image}
+                  onChange={url => setNewProd(p => ({ ...p, image: url }))}
+                  token={adminToken}
+                  folder="products"
+                />
+              </div>
+            </div>
+            {newProdMsg && <div style={{ padding: "0 24px 12px", fontSize: 13, color: newProdMsg.startsWith("✓") ? N.success : N.danger }}>{newProdMsg}</div>}
+            <div style={{ padding: "0 24px 24px", display: "flex", gap: 10, justifyContent: "flex-end" }}>
+              <button style={{ ...btn(N.text2, true) }} onClick={() => setShowNewProduct(false)}>Cancelar</button>
+              <button style={btn(N.success)} onClick={() => {
+                if (!newProd.name || !newProd.sku || !newProd.price || !newProd.category) { setNewProdMsg("Completá los campos obligatorios (*)"); return; }
+                const price = parseFloat(newProd.price);
+                const salePrice = newProd.salePrice ? parseFloat(newProd.salePrice) : undefined;
+                if (isNaN(price) || price <= 0) { setNewProdMsg("El precio debe ser mayor a 0"); return; }
+                const product = {
+                  id: `${newProd.brand.toLowerCase().replace(/\s/g, "-")}-${newProd.sku}-${Date.now()}`,
+                  name: newProd.name,
+                  brand: newProd.brand,
+                  category: newProd.category,
+                  sku: newProd.sku,
+                  description: newProd.description || "",
+                  image: newProd.image || "",
+                  imageColor: "#64748b",
+                  imageIcon: "📦",
+                  price,
+                  salePrice,
+                  onSale: false,
+                  minQty: parseInt(newProd.minQty) || 1,
+                  stock: parseInt(newProd.stock) || 100,
+                };
+                setProducts(prev => [product, ...prev]);
+                setNewProdMsg("✓ Producto creado. Guardá los cambios para publicarlo.");
+                setTimeout(() => { setShowNewProduct(false); setNewProdMsg(""); }, 1500);
+              }}>Crear producto</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Modal detalle pedido ─────────────────────────────────────────── */}
       {selectedOrder && (
