@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
   if (!Array.isArray(rows) || rows.length === 0)
     return NextResponse.json({ error: "Sin datos" }, { status: 400 });
 
-  const SKU_RE = /^[a-zA-Z0-9\-_]{1,50}$/;
+  const SKU_RE = /^[a-zA-Z0-9\-_./\s]{1,80}$/;
   for (const r of rows) {
     const price = Number(r.price);
     const salePrice = r.sale_price != null ? Number(r.sale_price) : null;

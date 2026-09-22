@@ -173,14 +173,17 @@ export default function PricesTab({ products, getToken }: { products: Product[];
       const wb = XLSX.read(ev.target?.result, { type: "binary" });
       const ws = wb.Sheets[wb.SheetNames[0]];
       const rows: any[][] = XLSX.utils.sheet_to_json(ws, { header: 1 });
-      // Find header row
-      const hIdx = rows.findIndex(r => r.some(c => String(c).toUpperCase().includes("SKU")));
-      if (hIdx === -1) { setImportMsg("No se encontró columna SKU en el archivo."); return; }
-      const header = rows[hIdx].map(c => String(c).toUpperCase().trim());
-      const iSku  = header.findIndex(h => h === "SKU");
-      const iDesc = header.findIndex(h => h.includes("DESC"));
-      const iPri  = header.findIndex(h => h.includes("PRECIO") && !h.includes("DESC") && !h.includes("CON"));
-      const iSale = header.findIndex(h => h.includes("DESCUENTO") || h.includes("CON"));
+      // Find header row — busca la fila que contenga algo parecido a SKU o CÓDIGO
+      const hIdx = rows.findIndex(r => r.some(c => /SKU|CÓD|COD|ARTÍCULO|ARTICULO/i.test(String(c))));
+      if (hIdx === -1) { setImportMsg("No se encontró columna SKU o Código en el archivo. Revisá que el Excel tenga encabezados."); return; }
+      const header = rows[hIdx].map(c => String(c).toUpperCase().trim().normalize("NFD").replace(/[̀-ͯ]/g, ""));
+      // Detección flexible de columnas
+      const iSku  = header.findIndex(h => h === "SKU") !== -1
+        ? header.findIndex(h => h === "SKU")
+        : header.findIndex(h => /SKU|CODIGO|COD$|ARTICULO/.test(h));
+      const iDesc = header.findIndex(h => /DESC|NOMBRE|DETALLE|PRODUCTO/.test(h) && !h.includes("DESCUENTO"));
+      const iPri  = header.findIndex(h => /PRECIO|LISTA|PRICE/.test(h) && !/DESCUENTO|CON_DESC|C_D|CD$|OFERTA|SALE/.test(h));
+      const iSale = header.findIndex(h => /DESCUENTO|CON_DESC|C\/D|C_D|CD$|OFERTA|SALE/.test(h));
 
       const dataRows = rows.slice(hIdx + 1).filter(r => r[iSku]);
       const skuMap = new Map(merged.map(p => [p.sku, p]));
@@ -315,10 +318,16 @@ export default function PricesTab({ products, getToken }: { products: Product[];
         {/* Preview table */}
         {preview && (
           <div>
-            <div style={{ fontSize: 13, color: N.text2, marginBottom: 10 }}>
+            <div style={{ fontSize: 13, color: N.text2, marginBottom: preview.filter(r => r.exists).length === 0 ? 6 : 10 }}>
               <strong>{preview.filter(r => r.exists).length}</strong> productos encontrados ·{" "}
-              <span style={{ color: N.danger }}>{preview.filter(r => !r.exists).length} SKUs no reconocidos</span>
+              <span style={{ color: preview.filter(r => !r.exists).length > 0 ? N.danger : N.text3 }}>{preview.filter(r => !r.exists).length} SKUs no reconocidos</span>
             </div>
+            {preview.length > 0 && preview.filter(r => r.exists).length === 0 && (
+              <div style={{ fontSize: 12, color: N.warning, background: "#fffbeb", border: "1px solid #fcd34d", borderRadius: 8, padding: "8px 12px", marginBottom: 10 }}>
+                Ningún SKU del Excel coincide con los productos del catálogo. Verificá que los códigos sean idénticos (mayúsculas, guiones).
+                El primer SKU del archivo: <strong>{preview[0]?.sku}</strong>
+              </div>
+            )}
             <div style={{ overflowX: "auto", borderRadius: 10, border: `1px solid ${N.border}`, marginBottom: 14, maxHeight: 320, overflowY: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
                 <thead>
