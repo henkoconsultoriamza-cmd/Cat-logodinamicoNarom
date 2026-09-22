@@ -121,7 +121,7 @@ export default function PricesTab({ products, getToken }: { products: Product[];
   async function applyBulk() {
     const pct = parseFloat(bulkPct);
     if (!pct || pct <= 0) return;
-    const targets = merged.filter(p => bulkBrand === "TODAS" || p.brand === bulkBrand);
+    const targets = merged.filter(p => (bulkBrand === "TODAS" || p.brand === bulkBrand) && p.price > 0);
     const factor = bulkType === "increase" ? 1 + pct / 100 : 1 - pct / 100;
     const rows = targets.map(p => ({
       sku: p.sku, brand: p.brand,
@@ -314,7 +314,7 @@ export default function PricesTab({ products, getToken }: { products: Product[];
           </button>
           {bulkPct && (
             <span style={{ fontSize: 12, color: N.text3, alignSelf: "center" }}>
-              {bulkBrand === "TODAS" ? merged.length : merged.filter(p => p.brand === bulkBrand).length} productos afectados
+              {merged.filter(p => (bulkBrand === "TODAS" || p.brand === bulkBrand) && p.price > 0).length} productos afectados
             </span>
           )}
         </div>
