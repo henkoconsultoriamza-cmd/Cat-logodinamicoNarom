@@ -26,13 +26,13 @@ export async function POST(req: NextRequest) {
   const filename = `${folder}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
   const buffer = Buffer.from(await file.arrayBuffer());
 
-  const { error } = await sb.storage.from("catalog-images").upload(filename, buffer, {
+  const { error } = await sb.storage.from("catalogo-images").upload(filename, buffer, {
     contentType: file.type,
     upsert: false,
   });
 
   if (error) return NextResponse.json({ error: "Error al subir imagen: " + error.message }, { status: 500 });
 
-  const { data: { publicUrl } } = sb.storage.from("catalog-images").getPublicUrl(filename);
+  const { data: { publicUrl } } = sb.storage.from("catalogo-images").getPublicUrl(filename);
   return NextResponse.json({ url: publicUrl });
 }
