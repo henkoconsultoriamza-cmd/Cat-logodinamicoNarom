@@ -383,10 +383,25 @@ export default function PricesTab({ products, getToken }: { products: Product[];
                 </tbody>
               </table>
             </div>
-            <div style={{ display: "flex", gap: 10 }}>
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
               <button style={btnS(N.success)} disabled={importing || !preview.some(r => r.exists)} onClick={confirmImport}>
                 <Icon name="check" size={14} /> {importing ? "Importando…" : `Confirmar ${preview.filter(r => r.exists).length} productos`}
               </button>
+              {preview.some(r => !r.exists) && (
+                <button style={btnS(N.warning, true)} onClick={() => {
+                  const notFound = preview.filter(r => !r.exists);
+                  const ws = XLSX.utils.aoa_to_sheet([
+                    ["SKU", "Descripción en Excel", "Precio en Excel"],
+                    ...notFound.map(r => [r.sku, r.description || "—", r.price || "—"]),
+                  ]);
+                  ws["!cols"] = [{ wch: 20 }, { wch: 50 }, { wch: 16 }];
+                  const wb = XLSX.utils.book_new();
+                  XLSX.utils.book_append_sheet(wb, ws, "SKUs no encontrados");
+                  XLSX.writeFile(wb, "SKUs_no_encontrados.xlsx");
+                }}>
+                  <Icon name="download" size={14} /> Descargar {preview.filter(r => !r.exists).length} no encontrados
+                </button>
+              )}
               <button style={btnS("#64748b", true)} onClick={() => { setPreview(null); setImportMsg(""); }}>
                 <Icon name="close" size={14} /> Cancelar
               </button>
