@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { DEFAULT_PRODUCTS } from "../../catalog-data";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 const url        = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const anonKey    = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
