@@ -5,14 +5,15 @@ export async function requireAdmin(req: NextRequest): Promise<{ error: string; s
   const token = req.headers.get("Authorization")?.replace("Bearer ", "");
   if (!token) return { error: "No autorizado", status: 401 };
 
-  const caller = createClient(
+  // Use service role to verify the token server-side — never trust client-side anon key for auth checks
+  const admin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { global: { headers: { Authorization: `Bearer ${token}` } } }
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
   );
 
-  const { data: { user } } = await caller.auth.getUser();
-  if (!user?.app_metadata?.is_admin) return { error: "Acceso denegado", status: 403 };
+  const { data: { user }, error } = await admin.auth.getUser(token);
+  if (error || !user) return { error: "Sesión inválida", status: 401 };
+  if (!user.app_metadata?.is_admin) return { error: "Acceso denegado", status: 403 };
 
   return null;
 }

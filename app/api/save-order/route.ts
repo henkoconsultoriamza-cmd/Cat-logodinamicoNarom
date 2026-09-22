@@ -18,6 +18,12 @@ export async function POST(req: NextRequest) {
   if (!Array.isArray(items) || items.length === 0 || typeof total !== "number") {
     return NextResponse.json({ error: "Datos inválidos" }, { status: 400 });
   }
+  if (total <= 0) return NextResponse.json({ error: "Total inválido" }, { status: 400 });
+  for (const item of items) {
+    if (!item.name || !item.brand) return NextResponse.json({ error: "Item inválido" }, { status: 400 });
+    if (!Number.isFinite(item.quantity) || item.quantity <= 0) return NextResponse.json({ error: "Cantidad inválida" }, { status: 400 });
+    if (!Number.isFinite(item.unitPrice) || item.unitPrice <= 0) return NextResponse.json({ error: "Precio inválido" }, { status: 400 });
+  }
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const serviceKey  = process.env.SUPABASE_SERVICE_ROLE_KEY!;
