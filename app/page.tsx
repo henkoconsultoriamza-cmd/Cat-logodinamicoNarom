@@ -527,7 +527,7 @@ export default function Catalog() {
 
         {/* Henko footer */}
         <div style={{ padding: "16px 16px 8px", marginTop: "auto", textAlign: "center" }}>
-          <a href="https://henkoconsultoria.com" target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+          <a href="https://consultoriahenko.com" target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
             <div style={{ fontSize: 9, color: "rgba(255,255,255,.25)", letterSpacing: ".06em", marginBottom: 2 }}>DESARROLLADO POR</div>
             <div style={{ fontSize: 11, fontWeight: 700, color: "#EA8215" }}>Henko Consultoría</div>
           </a>
