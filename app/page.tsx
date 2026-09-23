@@ -524,6 +524,14 @@ export default function Catalog() {
             </button>
           )}
         </div>
+
+        {/* Henko footer */}
+        <div style={{ padding: "16px 16px 8px", marginTop: "auto", textAlign: "center" }}>
+          <a href="https://henkoconsultoria.com" target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+            <div style={{ fontSize: 9, color: "rgba(255,255,255,.25)", letterSpacing: ".06em", marginBottom: 2 }}>DESARROLLADO POR</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#EA8215" }}>Henko Consultoría</div>
+          </a>
+        </div>
       </aside>
 
       {/* ── Main content ─────────────────────────────────────────────────────── */}
@@ -986,15 +994,6 @@ export default function Catalog() {
           </div>
         </div>
       )}
-
-      {/* Footer */}
-      <div style={{ borderTop: "1px solid var(--border)", marginTop: 48, padding: "20px 16px", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
-        <span style={{ fontSize: 11, color: "var(--text3)" }}>Desarrollado por</span>
-        <a href="https://henkoconsultoria.com" target="_blank" rel="noopener noreferrer"
-          style={{ fontSize: 11, fontWeight: 700, color: "#EA8215", textDecoration: "none" }}>
-          Henko Consultoría
-        </a>
-      </div>
 
       {/* Lightbox */}
       {lightbox && (
