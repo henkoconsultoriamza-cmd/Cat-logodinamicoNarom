@@ -241,7 +241,7 @@ export default function Catalog() {
     if (!hydrated || products.length === 0) return;
     const sku = new URLSearchParams(window.location.search).get("producto");
     if (!sku) return;
-    const p = products.find(x => x.sku === sku);
+    const p = products.find(x => x?.sku === sku);
     if (p) { setSelected(p); setSelectedVariant(p.variants?.[0] ?? null); setDetailQty(p.minQty); }
   }, [hydrated, products]);
 
