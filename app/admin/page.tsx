@@ -1346,7 +1346,7 @@ export default function Admin() {
               </div>
 
               <div style={{ textAlign: "center", padding: "20px 0 0", fontSize: 12, color: N.text3 }}>
-                Desarrollado por <a href="https://henkoconsultoria.com" style={{ color: N.navy, textDecoration: "none", fontWeight: 600 }}>Henko Consultoría</a>
+                Desarrollado por <a href="https://consultoriahenko.com" style={{ color: N.navy, textDecoration: "none", fontWeight: 600 }}>Henko Consultoría</a>
               </div>
             </div>
           )}
