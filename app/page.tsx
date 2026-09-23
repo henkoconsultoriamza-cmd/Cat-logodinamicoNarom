@@ -988,12 +988,11 @@ export default function Catalog() {
       )}
 
       {/* Footer */}
-      <div style={{ borderTop: "1px solid var(--border)", marginTop: 48, padding: "24px 16px", display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
-        <span style={{ fontSize: 12, color: "var(--text3)" }}>Desarrollado por</span>
+      <div style={{ borderTop: "1px solid var(--border)", marginTop: 48, padding: "20px 16px", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+        <span style={{ fontSize: 11, color: "var(--text3)" }}>Desarrollado por</span>
         <a href="https://henkoconsultoria.com" target="_blank" rel="noopener noreferrer"
-          style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
-          <img src="/henko-logo.png" alt="Henko Consultoría" style={{ height: 22, objectFit: "contain" }} onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
-          <span style={{ fontSize: 12, fontWeight: 700, color: "#EA8215" }}>Henko Consultoría</span>
+          style={{ fontSize: 11, fontWeight: 700, color: "#EA8215", textDecoration: "none" }}>
+          Henko Consultoría
         </a>
       </div>
 
