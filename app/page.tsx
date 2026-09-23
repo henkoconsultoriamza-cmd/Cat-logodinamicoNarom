@@ -236,6 +236,15 @@ export default function Catalog() {
 
   useEffect(() => { if (hydrated) localStorage.setItem(CART_KEY, JSON.stringify(cart)); }, [cart, hydrated]);
 
+  // Abrir producto desde URL ?producto=SKU
+  useEffect(() => {
+    if (!hydrated || products.length === 0) return;
+    const sku = new URLSearchParams(window.location.search).get("producto");
+    if (!sku) return;
+    const p = products.find(x => x.sku === sku);
+    if (p) { setSelected(p); setSelectedVariant(p.variants?.[0] ?? null); setDetailQty(p.minQty); }
+  }, [hydrated, products]);
+
   useEffect(() => {
     const t = setInterval(() => setSlide(s => (s + 1) % 3), 4500);
     return () => clearInterval(t);
@@ -258,6 +267,16 @@ export default function Catalog() {
     setSelected(p);
     setSelectedVariant(p.variants?.[0] ?? null);
     setDetailQty(p.minQty);
+    const url = new URL(window.location.href);
+    url.searchParams.set("producto", p.sku);
+    window.history.pushState({}, "", url.toString());
+  }
+
+  function closeProduct() {
+    setSelected(null);
+    const url = new URL(window.location.href);
+    url.searchParams.delete("producto");
+    window.history.pushState({}, "", url.toString());
   }
 
   function effectivePrice(p: Product, v?: Variant | null) {
@@ -275,7 +294,7 @@ export default function Catalog() {
       if (existing) return prev.map(i => (i.variantSku ?? i.productId) === key ? { ...i, quantity: i.quantity + qty } : i);
       return [...prev, { productId: p.id, variantSku: variant?.sku, variantLabel: variant?.label, name: p.name, brand: p.brand, unitPrice, cdPrice, quantity: qty, image: p.image, imageColor: p.imageColor, imageIcon: p.imageIcon }];
     });
-    setSelected(null);
+    closeProduct();
   }
 
   function updateQty(key: string, delta: number) {
@@ -811,7 +830,7 @@ export default function Catalog() {
 
       {/* ── Product modal ──────────────────────────────────────────────────────── */}
       {selected && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.75)", zIndex: 200, display: "flex", alignItems: isMobile ? "flex-end" : "center", justifyContent: "center", padding: isMobile ? 0 : 16 }} onClick={e => { if (e.target === e.currentTarget) setSelected(null); }}>
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.75)", zIndex: 200, display: "flex", alignItems: isMobile ? "flex-end" : "center", justifyContent: "center", padding: isMobile ? 0 : 16 }} onClick={e => { if (e.target === e.currentTarget) closeProduct(); }}>
           <div style={{ background: "var(--surface)", borderRadius: isMobile ? "20px 20px 0 0" : 18, maxWidth: 860, width: "100%", maxHeight: isMobile ? "92vh" : "92vh", overflow: "hidden", display: "flex", flexDirection: "column", border: "1px solid var(--border)", boxShadow: "var(--shadow-lg)" }}>
 
             {/* Imagen grande */}
@@ -820,7 +839,7 @@ export default function Catalog() {
                 ? <img src={selected.image} alt="" style={{ width: "100%", height: "100%", objectFit: "contain", cursor: "zoom-in" }} onClick={() => setLightbox(selected.image)} />
                 : <div style={{ width: "100%", height: "100%", background: selected.imageColor, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 100 }}>{selected.imageIcon}</div>
               }
-              <button style={{ position: "absolute", top: 12, right: 12, background: "rgba(0,0,0,.5)", border: "none", borderRadius: "50%", width: 36, height: 36, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }} onClick={() => setSelected(null)}>
+              <button style={{ position: "absolute", top: 12, right: 12, background: "rgba(0,0,0,.5)", border: "none", borderRadius: "50%", width: 36, height: 36, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }} onClick={() => closeProduct()}>
                 <Icon name="close" size={18} />
               </button>
               <div style={{ position: "absolute", top: 12, left: 12, display: "flex", gap: 6 }}>
@@ -923,7 +942,7 @@ export default function Catalog() {
                 </div>
               ) : (
                 <button
-                  onClick={() => { setSelected(null); setLoginOpen(true); }}
+                  onClick={() => { closeProduct(); setLoginOpen(true); }}
                   style={{ width: "100%", height: 48, borderRadius: 12, background: accent, color: "#000", fontSize: 15, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, border: "none", cursor: "pointer" }}
                 >
                   🔒 Iniciá sesión para ver precios y pedir
