@@ -216,6 +216,15 @@ export default function Catalog() {
         });
       } catch {}
 
+      // Productos con imagen primero, luego por marca y nombre
+      base.sort((a: any, b: any) => {
+        const aHasImg = a.image ? 1 : 0;
+        const bHasImg = b.image ? 1 : 0;
+        if (bHasImg !== aHasImg) return bHasImg - aHasImg;
+        if (a.brand < b.brand) return -1;
+        if (a.brand > b.brand) return 1;
+        return a.name.localeCompare(b.name);
+      });
       setProducts(base);
     }
 
