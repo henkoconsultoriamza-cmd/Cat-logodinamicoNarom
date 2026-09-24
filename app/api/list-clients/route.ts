@@ -24,6 +24,7 @@ export async function GET(req: NextRequest) {
     phone: u.user_metadata?.phone ?? null,
     address: u.user_metadata?.address ?? null,
     tax_id: u.user_metadata?.tax_id ?? null,
+    app_metadata: u.app_metadata ?? {},
     is_admin: u.app_metadata?.is_admin ?? false,
     created_at: u.created_at,
   }));
