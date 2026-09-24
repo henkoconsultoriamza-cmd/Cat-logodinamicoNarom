@@ -60,12 +60,12 @@ export default function PricesTab({ products, getToken }: { products: Product[];
   // Marcas reales presentes en los productos
   const brandOptions = Array.from(new Set(products.map(p => p.brand).filter(Boolean))).sort();
 
-  // Merge: products with Supabase overrides applied
-  const merged = products.map(p => {
+  // Merge: products with Supabase overrides applied; _idx garantiza key única aunque SKU esté vacío
+  const merged = products.map((p, _idx) => {
     const ov = supabasePrices.find(r => r.sku === p.sku && r.brand === p.brand);
     return ov
-      ? { ...p, price: ov.price, salePrice: ov.sale_price ?? undefined, onSale: ov.on_sale, description: ov.description ?? p.description }
-      : p;
+      ? { ...p, _idx, price: ov.price, salePrice: ov.sale_price ?? undefined, onSale: ov.on_sale, description: ov.description ?? p.description }
+      : { ...p, _idx };
   });
 
   const filtered = merged.filter(p => {
@@ -74,7 +74,7 @@ export default function PricesTab({ products, getToken }: { products: Product[];
     return matchBrand && matchSearch;
   });
 
-  function key(p: Product) { return `${p.brand}||${p.sku}`; }
+  function key(p: any) { return `${(p as any)._idx ?? 0}||${p.brand}||${p.sku}`; }
 
   function startEdit(p: Product) {
     setEditing(prev => ({
