@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
   const res = await fetch(`${supabaseUrl}/auth/v1/admin/users`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "apikey": serviceKey, "Authorization": `Bearer ${serviceKey}` },
-    body: JSON.stringify({ email, password, email_confirm: true, user_metadata: { name, business, phone, address, tax_id } }),
+    body: JSON.stringify({ email, password, email_confirm: true, app_metadata: { confirmed: false }, user_metadata: { name, business, phone, address, tax_id } }),
   });
 
   const data = await res.json();

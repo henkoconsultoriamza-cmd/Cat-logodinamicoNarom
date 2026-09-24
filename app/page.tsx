@@ -254,11 +254,18 @@ export default function Catalog() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       const u = data.session?.user;
-      if (u) setUser({ id: u.id, email: u.email ?? "", name: u.user_metadata?.name ?? u.email ?? "" });
+      if (u && (u.app_metadata?.confirmed || u.app_metadata?.is_admin)) {
+        setUser({ id: u.id, email: u.email ?? "", name: u.user_metadata?.name ?? u.email ?? "" });
+      } else if (u) {
+        supabase.auth.signOut();
+      }
     });
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_ev, session) => {
       const u = session?.user;
-      setUser(u ? { id: u.id, email: u.email ?? "", name: u.user_metadata?.name ?? u.email ?? "" } : null);
+      if (!u) { setUser(null); return; }
+      if (u.app_metadata?.confirmed || u.app_metadata?.is_admin) {
+        setUser({ id: u.id, email: u.email ?? "", name: u.user_metadata?.name ?? u.email ?? "" });
+      }
     });
     return () => subscription.unsubscribe();
   }, []);
@@ -354,9 +361,15 @@ export default function Catalog() {
     e.preventDefault();
     setLoginError("");
     setLoginLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email: loginEmail, password: loginPass });
+    const { data, error } = await supabase.auth.signInWithPassword({ email: loginEmail, password: loginPass });
     setLoginLoading(false);
     if (error) { setLoginError("Email o contraseña incorrectos"); return; }
+    // Verificar que el admin haya confirmado la cuenta
+    if (!data.user?.app_metadata?.confirmed && !data.user?.app_metadata?.is_admin) {
+      await supabase.auth.signOut();
+      setLoginError("Tu cuenta está pendiente de aprobación. Contactá a Narom Group para activarla.");
+      return;
+    }
     setLoginOpen(false);
     setLoginEmail(""); setLoginPass("");
     pendingOrderRef.current = true;

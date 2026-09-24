@@ -1033,7 +1033,9 @@ export default function Admin() {
                           <div style={{ fontSize: 14, fontWeight: 700, color: N.text }}>{c.name || "—"}</div>
                           <div style={{ fontSize: 12, color: N.text3 }}>{meta.business ? `${meta.business} · ` : ""}{c.email}</div>
                         </div>
-                        {meta.phone && <div style={{ fontSize: 12, color: N.text2 }}>{meta.phone}</div>}
+                        <div style={{ fontSize: 10, fontWeight: 800, padding: "2px 8px", borderRadius: 20, background: c.app_metadata?.confirmed ? N.success + "20" : N.amber + "20", color: c.app_metadata?.confirmed ? N.success : N.amber, flexShrink: 0 }}>
+                          {c.app_metadata?.confirmed ? "ACTIVO" : "PENDIENTE"}
+                        </div>
                         <div style={{ fontSize: 12, fontWeight: 600, color: clientOrders.length > 0 ? N.info : N.text3, background: clientOrders.length > 0 ? N.info + "15" : N.border, padding: "3px 10px", borderRadius: 20 }}>
                           {clientOrders.length} pedido{clientOrders.length !== 1 ? "s" : ""}
                         </div>
@@ -1060,9 +1062,28 @@ export default function Admin() {
                           {(c.name || c.email || "?")[0].toUpperCase()}
                         </div>
                         <div style={{ flex: 1 }}>
-                          <div style={{ fontSize: 18, fontWeight: 800, color: "#fff" }}>{c.name || "—"}</div>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            <span style={{ fontSize: 18, fontWeight: 800, color: "#fff" }}>{c.name || "—"}</span>
+                            <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: ".08em", padding: "2px 8px", borderRadius: 20, background: c.app_metadata?.confirmed ? N.success + "22" : N.amber + "22", color: c.app_metadata?.confirmed ? N.success : N.amber }}>
+                              {c.app_metadata?.confirmed ? "ACTIVO" : "PENDIENTE"}
+                            </span>
+                          </div>
                           <div style={{ fontSize: 13, color: "rgba(255,255,255,.5)" }}>{c.email}</div>
                         </div>
+                        {!c.app_metadata?.confirmed && (
+                          <button onClick={async () => {
+                              if (!confirm(`¿Confirmar acceso a ${c.name || c.email}?`)) return;
+                              const headers = await authHeaders();
+                              const res = await fetch("/api/confirm-client", { method: "POST", headers, body: JSON.stringify({ id: c.id }) });
+                              const json = await res.json();
+                              if (json.error) { alert("Error: " + json.error); return; }
+                              setSelectedClient({ ...c, app_metadata: { ...c.app_metadata, confirmed: true } });
+                              loadClients();
+                            }}
+                            style={{ fontSize: 12, fontWeight: 800, color: "#fff", background: N.success, border: "none", borderRadius: 8, padding: "6px 14px", cursor: "pointer", marginRight: 6 }}>
+                            ✓ Confirmar
+                          </button>
+                        )}
                         <button onClick={async () => {
                             const isAdmin = c.app_metadata?.is_admin;
                             if (!confirm(isAdmin ? `¿Quitarle acceso admin a ${c.name || c.email}?` : `¿Dar acceso admin a ${c.name || c.email}?`)) return;
