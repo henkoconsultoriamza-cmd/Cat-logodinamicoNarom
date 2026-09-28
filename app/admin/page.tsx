@@ -483,6 +483,8 @@ export default function Admin() {
           updated++;
           return {
             ...p,
+            name:      nombreKey && row[nombreKey] != null ? String(row[nombreKey]).trim() || p.name : p.name,
+            brand:     marcaKey  && row[marcaKey]  != null ? String(row[marcaKey]).trim()  || p.brand : p.brand,
             price:     precioKey && row[precioKey] != null ? Number(row[precioKey]) || p.price : p.price,
             salePrice: ofertaKey && row[ofertaKey] != null ? Number(row[ofertaKey]) || undefined : p.salePrice,
             onSale:    p.onSale, // la oferta solo se cambia manualmente, nunca por importación

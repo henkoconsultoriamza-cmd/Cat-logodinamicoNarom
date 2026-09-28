@@ -209,6 +209,18 @@ export default function PricesTab({ products, getToken }: { products: Product[];
 
         setImportMsg(`Columnas: SKU="${header[iSku]}" Precio="${header[iPri] ?? '—'}" C/D="${header[iSale] ?? '—'}" | ${dataRows.length} filas | ${skuMap.size} productos en catálogo`);
 
+        // Detectar SKUs duplicados en el Excel
+        const skuCount = new Map<string, number>();
+        for (const r of dataRows) {
+          const sku = String(r[iSku]).trim();
+          skuCount.set(sku, (skuCount.get(sku) ?? 0) + 1);
+        }
+        const duplicatedSkus = Array.from(skuCount.entries()).filter(([, c]) => c > 1).map(([sku]) => sku);
+        if (duplicatedSkus.length > 0) {
+          setImportMsg(`Error: El Excel tiene SKUs duplicados: ${duplicatedSkus.join(", ")}. Corregí el archivo y volvé a subirlo.`);
+          return;
+        }
+
         const parsed: PreviewRow[] = dataRows.map(r => {
           const sku = String(r[iSku]).trim();
           const existing = skuMap.get(sku);

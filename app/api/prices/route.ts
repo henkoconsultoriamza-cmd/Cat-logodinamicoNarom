@@ -42,15 +42,19 @@ export async function POST(req: NextRequest) {
   }
 
   const sb = createClient(url, serviceKey, { db: { schema: "catalog" } });
-  const payload = rows.map((r: any) => ({
-    sku:         String(r.sku).trim(),
-    brand:       String(r.brand).trim(),
-    price:       Number(r.price),
-    sale_price:  r.sale_price != null ? Number(r.sale_price) : null,
-    on_sale:     Boolean(r.on_sale),
-    description: r.description ?? null,
-    updated_at:  new Date().toISOString(),
-  }));
+  const seen = new Map<string, any>();
+  for (const r of rows) {
+    seen.set(String(r.sku).trim(), {
+      sku:         String(r.sku).trim(),
+      brand:       String(r.brand ?? "").trim(),
+      price:       Number(r.price),
+      sale_price:  r.sale_price != null ? Number(r.sale_price) : null,
+      on_sale:     Boolean(r.on_sale),
+      description: r.description ?? null,
+      updated_at:  new Date().toISOString(),
+    });
+  }
+  const payload = Array.from(seen.values());
 
   const { error } = await sb.from("prices").upsert(payload, { onConflict: "sku,brand" });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
