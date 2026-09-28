@@ -543,7 +543,7 @@ export default function Admin() {
   const confirmedOrders = filteredByMonth.filter(o => o.status === "confirmado").length;
   const inPrepOrders    = orders.filter(o => o.status === "en_preparacion").length;
   const deliveredOrders = filteredByMonth.filter(o => o.status === "entregado").length;
-  const totalRevenue    = filteredByMonth.reduce((acc, o) => acc + (o.total || 0), 0);
+  const totalRevenue    = filteredByMonth.filter(o => o.status === "entregado").reduce((acc, o) => acc + (o.total || 0), 0);
   const safeProds = products.filter(p => p != null && p.id != null);
   const onSaleCount = safeProds.filter(p => p.onSale).length;
   const noStockCount = safeProds.filter(p => p.stock === 0).length;
@@ -798,7 +798,7 @@ export default function Admin() {
                     $ {totalRevenue.toLocaleString("es-AR", { minimumFractionDigits: 0 })}
                   </div>
                   <div style={{ fontSize: 12, color: "rgba(255,255,255,.4)", marginTop: 4 }}>
-                    {filteredByMonth.length} pedido{filteredByMonth.length !== 1 ? "s" : ""} · {dashMonth === "all" ? "histórico total" : new Date(dashMonth + "-01").toLocaleDateString("es-AR", { month: "long", year: "numeric" })}
+                    {deliveredOrders} pedido{deliveredOrders !== 1 ? "s" : ""} entregado{deliveredOrders !== 1 ? "s" : ""} · {dashMonth === "all" ? "histórico total" : new Date(dashMonth + "-01").toLocaleDateString("es-AR", { month: "long", year: "numeric" })}
                   </div>
                 </div>
                 {/* Mini stats */}
