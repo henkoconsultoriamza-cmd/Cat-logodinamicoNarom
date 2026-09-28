@@ -456,6 +456,7 @@ export default function Catalog() {
     "TELPLAST": "/brands/telplas.png",
     "SINTEPLAST": "/brands/sinteplast.jpg",
     "ALIAFOR": "/brands/Aliafor.jpg",
+    "PENETRIT": "/brands/Penetrit.jpg",
   };
 
   return (
