@@ -130,6 +130,7 @@ export const BRANDS = [
   "GAMA PINTURAS",
   "TELPLAST",
   "SINTEPLAST",
+  "ALIAFOR",
 ] as const;
 
 export type Brand = typeof BRANDS[number];
