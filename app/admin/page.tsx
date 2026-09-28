@@ -1181,17 +1181,32 @@ export default function Admin() {
                         {clientOrders.length === 0 ? (
                           <div style={{ fontSize: 13, color: N.text3, padding: "20px 0" }}>Sin pedidos aún.</div>
                         ) : clientOrders.map(o => (
-                          <div key={o.id} style={{ borderRadius: 10, border: `1px solid ${N.border}`, padding: 16, marginBottom: 10 }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                              <div style={{ fontSize: 12, color: N.text3 }}>{new Date(o.created_at).toLocaleDateString("es-AR", { day: "2-digit", month: "short", year: "numeric" })}</div>
+                          <div key={o.id} style={{ borderRadius: 10, border: `1px solid ${N.border}`, marginBottom: 10, overflow: "hidden" }}>
+                            {/* Cabecera del pedido */}
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", background: N.surface2, borderBottom: `1px solid ${N.border}` }}>
+                              <div>
+                                <div style={{ fontSize: 12, color: N.text3 }}>{new Date(o.created_at).toLocaleDateString("es-AR", { day: "2-digit", month: "short", year: "numeric" })} · {new Date(o.created_at).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })}</div>
+                                <div style={{ fontSize: 11, color: N.text3, marginTop: 2 }}>{(o.items as any[]).length} producto{(o.items as any[]).length !== 1 ? "s" : ""}</div>
+                              </div>
                               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                                <span style={{ fontSize: 16, fontWeight: 800, color: N.text }}>{fmt(o.total)}</span>
+                                <span style={{ fontSize: 15, fontWeight: 800, color: N.text }}>{fmt(o.total)}</span>
                                 <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 20, background: COL_COLOR[o.status] + "18", color: COL_COLOR[o.status] }}>{COL_LABEL[o.status]}</span>
+                                <button onClick={() => { setSelectedClient(null); setSelectedOrder(o); }} style={{ fontSize: 11, fontWeight: 700, color: N.navy, background: N.border, border: "none", borderRadius: 6, padding: "4px 10px", cursor: "pointer" }}>Ver →</button>
                               </div>
                             </div>
-                            <div style={{ fontSize: 12, color: N.text2 }}>
+                            {/* Items */}
+                            <div style={{ padding: "8px 12px" }}>
                               {(o.items as any[]).map((it, idx) => (
-                                <span key={idx}>{idx > 0 ? " · " : ""}{it.quantity}× {it.name}</span>
+                                <div key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 4px", borderBottom: idx < (o.items as any[]).length - 1 ? `1px solid ${N.border}` : "none" }}>
+                                  <div>
+                                    <div style={{ fontSize: 13, fontWeight: 600, color: N.text }}>{it.name}</div>
+                                    <div style={{ fontSize: 11, color: N.text3 }}>{it.brand} · SKU {it.sku}</div>
+                                  </div>
+                                  <div style={{ textAlign: "right", flexShrink: 0, marginLeft: 12 }}>
+                                    <div style={{ fontSize: 13, fontWeight: 700, color: N.text }}>{it.quantity}×</div>
+                                    <div style={{ fontSize: 12, color: N.text3 }}>$ {(it.unitPrice * it.quantity).toLocaleString("es-AR", { minimumFractionDigits: 0 })}</div>
+                                  </div>
+                                </div>
                               ))}
                             </div>
                           </div>
