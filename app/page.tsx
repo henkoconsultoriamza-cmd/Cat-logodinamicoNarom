@@ -457,6 +457,7 @@ export default function Catalog() {
     "SINTEPLAST": "/brands/sinteplast.jpg",
     "ALIAFOR": "/brands/Aliafor.jpg",
     "PENETRIT": "/brands/Penetrit.jpg",
+    "REFRIWATER": "/brands/Refriwater.jpg",
   };
 
   return (

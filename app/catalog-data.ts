@@ -132,6 +132,7 @@ export const BRANDS = [
   "SINTEPLAST",
   "ALIAFOR",
   "PENETRIT",
+  "REFRIWATER",
 ] as const;
 
 export type Brand = typeof BRANDS[number];
