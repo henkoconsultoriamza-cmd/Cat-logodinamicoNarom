@@ -430,7 +430,7 @@ export default function Catalog() {
     if (onlySale && !p.onSale) return false;
     if (query) {
       const q = query.toLowerCase();
-      return (p.name ?? "").toLowerCase().includes(q) || (p.sku ?? "").toLowerCase().includes(q) || (p.brand ?? "").toLowerCase().includes(q);
+      if (!((p.name ?? "").toLowerCase().includes(q) || (p.sku ?? "").toLowerCase().includes(q) || (p.brand ?? "").toLowerCase().includes(q))) return false;
     }
     return true;
   }), [products, activeCategory, activeBrands, onlySale, query]);
