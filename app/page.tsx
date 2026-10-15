@@ -423,6 +423,11 @@ export default function Catalog() {
 
   useEffect(() => { setVisibleCount(PAGE_SIZE); setSelected(null); }, [query, activeCategory, activeBrands, onlySale]);
 
+  const availableCategories = useMemo(() => {
+    const cats = new Set(products.map(p => p.category).filter(c => c && c.trim() !== ""));
+    return [...cats].sort();
+  }, [products]);
+
   const filtered = useMemo(() => products.filter(p => {
     if (p == null) return false;
     if (activeCategory !== "Todos" && (p.category ?? "").trim().toLowerCase() !== activeCategory.trim().toLowerCase()) return false;
@@ -520,7 +525,7 @@ export default function Catalog() {
 
           <div style={{ height: 1, background: "rgba(255,255,255,.08)", margin: "12px 6px" }} />
           <div style={{ fontSize: 9, fontWeight: 800, color: "rgba(255,255,255,.25)", letterSpacing: ".14em", textTransform: "uppercase" as const, padding: "0 10px", marginBottom: 4 }}>Categorías</div>
-          {["Todos", ...CATEGORIES].map(cat => {
+          {["Todos", ...availableCategories].map(cat => {
             const on = activeCategory === cat;
             return (
               <button key={cat} onClick={() => { setActiveCategory(cat); setActiveBrands([]); setSidebarOpen(false); }} style={{
