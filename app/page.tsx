@@ -436,6 +436,7 @@ export default function Catalog() {
   }), [products, activeCategory, activeBrands, onlySale, query]);
 
   function toggleBrand(b: string) {
+    setActiveCategory("Todos");
     setActiveBrands(prev => prev.includes(b) ? prev.filter(x => x !== b) : [...prev, b]);
   }
 
@@ -522,7 +523,7 @@ export default function Catalog() {
           {["Todos", ...CATEGORIES].map(cat => {
             const on = activeCategory === cat;
             return (
-              <button key={cat} onClick={() => { setActiveCategory(cat); setSidebarOpen(false); }} style={{
+              <button key={cat} onClick={() => { setActiveCategory(cat); setActiveBrands([]); setSidebarOpen(false); }} style={{
                 display: "flex", alignItems: "center", gap: 8, width: "100%", height: 36, padding: "0 10px",
                 borderRadius: 9, border: "none", borderLeft: on ? "3px solid #F4AA24" : "3px solid transparent",
                 background: on ? "rgba(244,170,36,.1)" : "transparent",
