@@ -229,9 +229,11 @@ export default function Catalog() {
     }
 
     loadProducts();
+    const interval = setInterval(loadProducts, 5 * 60 * 1000);
     const c = localStorage.getItem(CART_KEY);
     if (c) { try { setCart(JSON.parse(c)); } catch { localStorage.removeItem(CART_KEY); } }
     setHydrated(true);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => { if (hydrated) localStorage.setItem(CART_KEY, JSON.stringify(cart)); }, [cart, hydrated]);
@@ -419,7 +421,7 @@ export default function Catalog() {
     }
   }, [user]);
 
-  useEffect(() => { setVisibleCount(PAGE_SIZE); }, [query, activeCategory, activeBrands, onlySale]);
+  useEffect(() => { setVisibleCount(PAGE_SIZE); setSelected(null); }, [query, activeCategory, activeBrands, onlySale]);
 
   const filtered = useMemo(() => products.filter(p => {
     if (p == null) return false;
