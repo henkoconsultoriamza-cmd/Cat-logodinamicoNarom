@@ -425,8 +425,8 @@ export default function Catalog() {
 
   const filtered = useMemo(() => products.filter(p => {
     if (p == null) return false;
-    if (activeCategory !== "Todos" && p.category !== activeCategory) return false;
-    if (activeBrands.length && !expandBrands(activeBrands).includes(p.brand)) return false;
+    if (activeCategory !== "Todos" && (p.category ?? "").trim().toLowerCase() !== activeCategory.trim().toLowerCase()) return false;
+    if (activeBrands.length && !expandBrands(activeBrands).map(x => x.trim().toUpperCase()).includes((p.brand ?? "").trim().toUpperCase())) return false;
     if (onlySale && !p.onSale) return false;
     if (query) {
       const q = query.toLowerCase();

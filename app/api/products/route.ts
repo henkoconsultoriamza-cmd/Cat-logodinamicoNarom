@@ -15,7 +15,7 @@ function mapRow(p: any) {
     id:          p.id,
     sku:         p.sku,
     name:        p.name,
-    brand:       p.brand,
+    brand:       String(p.brand ?? "").trim(),
     category:    p.category ?? "",
     description: p.description ?? "",
     image:       p.image ?? "",
