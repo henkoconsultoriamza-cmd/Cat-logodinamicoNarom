@@ -403,7 +403,14 @@ export default function Catalog() {
   const BRAND_GROUPS: Record<string, string[]> = {
     "MOTA": ["MOTA", "ArtMota", "LubriMota", "MembraMota", "GasMota"],
   };
-  const VISIBLE_BRANDS = BRANDS.filter(b => !Object.values(BRAND_GROUPS).flat().includes(b) || Object.keys(BRAND_GROUPS).includes(b));
+  const VISIBLE_BRANDS = useMemo(() => {
+    const brandsInProducts = new Set(products.map(p => p.brand).filter(b => b && b.trim() !== ""));
+    const subBrands = new Set(Object.values(BRAND_GROUPS).flat());
+    const parentBrands = new Set(Object.keys(BRAND_GROUPS));
+    return [...brandsInProducts]
+      .filter(b => !subBrands.has(b) || parentBrands.has(b))
+      .sort();
+  }, [products]);
 
   function expandBrands(selected: string[]): string[] {
     const expanded = new Set<string>();
