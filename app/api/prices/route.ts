@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { requireAdmin } from "../_auth";
 
 const url        = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const anonKey    = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 // GET — public, returns all prices
 export async function GET() {
-  if (!url || !anonKey) return NextResponse.json([]);
+  if (!url || !serviceKey) return NextResponse.json([]);
   try {
-    const sb = createClient(url, anonKey, { db: { schema: "catalog" } });
+    const sb = createClient(url, serviceKey, { db: { schema: "catalog" } });
     const { data, error } = await sb.from("prices").select("sku, brand, price, sale_price, on_sale, description");
     if (error) { console.error("Supabase prices error:", error.message, error.code); return NextResponse.json([]); }
     return NextResponse.json(data ?? []);
@@ -21,12 +21,8 @@ export async function GET() {
 // POST — admin only, upsert one or many rows
 // Body: { rows: Array<{ sku, brand, price, sale_price?, on_sale?, description? }> }
 export async function POST(req: NextRequest) {
-  const token = req.headers.get("Authorization")?.replace("Bearer ", "");
-  if (!token) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-
-  const caller = createClient(url, anonKey);
-  const { data: { user } } = await caller.auth.getUser(token);
-  if (!user) return NextResponse.json({ error: "Sesión inválida" }, { status: 401 });
+  const authErr = await requireAdmin(req);
+  if (authErr) return NextResponse.json({ error: authErr.error }, { status: authErr.status });
 
   const { rows } = await req.json();
   if (!Array.isArray(rows) || rows.length === 0)

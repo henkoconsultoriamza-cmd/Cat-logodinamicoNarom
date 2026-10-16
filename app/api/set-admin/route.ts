@@ -17,6 +17,7 @@ export async function POST(req: NextRequest) {
     method: "PUT",
     headers: { "Content-Type": "application/json", "apikey": serviceKey, "Authorization": `Bearer ${serviceKey}` },
     body: JSON.stringify({ app_metadata: { is_admin: !!is_admin } }),
+    // NOTA: la API de Supabase Admin hace merge automático de app_metadata — no pisa otros campos
   });
 
   const data = await res.json();
