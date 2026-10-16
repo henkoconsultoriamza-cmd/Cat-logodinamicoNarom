@@ -1019,7 +1019,7 @@ export default function Catalog() {
                         style={{ height: 42, borderRadius: 9, border: `1.5px solid ${loginError ? "#ef4444" : "#e2e8f0"}`, padding: "0 14px", fontSize: 14, color: "#0f172a", outline: "none", background: "#f8fafc" }} />
                     </div>
                   ))}
-                  {loginError && <div style={{ fontSize: 13, color: "#ef4444", fontWeight: 500 }}>{loginError}</div>}
+                  {loginError && <div style={{ fontSize: 13, color: loginError.startsWith("✓") || loginError.startsWith("Ingresá tu email") ? "#475569" : "#ef4444", fontWeight: 500 }}>{loginError}</div>}
                   <button type="submit" disabled={loginLoading}
                     style={{ height: 44, borderRadius: 9, background: "#F4AA24", color: "#02152C", fontSize: 14, fontWeight: 800, border: "none", cursor: "pointer", opacity: loginLoading ? 0.7 : 1, marginTop: 4 }}>
                     {loginLoading ? "Ingresando…" : "Ingresar"}
