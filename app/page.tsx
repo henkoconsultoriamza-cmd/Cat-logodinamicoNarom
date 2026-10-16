@@ -1024,6 +1024,16 @@ export default function Catalog() {
                     style={{ height: 44, borderRadius: 9, background: "#F4AA24", color: "#02152C", fontSize: 14, fontWeight: 800, border: "none", cursor: "pointer", opacity: loginLoading ? 0.7 : 1, marginTop: 4 }}>
                     {loginLoading ? "Ingresando…" : "Ingresar"}
                   </button>
+                  <button type="button" onClick={async () => {
+                    if (!loginEmail) { setLoginError("Ingresá tu email para recuperar la contraseña"); return; }
+                    const { error } = await supabase.auth.resetPasswordForEmail(loginEmail, {
+                      redirectTo: `${window.location.origin}/reset-password`,
+                    });
+                    if (error) setLoginError("Error: " + error.message);
+                    else setLoginError("✓ Te enviamos un email para restablecer tu contraseña");
+                  }} style={{ background: "none", border: "none", color: "#475569", fontSize: 12, cursor: "pointer", textDecoration: "underline", textAlign: "center" as const }}>
+                    ¿Olvidaste tu contraseña?
+                  </button>
                 </form>
               ) : (
                 <form onSubmit={handleRegister} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
