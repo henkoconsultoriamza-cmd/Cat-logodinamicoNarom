@@ -1120,6 +1120,17 @@ export default function Admin() {
                           Editar
                         </button>
                         <button onClick={async () => {
+                            if (!confirm(`¿Enviar email de recuperación de contraseña a ${c.email}?`)) return;
+                            const { error } = await supabase.auth.resetPasswordForEmail(c.email, {
+                              redirectTo: `${window.location.origin}/reset-password`,
+                            });
+                            if (error) alert("Error: " + error.message);
+                            else alert(`Email de recuperación enviado a ${c.email}`);
+                          }}
+                          style={{ fontSize: 12, fontWeight: 700, color: N.info, background: N.info + "18", border: "none", borderRadius: 8, padding: "6px 14px", cursor: "pointer", marginRight: 8 }}>
+                          Resetear contraseña
+                        </button>
+                        <button onClick={async () => {
                             if (!confirm(`¿Eliminar a ${c.name || c.email}? Esta acción no se puede deshacer.`)) return;
                             const headers = await authHeaders();
                             const res = await fetch("/api/delete-client", { method: "DELETE", headers, body: JSON.stringify({ id: c.id, email: c.email }) });
