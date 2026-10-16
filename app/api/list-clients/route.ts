@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
   const serviceKey  = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!supabaseUrl || !serviceKey) return NextResponse.json({ error: "Configuración incompleta" }, { status: 500 });
 
-  const res = await fetch(`${supabaseUrl}/auth/v1/admin/users?per_page=200`, {
+  const res = await fetch(`${supabaseUrl}/auth/v1/admin/users?per_page=1000`, {
     headers: { "apikey": serviceKey, "Authorization": `Bearer ${serviceKey}` },
   });
 

@@ -217,6 +217,17 @@ export default function Admin() {
       const u = data.session?.user;
       if (u && u.app_metadata?.is_admin) { setAdminUser({ email: u.email ?? "", id: u.id }); setAdminToken(data.session?.access_token ?? ""); }
     });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "TOKEN_REFRESHED" && session) {
+        setAdminToken(session.access_token);
+      }
+      if (event === "SIGNED_OUT") {
+        setAdminUser(null);
+        setAdminToken("");
+      }
+    });
+    return () => subscription.unsubscribe();
   }, []);
 
   async function loginAdmin(e) {
@@ -303,10 +314,15 @@ export default function Admin() {
   useEffect(() => { if (adminUser && activeTab === "clients") loadClients(); }, [activeTab]);
 
   async function moveOrder(id, status) {
-    const headers = await authHeaders();
-    await fetch("/api/update-order", { method: "PATCH", headers, body: JSON.stringify({ id, status }) });
+    const prevOrders = orders;
+    const prevSelected = selectedOrder;
     setOrders(prev => prev.map(o => o.id === id ? { ...o, status } : o));
-    if (selectedOrder?.id === id) setSelectedOrder(o => ({ ...o, status }));
+    if (selectedOrder?.id === id) setSelectedOrder((o: any) => ({ ...o, status }));
+    try {
+      const headers = await authHeaders();
+      const res = await fetch("/api/update-order", { method: "PATCH", headers, body: JSON.stringify({ id, status }) });
+      if (!res.ok) { setOrders(prevOrders); setSelectedOrder(prevSelected); alert("Error al mover el pedido."); }
+    } catch { setOrders(prevOrders); setSelectedOrder(prevSelected); }
   }
 
   async function saveSettings() {
@@ -360,15 +376,15 @@ export default function Admin() {
     setSettings(DEFAULT_APP_SETTINGS);
   }
 
-  const autoSaveTimer = useRef<any>(null);
+  const autoSaveTimers = useRef<Record<string, any>>({});
   const [savingId, setSavingId] = useState<string | null>(null);
 
   function updateProduct(id: string, key: string, value: any) {
     setProducts(prev => {
       const next = prev.map(p => p.id === id ? { ...p, [key]: value } : p);
-      // Auto-save con debounce de 800ms
-      clearTimeout(autoSaveTimer.current);
-      autoSaveTimer.current = setTimeout(async () => {
+      // Auto-save con debounce de 800ms por producto (un timer independiente por ID)
+      clearTimeout(autoSaveTimers.current[id]);
+      autoSaveTimers.current[id] = setTimeout(async () => {
         const updated = next.find(p => p.id === id);
         if (!updated) return;
         setSavingId(id);
@@ -1319,11 +1335,12 @@ export default function Admin() {
                             <button style={{ color: N.danger, background: N.danger + "12", border: "none", borderRadius: 8, width: 34, height: 34, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
                               onClick={async () => {
                                 if (!confirm(`¿Eliminar "${p.name}" del catálogo?`)) return;
-                                setProducts(prev => prev.filter(x => x.id !== p.id));
                                 try {
                                   const token = await getToken();
-                                  await fetch("/api/products", { method: "DELETE", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` }, body: JSON.stringify({ id: p.id }) });
-                                } catch {}
+                                  const res = await fetch("/api/products", { method: "DELETE", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` }, body: JSON.stringify({ id: p.id }) });
+                                  if (res.ok) setProducts(prev => prev.filter(x => x.id !== p.id));
+                                  else alert("Error al eliminar el producto.");
+                                } catch { alert("Error de red al eliminar el producto."); }
                               }}>
                               <Icon name="close" size={15} />
                             </button>
