@@ -467,7 +467,6 @@ export default function Catalog() {
     "SANIPLAST": "/brands/saniplast.png",
     "SIKA": "/brands/sika.png",
     "GAMA PINTURAS": "/brands/gama.png",
-    "TELPLAS": "/brands/telplas.png",
     "TELPLAST": "/brands/telplas.png",
     "SINTEPLAST": "/brands/sinteplast.jpg",
     "ALIAFOR": "/brands/Aliafor.jpg",

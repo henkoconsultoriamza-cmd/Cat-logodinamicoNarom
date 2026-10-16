@@ -16,7 +16,7 @@ function mapRow(p: any) {
     sku:         p.sku,
     name:        p.name,
     brand:       String(p.brand ?? "").trim(),
-    category:    p.category ?? "",
+    category:    String(p.category ?? "").trim(),
     description: p.description ?? "",
     image:       p.image ?? "",
     imageColor:  p.image_color ?? "",
@@ -35,9 +35,9 @@ function mapRow(p: any) {
 
 // GET — público, retorna todos los productos con overrides de precios aplicados
 export async function GET() {
-  if (!url || !anonKey) return NextResponse.json([], { status: 200 });
+  if (!url || !serviceKey) return NextResponse.json([], { status: 200 });
   try {
-    const sb = createClient(url, anonKey, { db: { schema: "catalog" } });
+    const sb = createClient(url, serviceKey, { db: { schema: "catalog" } });
 
     const [{ data: products, error: prodErr }, { data: prices }] = await Promise.all([
       sb.from("products").select("*").eq("is_deleted", false).order("brand").order("name").limit(10000),
