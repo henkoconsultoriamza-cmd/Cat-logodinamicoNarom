@@ -9,11 +9,16 @@ export default function ResetPassword() {
   const [msg, setMsg]               = useState("");
   const [ready, setReady]           = useState(false);
 
+  const [isAdmin, setIsAdmin] = useState(false);
+
   // Supabase pasa el token en el hash (#access_token=...&type=recovery)
   // onAuthStateChange lo intercepta y establece la sesión automáticamente
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY") setReady(true);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "PASSWORD_RECOVERY") {
+        setReady(true);
+        setIsAdmin(session?.user?.app_metadata?.is_admin === true);
+      }
     });
     return () => subscription.unsubscribe();
   }, []);
@@ -44,8 +49,8 @@ export default function ResetPassword() {
             <div style={{ fontSize: 48, marginBottom: 12 }}>✓</div>
             <div style={{ fontSize: 16, fontWeight: 700, color: N.success, marginBottom: 8 }}>Contraseña actualizada</div>
             <div style={{ fontSize: 14, color: N.text2, marginBottom: 24 }}>Ya podés iniciar sesión con tu nueva contraseña.</div>
-            <a href="/admin" style={{ display: "inline-block", padding: "10px 24px", background: N.amber, color: N.navy, borderRadius: 8, fontWeight: 700, fontSize: 14, textDecoration: "none" }}>
-              Ir al panel
+            <a href={isAdmin ? "/admin" : "/"} style={{ display: "inline-block", padding: "10px 24px", background: N.amber, color: N.navy, borderRadius: 8, fontWeight: 700, fontSize: 14, textDecoration: "none" }}>
+              {isAdmin ? "Ir al panel" : "Ir al catálogo"}
             </a>
           </div>
         ) : !ready ? (
