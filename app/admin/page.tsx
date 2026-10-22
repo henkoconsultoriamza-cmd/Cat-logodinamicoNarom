@@ -425,6 +425,11 @@ export default function Admin() {
     await downloadProductSheet(products, "Productos_Narom.xlsx");
   }
 
+  // Planilla vacía (solo encabezados) para cargar productos nuevos: sin filas existentes ni ID interno para copiar
+  async function downloadTemplate() {
+    await downloadProductSheet([], "Planilla_Productos_Nuevos_Narom.xlsx");
+  }
+
   async function importExcel(e) {
     const file = e.target.files[0];
     e.target.value = "";
@@ -1216,6 +1221,7 @@ export default function Admin() {
                     {BRANDS.map(b => <option key={b}>{b}</option>)}
                   </select>
                   <button style={{ ...btn("#16a34a"), height: 36 }} onClick={() => { setNewProd({ name: "", brand: BRANDS[0] ?? "", category: CATEGORIES[0] ?? "", sku: "", description: "", image: "", price: "", salePrice: "", minQty: "1" }); setNewProdMsg(""); setShowNewProduct(true); }}>+ Nuevo producto</button>
+                  <button style={{ ...btn("#16a34a", true), height: 36 }} onClick={downloadTemplate}><Icon name="download" size={14} />Descargar planilla</button>
                   <button style={{ ...btn("#16a34a", true), height: 36 }} onClick={exportExcel}><Icon name="download" size={14} />Exportar Excel</button>
                   <label style={{ ...btn("#2563eb", true), height: 36, cursor: "pointer" }}><Icon name="upload" size={14} />Importar Excel<input type="file" accept=".xlsx,.xls" style={{ display: "none" }} onChange={importExcel} /></label>
                 </div>
@@ -1227,7 +1233,7 @@ export default function Admin() {
                     </div>
                   )}
                   <div style={{ fontSize: 12, color: N.text3, padding: "12px 0 4px" }}>
-                    Planilla: SKU · Nombre · Marca · Categoria · Precio Lista · Precio Con Descuento · MinQty · Descripcion · ID interno. Es la misma de Precios: exportá, editá y volvé a importar. Los SKU nuevos se crean; no modifiques la columna ID interno.
+                    Productos nuevos: «Descargar planilla» (viene vacía), completala y subila con «Importar Excel». Sin SKU no se carga el producto. Para editar los que ya existen: «Exportar Excel», cambiá lo que necesites y volvé a importar; no modifiques la columna ID interno. Es la misma planilla de Precios.
                   </div>
                   {pagedProds.map(p => {
                     const isEditing = editingId === p.id;
