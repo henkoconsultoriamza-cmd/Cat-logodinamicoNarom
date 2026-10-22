@@ -424,11 +424,6 @@ export default function Admin() {
     const ExcelJS = (await import("exceljs")).default;
     const wb = new ExcelJS.Workbook();
 
-    // Hoja oculta con la lista de categorías (requerida para data validation)
-    const catSheet = wb.addWorksheet("__Categorias", { state: "veryHidden" });
-    CATEGORIES.forEach((c, i) => { catSheet.getCell(`A${i + 1}`).value = c; });
-    const catRange = `__Categorias!$A$1:$A$${CATEGORIES.length}`;
-
     const ws = wb.addWorksheet("Productos");
     ws.columns = [
       { header: "SKU",                  key: "sku",       width: 16 },
@@ -443,19 +438,6 @@ export default function Admin() {
     products.forEach(p => {
       ws.addRow({ sku: p.sku, nombre: p.name, marca: p.brand, categoria: p.category, precio: p.price, descuento: p.salePrice ?? "", minqty: p.minQty });
     });
-
-    // Dropdown en columna D (Categoria) para todas las filas de datos
-    const dataRows = products.length + 1; // +1 por el header
-    for (let r = 2; r <= dataRows; r++) {
-      ws.getCell(`D${r}`).dataValidation = {
-        type: "list",
-        allowBlank: true,
-        formulae: [`${catRange}`],
-        showErrorMessage: true,
-        errorTitle: "Categoría inválida",
-        error: "Seleccioná una categoría de la lista.",
-      };
-    }
 
     const buf = await wb.xlsx.writeBuffer();
     const blob = new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
