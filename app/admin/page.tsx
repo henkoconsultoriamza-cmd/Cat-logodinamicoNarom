@@ -10,6 +10,7 @@ import { supabase } from "../lib/supabase";
 import { Order, OrderStatus } from "../lib/orders";
 import PricesTab from "./PricesTab";
 import ImageUpload from "./ImageUpload";
+import { downloadProductSheet, planProductImport, readProductSheet } from "./product-sheet";
 
 // ── Icons ────────────────────────────────────────────────────────────────────
 function Icon({ name, size = 18 }) {
@@ -421,115 +422,48 @@ export default function Admin() {
   }
 
   async function exportExcel() {
-    const ExcelJS = (await import("exceljs")).default;
-    const wb = new ExcelJS.Workbook();
-
-    const ws = wb.addWorksheet("Productos");
-    ws.columns = [
-      { header: "SKU",                  key: "sku",       width: 16 },
-      { header: "Nombre",               key: "nombre",    width: 40 },
-      { header: "Marca",                key: "marca",     width: 14 },
-      { header: "Categoria",            key: "categoria", width: 26 },
-      { header: "Precio Lista",         key: "precio",    width: 14 },
-      { header: "Precio Con Descuento", key: "descuento", width: 22 },
-      { header: "MinQty",               key: "minqty",    width: 10 },
-    ];
-
-    products.forEach(p => {
-      ws.addRow({ sku: p.sku, nombre: p.name, marca: p.brand, categoria: p.category, precio: p.price, descuento: p.salePrice ?? "", minqty: p.minQty });
-    });
-
-    const buf = await wb.xlsx.writeBuffer();
-    const blob = new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a"); a.href = url; a.download = "Productos_Narom.xlsx"; a.click();
-    URL.revokeObjectURL(url);
+    await downloadProductSheet(products, "Productos_Narom.xlsx");
   }
 
-  function importExcel(e) {
+  async function importExcel(e) {
     const file = e.target.files[0];
+    e.target.value = "";
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = async ev => {
-      try {
-        const XLSX = await import("xlsx");
-        const wb = XLSX.read(ev.target.result, { type: "binary" });
-        const rows: any[] = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: null });
-        if (!rows.length) { alert("El archivo está vacío o no tiene datos."); return; }
-        // Detectar columna SKU flexible (SKU, Código, Cod, etc.)
-        const firstRow = rows[0];
-        const keys = Object.keys(firstRow);
-        const skuKey = keys.find(k => /^sku$/i.test(k)) ?? keys.find(k => /c[oó]d/i.test(k)) ?? keys.find(k => /artículo|articulo/i.test(k));
-        const precioKey = keys.find(k => /^precio$/i.test(k) && !/oferta|descuento/i.test(k));
-        const ofertaKey = keys.find(k => /oferta|descuento|precioc/i.test(k));
-        const enOfertaKey = keys.find(k => /enoferta|en_oferta|oferta$/i.test(k));
-        const stockKey = keys.find(k => /^stock$/i.test(k));
-        const minQtyKey = keys.find(k => /minqty|min_qty|minimo/i.test(k));
-        if (!skuKey) { alert(`No se encontró columna SKU. Columnas detectadas: ${keys.join(", ")}`); return; }
-        const nombreKey = keys.find(k => /nombre|name|descripci/i.test(k));
-        const marcaKey  = keys.find(k => /marca|brand/i.test(k));
-        const catKey    = keys.find(k => /categ/i.test(k));
+    try {
+      const sheet = await readProductSheet(file);
+      const plan = planProductImport(sheet.rows, products.filter(p => p != null && p.id != null), { brands: BRANDS, categories: CATEGORIES });
+      if (!plan.changed.length) { alert("No hay nada para cambiar: todos los productos de la planilla ya están iguales en el catálogo."); return; }
 
-        // Calcular todo sincrónicamente ANTES de setProducts
-        const safeProducts = (products ?? []).filter(p => p != null && p.sku != null);
-        const currentSkus = new Map(safeProducts.map(p => [String(p.sku).trim(), p]));
-        let updated = 0, added = 0;
+      const lines = [`Se van a actualizar ${plan.updated} productos y crear ${plan.added} nuevos.`];
+      if (plan.withoutPrice.length) lines.push(`${plan.withoutPrice.length} productos nuevos no tienen Precio Lista y van a quedar sin precio: ${plan.withoutPrice.slice(0, 10).join(", ")}${plan.withoutPrice.length > 10 ? "…" : ""}`);
+      if (plan.priceConflicts.length) lines.push(`No se cambia el precio de ${plan.priceConflicts.length} SKU repetidos con precios distintos: ${plan.priceConflicts.slice(0, 10).join(", ")}${plan.priceConflicts.length > 10 ? "…" : ""}`);
+      if (sheet.skipped) lines.push(`${sheet.skipped} filas sin SKU se ignoran.`);
+      if (!confirm(`${lines.join("\n\n")}\n\n¿Continuar?`)) return;
 
-        const updatedList = safeProducts.map(p => {
-          const row: any = rows.find((r: any) => String(r[skuKey] ?? "").trim() === String(p.sku).trim());
-          if (!row) return p;
-          updated++;
-          return {
-            ...p,
-            name:      nombreKey && row[nombreKey] != null ? String(row[nombreKey]).trim() || p.name : p.name,
-            brand:     marcaKey  && row[marcaKey]  != null ? String(row[marcaKey]).trim()  || p.brand : p.brand,
-            price:     precioKey && row[precioKey] != null ? Number(row[precioKey]) || p.price : p.price,
-            salePrice: ofertaKey && row[ofertaKey] != null ? Number(row[ofertaKey]) || undefined : p.salePrice,
-            onSale:    p.onSale, // la oferta solo se cambia manualmente, nunca por importación
-            stock:     stockKey && row[stockKey]   != null ? Number(row[stockKey])  : p.stock,
-            minQty:    minQtyKey && row[minQtyKey] != null ? Number(row[minQtyKey]) : p.minQty,
-          };
-        });
+      const token = await getToken();
+      const res = await fetch("/api/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        body: JSON.stringify({ products: plan.changed, preserveOnSale: true }),
+      });
+      const json = await res.json();
+      if (json.error) { alert("Error al guardar en Supabase: " + json.error); return; }
 
-        const newProds: any[] = [];
-        for (const row of rows as any[]) {
-          const sku = String(row[skuKey] ?? "").trim();
-          if (!sku || currentSkus.has(sku)) continue;
-          added++;
-          newProds.push({
-            id: `imp-${Date.now()}-${added}`,
-            sku,
-            name:        nombreKey ? String(row[nombreKey] ?? sku).trim() : sku,
-            brand:       marcaKey  ? String(row[marcaKey]  ?? "").trim()  : "",
-            category:    catKey    ? String(row[catKey]    ?? "").trim()  : "",
-            description: "", image: "", imageColor: "", imageIcon: "",
-            price:     precioKey  && row[precioKey]  != null ? Number(row[precioKey])  || 0 : 0,
-            salePrice: ofertaKey  && row[ofertaKey]  != null ? Number(row[ofertaKey])  || undefined : undefined,
-            onSale:    false, // la oferta solo se activa manualmente
-            stock:     stockKey   && row[stockKey]   != null ? Number(row[stockKey])  : 0,
-            minQty:    minQtyKey  && row[minQtyKey]  != null ? Number(row[minQtyKey]) : 1,
-          });
-        }
-
-        const finalList = [...updatedList, ...newProds];
-        setProducts(finalList);
-
-        // Guardar en Supabase
-        const token = await getToken();
-        const res = await fetch("/api/products", {
+      if (plan.priceRows.length) {
+        const pres = await fetch("/api/prices", {
           method: "POST",
           headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-          body: JSON.stringify({ products: finalList, preserveOnSale: true }),
+          body: JSON.stringify({ rows: plan.priceRows }),
         });
-        const json = await res.json();
-        if (json.error) { alert("Error al guardar en Supabase: " + json.error); return; }
-        alert(`✅ ${updated} actualizados · ${added} nuevos · guardados para todos los usuarios.`);
-      } catch (err: any) {
-        alert("Error al importar: " + (err?.message ?? String(err)));
+        const pjson = await pres.json();
+        if (pjson.error) { await reloadProducts(); alert("Los productos se guardaron, pero los precios no: " + pjson.error); return; }
       }
-    };
-    reader.readAsBinaryString(file);
-    e.target.value = "";
+
+      await reloadProducts();
+      alert(`✅ ${plan.updated} actualizados · ${plan.added} nuevos · guardados para todos los usuarios.`);
+    } catch (err: any) {
+      alert("Error al importar: " + (err?.message ?? String(err)));
+    }
   }
 
   // ── Derived stats ────────────────────────────────────────────────────────
@@ -1293,7 +1227,7 @@ export default function Admin() {
                     </div>
                   )}
                   <div style={{ fontSize: 12, color: N.text3, padding: "12px 0 4px" }}>
-                    Columnas de importación Excel: SKU · Precio · PrecioOferta · EnOferta (SI/NO) · Stock · MinQty
+                    Planilla: SKU · Nombre · Marca · Categoria · Precio Lista · Precio Con Descuento · MinQty · Descripcion · ID interno. Es la misma de Precios: exportá, editá y volvé a importar. Los SKU nuevos se crean; no modifiques la columna ID interno.
                   </div>
                   {pagedProds.map(p => {
                     const isEditing = editingId === p.id;

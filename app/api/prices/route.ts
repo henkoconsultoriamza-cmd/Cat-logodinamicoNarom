@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
   const sb = createClient(url, serviceKey, { db: { schema: "catalog" } });
   const seen = new Map<string, any>();
   for (const r of rows) {
-    seen.set(String(r.sku).trim(), {
+    seen.set(`${String(r.sku).trim()}||${String(r.brand ?? "").trim()}`, {
       sku:         String(r.sku).trim(),
       brand:       String(r.brand ?? "").trim(),
       price:       Number(r.price),

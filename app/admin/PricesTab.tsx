@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 import { BRANDS } from "../catalog-constants";
 import type { Product } from "../catalog-data";
-import * as XLSX from "xlsx";
+import { downloadProductSheet, planPriceImport, readProductSheet, type PricePreviewRow } from "./product-sheet";
 
 const N = {
   navy: "#02152C", navyMid: "#0a2240", amber: "#F4AA24", amberDim: "rgba(244,170,36,.12)",
@@ -15,7 +15,7 @@ const N = {
 };
 
 type PriceRow = { sku: string; brand: string; price: number; sale_price: number | null; on_sale: boolean; description: string | null; };
-type PreviewRow = { sku: string; brand: string; name: string; description: string; price: number; sale_price: number | null; exists: boolean; };
+type PreviewRow = PricePreviewRow;
 
 function fmt(n: number) { return n.toLocaleString("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 2 }); }
 
@@ -154,97 +154,25 @@ export default function PricesTab({ products, getToken }: { products: Product[];
     }
   }
 
-  // Download template
+  // Misma planilla que Productos → Exportar Excel
   function downloadTemplate() {
-    const header = [["SKU", "DESCRIPCION", "PRECIO", "PRECIO_CON_DESCUENTO"]];
-    const example = [
-      ["AG01", "Aguarrás mineral 1 LT", 3798.30, 3453.00],
-      ["2728", 'Canilla esférica metálica 1/2"', 4312.00, 3920.00],
-    ];
-    const ws = XLSX.utils.aoa_to_sheet([...header, ...example]);
-    ws["!cols"] = [{ wch: 14 }, { wch: 50 }, { wch: 14 }, { wch: 22 }];
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Precios");
-    XLSX.writeFile(wb, "Plantilla_Precios_Narom.xlsx");
+    downloadProductSheet(merged, "Productos_Narom.xlsx");
   }
 
   // Parse uploaded Excel
-  function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
+    e.target.value = "";
     if (!file) return;
     setImportMsg("Leyendo archivo...");
     setPreview(null);
-    const reader = new FileReader();
-    reader.onerror = () => setImportMsg("Error al leer el archivo. Intentá de nuevo.");
-    reader.onload = ev => {
-      try {
-        const data = ev.target?.result;
-        if (!data) { setImportMsg("Error: el archivo llegó vacío."); return; }
-        const wb = XLSX.read(data, { type: "binary" });
-        if (!wb.SheetNames.length) { setImportMsg("El archivo no tiene hojas."); return; }
-        const ws = wb.Sheets[wb.SheetNames[0]];
-        const rows: any[][] = XLSX.utils.sheet_to_json(ws, { header: 1, defval: null });
-
-        const hIdx = rows.findIndex(r => r.some(c => /SKU|C[OÓ]D|ART[IÍ]CULO/i.test(String(c))));
-        if (hIdx === -1) {
-          setImportMsg(`No se encontró columna SKU o Código. Encabezados detectados: ${JSON.stringify(rows[0])}`);
-          return;
-        }
-
-        const header = rows[hIdx].map(c => String(c).trim());
-        const iSku  = header.findIndex(h => /^sku$/i.test(h) || /^c[oó]digo$/i.test(h) || /^c[oó]d\.?$/i.test(h) || /^art[íi]culo$/i.test(h) || /sku/i.test(h));
-        const iDesc = header.findIndex(h => /descripci[oó]n/i.test(h) || /^nombre$/i.test(h) || /^detalle$/i.test(h) || /^producto$/i.test(h));
-        const iPri  = header.findIndex(h => /^precio$/i.test(h) || /precio\s*lista/i.test(h) || /^price$/i.test(h));
-        const iSale = header.findIndex(h => /descuento/i.test(h) || /c\/d/i.test(h) || /precio.{0,4}c.{0,4}d/i.test(h) || /oferta/i.test(h));
-
-        if (iSku === -1) {
-          setImportMsg(`Encabezados encontrados: ${JSON.stringify(header)} — no se detectó columna de código.`);
-          return;
-        }
-
-        setImportMsg(`Paso 4: merged tiene ${merged.length} productos, construyendo mapa...`);
-        const dataRows = rows.slice(hIdx + 1).filter(r => r[iSku]);
-        const validMerged = merged.filter((p): p is NonNullable<typeof p> => p != null && p.sku != null);
-        const skuMap = new Map(validMerged.map(p => [String(p.sku), p]));
-
-        setImportMsg(`Columnas: SKU="${header[iSku]}" Precio="${header[iPri] ?? '—'}" C/D="${header[iSale] ?? '—'}" | ${dataRows.length} filas | ${skuMap.size} productos en catálogo`);
-
-        // Detectar SKUs duplicados en el Excel
-        const skuCount = new Map<string, number>();
-        for (const r of dataRows) {
-          const sku = String(r[iSku]).trim();
-          skuCount.set(sku, (skuCount.get(sku) ?? 0) + 1);
-        }
-        const duplicatedSkus = Array.from(skuCount.entries()).filter(([, c]) => c > 1).map(([sku]) => sku);
-        if (duplicatedSkus.length > 0) {
-          setImportMsg(`Error: El Excel tiene SKUs duplicados: ${duplicatedSkus.join(", ")}. Corregí el archivo y volvé a subirlo.`);
-          return;
-        }
-
-        const parsed: PreviewRow[] = dataRows.map(r => {
-          const sku = String(r[iSku]).trim();
-          const existing = skuMap.get(sku);
-          const rawPrice = iPri >= 0 && r[iPri] != null ? parseFloat(r[iPri]) || 0 : 0;
-          const rawSale  = iSale >= 0 && r[iSale] != null ? parseFloat(r[iSale]) || null : null;
-          const price     = rawPrice > 0 ? rawPrice : (rawSale ?? 0);
-          const sale_price = rawPrice > 0 ? rawSale : null;
-          return {
-            sku,
-            brand:       existing?.brand ?? "—",
-            name:        existing?.name  ?? "— no encontrado —",
-            description: iDesc >= 0 && r[iDesc] ? String(r[iDesc]).trim() : (existing?.description ?? ""),
-            price,
-            sale_price,
-            exists:      !!existing,
-          };
-        });
-        setPreview(parsed);
-      } catch (err: any) {
-        setImportMsg("Error al procesar el Excel: " + (err?.message ?? String(err)));
-      }
-    };
-    reader.readAsBinaryString(file);
-    e.target.value = "";
+    try {
+      const sheet = await readProductSheet(file);
+      setPreview(planPriceImport(sheet.rows, merged, { brands: BRANDS }));
+      setImportMsg(sheet.skipped ? `${sheet.skipped} filas sin SKU se ignoraron.` : "");
+    } catch (err: any) {
+      setImportMsg("Error: " + (err?.message ?? String(err)));
+    }
   }
 
   async function confirmImport() {
@@ -258,7 +186,7 @@ export default function PricesTab({ products, getToken }: { products: Product[];
         sku: r.sku, brand: r.brand,
         price: r.price,
         sale_price: r.sale_price,
-        on_sale: r.sale_price != null && r.sale_price < r.price,
+        on_sale: r.onSale, // la oferta solo se cambia a mano, nunca por planilla
         description: r.description || null,
       }));
       const res = await fetch("/api/prices", {
@@ -342,12 +270,15 @@ export default function PricesTab({ products, getToken }: { products: Product[];
         </div>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 12 }}>
           <button style={btnS(N.navy, true)} onClick={downloadTemplate}>
-            <Icon name="download" size={14} /> Descargar plantilla
+            <Icon name="download" size={14} /> Descargar planilla
           </button>
           <label style={{ ...btnS(N.navy), cursor: "pointer" }}>
             <Icon name="upload" size={14} /> Subir Excel
             <input type="file" accept=".xlsx,.xls,.csv" style={{ display: "none" }} onChange={handleFile} />
           </label>
+        </div>
+        <div style={{ fontSize: 12, color: N.text3, marginBottom: 12 }}>
+          Es la misma planilla de Productos → Exportar Excel. Acá solo se actualizan Precio Lista, Precio Con Descuento y Descripcion de productos que ya existen; los SKU nuevos se cargan desde Productos → Importar Excel.
         </div>
 
         {importMsg && (
@@ -364,7 +295,7 @@ export default function PricesTab({ products, getToken }: { products: Product[];
           <div>
             <div style={{ fontSize: 13, color: N.text2, marginBottom: preview.filter(r => r.exists).length === 0 ? 6 : 10 }}>
               <strong>{preview.filter(r => r.exists).length}</strong> productos encontrados ·{" "}
-              <span style={{ color: preview.filter(r => !r.exists).length > 0 ? N.danger : N.text3 }}>{preview.filter(r => !r.exists).length} SKUs no reconocidos</span>
+              <span style={{ color: preview.filter(r => !r.exists).length > 0 ? N.danger : N.text3 }}>{preview.filter(r => !r.exists).length} filas sin importar (el motivo figura en Nombre)</span>
             </div>
             {/* Botones ARRIBA de la tabla para que sean visibles sin scrollear */}
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 14 }}>
@@ -373,17 +304,10 @@ export default function PricesTab({ products, getToken }: { products: Product[];
               </button>
               {preview.some(r => !r.exists) && (
                 <button style={btnS(N.warning, true)} onClick={() => {
-                  const notFound = preview.filter(r => !r.exists);
-                  const ws = XLSX.utils.aoa_to_sheet([
-                    ["SKU", "Descripción en Excel", "Precio en Excel"],
-                    ...notFound.map(r => [r.sku, r.description || "—", r.price || "—"]),
-                  ]);
-                  ws["!cols"] = [{ wch: 20 }, { wch: 50 }, { wch: 16 }];
-                  const wb2 = XLSX.utils.book_new();
-                  XLSX.utils.book_append_sheet(wb2, ws, "SKUs no encontrados");
-                  XLSX.writeFile(wb2, "SKUs_no_encontrados.xlsx");
+                  // Sale en la planilla única: los SKU nuevos se pueden subir tal cual en Productos → Importar Excel
+                  downloadProductSheet(preview.filter(r => !r.exists).map(r => r.row), "Filas_sin_importar_Narom.xlsx");
                 }}>
-                  <Icon name="download" size={14} /> Descargar {preview.filter(r => !r.exists).length} no encontrados
+                  <Icon name="download" size={14} /> Descargar {preview.filter(r => !r.exists).length} sin importar
                 </button>
               )}
               <button style={btnS("#64748b", true)} onClick={() => { setPreview(null); setImportMsg(""); }}>
@@ -392,7 +316,7 @@ export default function PricesTab({ products, getToken }: { products: Product[];
             </div>
             {preview.length > 0 && preview.filter(r => r.exists).length === 0 && (
               <div style={{ fontSize: 12, color: N.warning, background: "#fffbeb", border: "1px solid #fcd34d", borderRadius: 8, padding: "8px 12px", marginBottom: 10 }}>
-                Ningún SKU del Excel coincide con los productos del catálogo. Verificá que los códigos sean idénticos (mayúsculas, guiones).
+                Ninguna fila se puede importar. Si son productos nuevos, cargalos desde Productos → Importar Excel; si no, verificá que el SKU y la marca sean idénticos (guiones, espacios).
                 El primer SKU del archivo: <strong>{preview[0]?.sku}</strong>
               </div>
             )}
